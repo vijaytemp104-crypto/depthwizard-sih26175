@@ -1,9 +1,10 @@
-import { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Header from './components/Header.jsx'
 import WorkflowStepper from './components/WorkflowStepper.jsx'
 import UploadPanel from './components/UploadPanel.jsx'
 import FileSummary from './components/FileSummary.jsx'
 import StageCard from './components/StageCard.jsx'
+import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
 const stages = [
   { name: 'Input', detail: 'Single RGB image' },
@@ -22,13 +23,102 @@ const futureStages = [
   { index: '06', eyebrow: 'Traceable delivery', title: 'Downloads / Evidence', description: 'Verified artifacts, provenance and evidence exports will be collected here after processing.' },
 ]
 
+const stageKeys = ['ingest', 'depth', 'calibration', 'validation', 'terrain', 'evidence']
+
+const resultCopy = {
+  depth: { label: 'DEMO', title: 'Depth', done: 'Demo placeholder — real depth module not integrated yet' },
+  calibration: { label: 'SKIPPED', title: 'Calibration / DSM', done: 'Skipped — awaiting calibration module' },
+  validation: { label: 'SKIPPED', title: 'Proof / Validation', done: 'Skipped — awaiting independent validation' },
+  terrain: { label: 'PLACEHOLDER', title: '3D MissionView', done: 'Synthetic 2×2 unitless grid only — no terrain or elevation output' },
+  evidence: { label: 'MOCK', title: 'Downloads / Evidence', done: 'Demo plumbing metadata and placeholder artifacts' },
+}
+
 function App() {
   const [selectedFile, setSelectedFile] = useState(null)
+  const [job, setJob] = useState(null)
+  const [result, setResult] = useState(null)
+  const [uiState, setUiState] = useState('idle')
+  const [error, setError] = useState('')
   const workspaceRef = useRef(null)
 
   const handleFile = (file) => {
-    if (file) setSelectedFile(file)
+    if (file) {
+      setSelectedFile(file)
+      setJob(null)
+      setResult(null)
+      setError('')
+      setUiState('idle')
+    }
   }
+
+  const runDemo = async () => {
+    if (!selectedFile || uiState === 'uploading' || uiState === 'running') return
+    setError('')
+    setResult(null)
+    setUiState('uploading')
+    try {
+      const created = await startDemoPipeline(selectedFile)
+      setJob(created)
+      setUiState(created.job_status === 'succeeded' ? 'succeeded' : 'running')
+    } catch (requestError) {
+      setUiState('error')
+      setError(requestError.message)
+    }
+  }
+
+  useEffect(() => {
+    if (!job?.job_id || !['running', 'pending'].includes(job.job_status)) return undefined
+    let cancelled = false
+    let failures = 0
+    const poll = async () => {
+      try {
+        const current = await getJob(job.job_id)
+        if (cancelled) return
+        failures = 0
+        setJob(current)
+        if (current.job_status === 'succeeded') setUiState('succeeded')
+        if (current.job_status === 'failed') {
+          setUiState('error')
+          setError('The demo pipeline could not complete. No scientific output was produced.')
+        }
+      } catch (pollError) {
+        failures += 1
+        if (failures >= 3 && !cancelled) {
+          setUiState('error')
+          setError(`Status polling failed: ${pollError.message}`)
+        }
+      }
+    }
+    poll()
+    const timer = window.setInterval(poll, 800)
+    return () => { cancelled = true; window.clearInterval(timer) }
+  }, [job?.job_id, job?.job_status])
+
+  useEffect(() => {
+    if (job?.job_status !== 'succeeded' || result) return
+    getJobResult(job.job_id)
+      .then(setResult)
+      .catch((resultError) => {
+        setUiState('error')
+        setError(`Result retrieval failed: ${resultError.message}`)
+      })
+  }, [job?.job_id, job?.job_status, result])
+
+  const workflowStates = Object.fromEntries(stageKeys.map((key) => [key, job?.stages?.[key]?.status || 'waiting']))
+  const futureCards = futureStages.map((card, index) => {
+    const key = stageKeys[index + 1]
+    const output = resultCopy[key]
+    const status = workflowStates[key]
+    return {
+      ...card,
+      status,
+      label: result && output ? output.label : null,
+      description: result && output ? output.done : card.description,
+      downloads: result && key === 'evidence'
+        ? ['mock_depth.json', 'mock_terrain.json', 'mock_evidence.json'].map((name) => ({ name, href: artifactUrl(job.job_id, name) }))
+        : [],
+    }
+  })
 
   const scrollToWorkspace = () => workspaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
 
@@ -52,16 +142,22 @@ function App() {
           </aside>
         </section>
 
-        <WorkflowStepper stages={stages} activeIndex={0} />
+        <WorkflowStepper stages={stages} stageStates={workflowStates} />
+
+        <section className="demo-banner" aria-label="Mock pipeline notice">
+          <strong>DEMO PIPELINE</strong>
+          <p>This checkpoint exercises upload, job states and artifacts only. No scientific processing or claims are produced.</p>
+          <span>{job ? `JOB ${job.job_id.slice(0, 8).toUpperCase()}` : 'NO JOB CREATED'}</span>
+        </section>
 
         <section className="workspace-grid" ref={workspaceRef}>
-          <UploadPanel onFileSelected={handleFile} />
+          <UploadPanel file={selectedFile} onFileSelected={handleFile} onRun={runDemo} busy={uiState === 'uploading' || uiState === 'running'} />
           <div className="workspace-side">
             <FileSummary file={selectedFile} onClear={() => setSelectedFile(null)} />
             <section className="flow-card" aria-labelledby="future-flow-title">
               <div className="section-heading compact">
                 <div><p className="micro-label">Future pipeline</p><h2 id="future-flow-title">What happens next</h2></div>
-                <span className="not-live-tag">Not connected</span>
+                <span className={job ? 'active-tag' : 'not-live-tag'}>{job ? job.job_status : 'Not started'}</span>
               </div>
               <ol className="flow-list">
                 {['RGB image', 'Relative depth', 'Calibration', 'DSM', 'Independent validation', 'Textured 3D', 'Measurements & evidence'].map((item, index) => (
@@ -71,6 +167,8 @@ function App() {
             </section>
           </div>
         </section>
+
+        {error && <div className="error-banner" role="alert"><strong>Demo pipeline error</strong><span>{error}</span></div>}
 
         <section className="guardrail-strip" aria-label="Scientific data rules">
           <div><span>PNG · JPG</span><p>Relative mode by default. Exact metric claims require valid external calibration evidence.</p></div>
@@ -84,12 +182,12 @@ function App() {
             <p>Each surface remains deliberately empty until real processing is connected.</p>
           </div>
           <div className="stage-grid">
-            {futureStages.map((stage) => <StageCard key={stage.title} {...stage} />)}
+            {futureCards.map((stage) => <StageCard key={stage.title} {...stage} />)}
           </div>
         </section>
       </main>
 
-      <footer><span>DepthWizard · Smart India Hackathon 2026</span><span>Workflow shell · No processing connected</span></footer>
+      <footer><span>DepthWizard · Smart India Hackathon 2026</span><span>Demo plumbing · No scientific processing</span></footer>
     </div>
   )
 }

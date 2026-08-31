@@ -1,3 +1,5 @@
+import React from 'react'
+
 function Header({ onOpenWorkspace }) {
   return (
     <header className="topbar">

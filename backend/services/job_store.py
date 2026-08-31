@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from threading import RLock
 from uuid import uuid4
 
-from backend.schemas.job import Job, JobStatus, PipelineStage, StageState, StageStatus
+from backend.schemas.job import Job, JobStatus, PipelineStage, StageState, StageStatus, StandardError
 
 
 def utc_now() -> datetime:
@@ -16,6 +16,8 @@ class InMemoryJobStore:
 
     def __init__(self) -> None:
         self._jobs: dict[str, Job] = {}
+        self._results: dict[str, dict] = {}
+        self._artifacts: dict[str, dict[str, str]] = {}
         self._lock = RLock()
 
     def create_job(self) -> Job:
@@ -41,6 +43,38 @@ class InMemoryJobStore:
             if job is None:
                 return None
             job.job_status = job_status
+            job.updated_at = utc_now()
+            return job.model_copy(deep=True)
+
+    def set_result(self, job_id: str, result: dict) -> bool:
+        with self._lock:
+            if job_id not in self._jobs:
+                return False
+            self._results[job_id] = result
+            return True
+
+    def get_result(self, job_id: str) -> dict | None:
+        with self._lock:
+            result = self._results.get(job_id)
+            return result.copy() if result is not None else None
+
+    def set_artifacts(self, job_id: str, artifacts: dict[str, str]) -> bool:
+        with self._lock:
+            if job_id not in self._jobs:
+                return False
+            self._artifacts[job_id] = artifacts.copy()
+            return True
+
+    def get_artifact(self, job_id: str, artifact_name: str) -> str | None:
+        with self._lock:
+            return self._artifacts.get(job_id, {}).get(artifact_name)
+
+    def add_error(self, job_id: str, error: StandardError) -> Job | None:
+        with self._lock:
+            job = self._jobs.get(job_id)
+            if job is None:
+                return None
+            job.errors.append(error)
             job.updated_at = utc_now()
             return job.model_copy(deep=True)
 

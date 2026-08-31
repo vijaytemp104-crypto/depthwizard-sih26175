@@ -1,3 +1,5 @@
+import React from 'react'
+
 const formatBytes = (bytes) => {
   if (bytes === 0) return '0 bytes'
   const units = ['bytes', 'KB', 'MB', 'GB']
