@@ -1,0 +1,134 @@
+{
+  "contract_name": "DepthWizard shared pipeline result",
+  "contract_version": "1.0.0",
+  "canonical": true,
+  "conventions": {
+    "input": "One overhead RGB satellite or aerial image",
+    "supported_file_types": ["png", "jpg", "jpeg", "geotiff", "tif", "tiff"],
+    "array_orientation": "height x width; row-major raster convention; first index row/y, second index column/x",
+    "artifact_paths": "Repository-relative paths only",
+    "null_policy": "Unknown, unavailable, or inapplicable values are null and are never fabricated",
+    "relative_depth": "Raw monocular depth is relative; uncalibrated output must not use metre units",
+    "validation": "Metrics require an independent valid reference; missing validation is not zero error",
+    "evidence": "Confidence and evidence artifacts never substitute for independent validation"
+  },
+  "allowed_values": {
+    "job_status": ["pending", "running", "succeeded", "failed"],
+    "stage_status": ["pending", "running", "succeeded", "skipped", "failed"],
+    "stages": ["ingest", "depth", "calibration", "validation", "terrain", "evidence"],
+    "coordinate_mode": ["relative", "geospatial"],
+    "uncalibrated_depth_units": ["relative", "arbitrary_units"]
+  },
+  "required_rules": {
+    "skipped_stage_requires_reason": true,
+    "uncalibrated_requires_reason": true,
+    "uncalibrated_forbids_metric_units": true,
+    "validation_not_performed_requires_null_metrics": true,
+    "depth_grid_matches_input_grid": true,
+    "preserve_geotiff_metadata_where_applicable": true,
+    "user_errors_exclude_stack_traces": true
+  },
+  "stable_artifact_filenames": {
+    "depth": ["depth.npy", "depth.png", "model_metadata.json"],
+    "calibration_and_terrain": ["calibrated_dsm.tif", "terrain.json", "calibration.json"],
+    "validation_optional": ["metrics.json", "error_map"],
+    "evidence_optional": ["confidence_map", "evidence_passport.json"]
+  },
+  "result_structure": {
+    "job_id": "string",
+    "job_status": "job_status enum",
+    "created_at": "ISO-8601 datetime string",
+    "updated_at": "ISO-8601 datetime string",
+    "input": {
+      "input_id": "string",
+      "original_filename": "string",
+      "file_type": "supported file type enum",
+      "width": "positive integer pixels",
+      "height": "positive integer pixels",
+      "channels": "positive integer",
+      "georeferenced": "boolean",
+      "crs": "string or null",
+      "transform": "six-number affine transform array or null",
+      "bounds": {"left": "number or null", "bottom": "number or null", "right": "number or null", "top": "number or null"},
+      "pixel_size": {"x": "number or null", "y": "number or null", "units": "string or null"},
+      "nodata": "number or null",
+      "artifact_path": "repository-relative string"
+    },
+    "stages": {
+      "ingest": {"status": "stage_status enum", "reason": "string or null", "started_at": "datetime or null", "completed_at": "datetime or null"},
+      "depth": {"status": "stage_status enum", "reason": "string or null", "started_at": "datetime or null", "completed_at": "datetime or null"},
+      "calibration": {"status": "stage_status enum", "reason": "string or null", "started_at": "datetime or null", "completed_at": "datetime or null"},
+      "validation": {"status": "stage_status enum", "reason": "string or null", "started_at": "datetime or null", "completed_at": "datetime or null"},
+      "terrain": {"status": "stage_status enum", "reason": "string or null", "started_at": "datetime or null", "completed_at": "datetime or null"},
+      "evidence": {"status": "stage_status enum", "reason": "string or null", "started_at": "datetime or null", "completed_at": "datetime or null"}
+    },
+    "depth": {
+      "status": "stage_status enum",
+      "artifacts": {"array": "depth.npy path or null", "preview": "depth.png path or null", "model_metadata": "model_metadata.json path or null"},
+      "width": "positive integer matching input.width",
+      "height": "positive integer matching input.height",
+      "units": "relative or arbitrary_units before calibration",
+      "array_orientation": "height x width; row-major raster convention",
+      "model_metadata": {
+        "model_name": "string or null",
+        "model_version": "string or null",
+        "checkpoint": "string or null",
+        "device": "string or null",
+        "runtime_seconds": "non-negative number or null",
+        "preprocessing": "object, string, or null",
+        "input_shape": "integer array or null",
+        "output_shape": "integer array or null"
+      },
+      "reason": "string or null"
+    },
+    "calibration": {
+      "status": "stage_status enum",
+      "calibrated": "boolean",
+      "units": "metric elevation unit only when calibrated; otherwise relative/arbitrary unit",
+      "method": "string or null; baseline may be linear E = aD + b",
+      "reference_source": "string or null",
+      "scale_a": "number or null",
+      "offset_b": "number or null",
+      "valid_anchor_count": "non-negative integer or null",
+      "crs": "string or null",
+      "transform": "six-number affine transform array or null",
+      "warnings": "array of strings",
+      "artifacts": {"calibrated_dsm": "calibrated_dsm.tif path or null", "calibration_metadata": "calibration.json path or null"},
+      "reason": "required string when calibrated is false; otherwise string or null"
+    },
+    "validation": {
+      "status": "stage_status enum",
+      "reference_source": "independent reference description or null",
+      "rmse": "number or null",
+      "mae": "number or null",
+      "correlation": "number or null",
+      "valid_pixel_count": "positive integer or null",
+      "units": "string or null",
+      "artifacts": {"metrics": "metrics.json path or null", "error_map": "repository-relative path or null"},
+      "reason": "required when skipped/unavailable; otherwise string or null"
+    },
+    "terrain": {
+      "status": "stage_status enum",
+      "width": "positive integer",
+      "height": "positive integer",
+      "heights": "2D numeric array shaped height x width",
+      "height_units": "relative/arbitrary or calibrated metric unit",
+      "texture_artifact": "repository-relative path or null",
+      "coordinate_mode": "relative or geospatial",
+      "crs": "string or null",
+      "transform": "six-number affine transform array or null",
+      "artifact_path": "terrain.json path or null",
+      "reason": "string or null"
+    },
+    "evidence": {
+      "status": "stage_status enum",
+      "confidence_map": "repository-relative path or null",
+      "evidence_passport": "evidence_passport.json path or null",
+      "summary": "object or null",
+      "independent_validation_substitute": false,
+      "reason": "string or null"
+    },
+    "artifacts": "array of repository-relative paths",
+    "errors": [{"code": "machine-readable string", "stage": "stage name", "message": "safe user-facing string", "detail": "safe structured value or null", "recoverable": "boolean"}]
+  }
+}
