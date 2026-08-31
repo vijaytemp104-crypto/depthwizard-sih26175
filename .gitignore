@@ -11,3 +11,11 @@ outputs/
 *.tif 
 *.tiff
 .DS_Store 
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+sample_data/input/*.npy
+sample_data/reference/*.tif
+sample_data/mock_outputs/*
+!sample_data/mock_outputs/.gitkeep
