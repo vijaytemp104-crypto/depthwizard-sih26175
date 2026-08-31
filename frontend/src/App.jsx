@@ -4,6 +4,7 @@ import WorkflowStepper from './components/WorkflowStepper.jsx'
 import UploadPanel from './components/UploadPanel.jsx'
 import FileSummary from './components/FileSummary.jsx'
 import StageCard from './components/StageCard.jsx'
+import MissionView from './components/MissionView.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
 const stages = [
@@ -39,7 +40,18 @@ function App() {
   const [result, setResult] = useState(null)
   const [uiState, setUiState] = useState('idle')
   const [error, setError] = useState('')
+  const [textureUrl, setTextureUrl] = useState(null)
   const workspaceRef = useRef(null)
+
+  useEffect(() => {
+    if (!selectedFile) {
+      setTextureUrl(null)
+      return undefined
+    }
+    const objectUrl = URL.createObjectURL(selectedFile)
+    setTextureUrl(objectUrl)
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [selectedFile])
 
   const handleFile = (file) => {
     if (file) {
@@ -121,6 +133,13 @@ function App() {
   })
 
   const scrollToWorkspace = () => workspaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  const missionState = error
+    ? 'error'
+    : !job
+      ? 'empty'
+      : job.job_status === 'succeeded' && !result
+        ? 'loading'
+        : job.job_status
 
   return (
     <div className="app-shell">
@@ -182,7 +201,9 @@ function App() {
             <p>Each surface remains deliberately empty until real processing is connected.</p>
           </div>
           <div className="stage-grid">
-            {futureCards.map((stage) => <StageCard key={stage.title} {...stage} />)}
+            {futureCards.map((stage) => stage.title === '3D MissionView'
+              ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.mock} state={missionState} errorMessage={error} />
+              : <StageCard key={stage.title} {...stage} />)}
           </div>
         </section>
       </main>
