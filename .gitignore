@@ -1,0 +1,13 @@
+.venv/ 
+venv/ 
+pycache/ 
+node_modules/ 
+.env 
+outputs/ 
+*.npy 
+*.pth 
+*.pt 
+*.ckpt 
+*.tif 
+*.tiff
+.DS_Store 
