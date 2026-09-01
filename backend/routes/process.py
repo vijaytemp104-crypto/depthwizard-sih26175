@@ -26,6 +26,7 @@ async def process_upload(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
     reference_dem: UploadFile | None = File(None),
+    validation_reference: UploadFile | None = File(None),
     mode: str = Form("real"),
 ) -> Job:
     supplied_name = file.filename or ""
@@ -50,6 +51,7 @@ async def process_upload(
     input_dir = pipeline.output_root / job.job_id / "input"
     input_path = input_dir / filename
     reference_path = None
+    validation_reference_path = None
     try:
         input_dir.mkdir(parents=True, exist_ok=True)
         with input_path.open("wb") as destination:
@@ -71,6 +73,23 @@ async def process_upload(
             reference_path = input_dir / f"reference_{reference_name}"
             with reference_path.open("wb") as destination:
                 shutil.copyfileobj(reference_dem.file, destination)
+        if validation_reference is not None:
+            supplied_validation = validation_reference.filename or ""
+            validation_name = Path(supplied_validation).name
+            if (
+                not validation_name
+                or validation_name != supplied_validation
+                or Path(validation_name).suffix.lower() not in {".tif", ".tiff"}
+            ):
+                raise safe_error(
+                    status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                    "UNSUPPORTED_VALIDATION_REFERENCE_TYPE",
+                    "Independent validation reference must be a TIF/TIFF GeoTIFF.",
+                    {"filename": supplied_validation},
+                )
+            validation_reference_path = input_dir / f"validation_{validation_name}"
+            with validation_reference_path.open("wb") as destination:
+                shutil.copyfileobj(validation_reference.file, destination)
     except OSError:
         job_store.update_job_status(job.job_id, JobStatus.FAILED)
         raise safe_error(
@@ -82,9 +101,12 @@ async def process_upload(
         await file.close()
         if reference_dem is not None:
             await reference_dem.close()
+        if validation_reference is not None:
+            await validation_reference.close()
 
     if mode == "real":
-        background_tasks.add_task(pipeline.run, job.job_id, filename, input_path, reference_path)
+        background_tasks.add_task(
+            pipeline.run, job.job_id, filename, input_path, reference_path, validation_reference_path)
     else:
         background_tasks.add_task(pipeline.run, job.job_id, filename, input_path)
     return job

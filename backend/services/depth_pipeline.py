@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import math
 import os
 from pathlib import Path
@@ -16,6 +17,7 @@ from backend.schemas.job import JobStatus, PipelineStage, StageStatus, StandardE
 from backend.services.ayush.pipeline import run_pipeline as run_ayush_pipeline
 from backend.services.job_store import InMemoryJobStore
 from backend.services.relative_depth_adapter import RelativeDepthAdapter, load_default_adapter, write_depth_artifacts
+from backend.services.validation import skipped_validation, validate_rasters
 
 
 class DepthPipeline:
@@ -26,7 +28,8 @@ class DepthPipeline:
         self.adapter_factory = adapter_factory or (lambda: load_default_adapter(device="auto", local_files_only=True))
 
     def run(self, job_id: str, original_filename: str, input_path: Path,
-            reference_path: Path | None = None) -> None:
+            reference_path: Path | None = None,
+            validation_reference_path: Path | None = None) -> None:
         job_dir = self.output_root / job_id
         try:
             self.store.update_job_status(job_id, JobStatus.RUNNING)
@@ -48,23 +51,35 @@ class DepthPipeline:
 
         calibration, terrain, extra_names = self._calibrate(
             job_id, job_dir, depth_result.depth_npy_path, input_meta, reference_path)
-        self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.SKIPPED,
-            reason="Independent validation module not integrated yet.")
+        validation, validation_names = self._validate(
+            job_id, job_dir, calibration, reference_path, validation_reference_path)
+        extra_names.extend(validation_names)
         self.store.update_stage_status(job_id, PipelineStage.EVIDENCE, StageStatus.RUNNING)
         evidence = {
-            "mock": False, "depth_inference": "real", "depth_metric": False,
-            "checkpoint": model_meta.get("checkpoint"), "calibration": calibration["status"],
+            "input": {"filename": original_filename, "file_type": input_path.suffix.lower().lstrip("."),
+                      "georeferenced": input_meta["georeferenced"]},
+            "depth": {"status": "succeeded", "mode": "relative", "model": model_meta.get("model_name"),
+                      "checkpoint": model_meta.get("checkpoint"), "artifact": "depth.npy"},
+            "calibration": {"status": calibration["status"], "method": calibration["method"],
+                            "reference_source": calibration["reference_source"],
+                            "scale_a": calibration["scale_a"], "offset_b": calibration["offset_b"],
+                            "artifact": "calibrated_dsm.tif" if calibration["calibrated"] else None},
+            "validation": {key: validation.get(key) for key in (
+                "status", "reference_source", "rmse", "mae", "correlation", "valid_pixel_count", "reason")},
+            "error_map_artifact": "error_map.tif" if validation["status"] == "succeeded" else None,
+            "crs": calibration.get("crs"), "units": calibration.get("units"),
+            "confidence": None, "confidence_reason": "Confidence map is not implemented.",
             "calibration_fit_is_independent_validation": False,
-            "independent_validation": "not integrated",
+            "warnings": calibration.get("warnings", []) + validation.get("warnings", []),
         }
-        (job_dir / "depth_evidence.json").write_text(json.dumps(evidence, indent=2), encoding="utf-8")
+        (job_dir / "evidence_passport.json").write_text(json.dumps(evidence, indent=2), encoding="utf-8")
         self.store.update_stage_status(job_id, PipelineStage.EVIDENCE, StageStatus.SUCCEEDED,
-            message="Depth/calibration provenance recorded; independent validation remains skipped.")
+            message="Factual pipeline provenance recorded; confidence remains unimplemented.")
 
         job = self.store.update_job_status(job_id, JobStatus.SUCCEEDED)
         if job is None:
             return
-        names = ["depth.npy", "depth.png", "model_metadata.json", *extra_names, "depth_evidence.json"]
+        names = ["depth.npy", "depth.png", "model_metadata.json", *extra_names, "evidence_passport.json"]
         relative = {name: f"outputs/{job_id}/{name}" for name in names}
         calibration["artifacts"] = {
             "calibrated_dsm": relative.get("calibrated_dsm.tif"),
@@ -73,8 +88,12 @@ class DepthPipeline:
         terrain["artifact_path"] = relative.get("terrain.json") or relative.get("mock_terrain.json")
         result = {
             "mock": False,
-            "pipeline_mode": "real_depth_metric_calibration" if calibration["calibrated"] else "real_depth_synthetic_terrain",
-            "notice": ("Depth is real and the DSM is calibrated in metres; independent validation is not integrated."
+            "pipeline_mode": ("real_depth_metric_independent_validation" if validation["status"] == "succeeded"
+                              else "real_depth_metric_calibration" if calibration["calibrated"]
+                              else "real_depth_synthetic_terrain"),
+            "notice": ("The metric DSM was evaluated against a separately uploaded independent reference."
+                       if validation["status"] == "succeeded" else
+                       "Depth is real and the DSM is calibrated in metres; independent validation was not performed."
                        if calibration["calibrated"] else
                        "Depth is real relative monocular inference; no metric elevation was produced."),
             "job_id": job.job_id, "job_status": job.job_status.value,
@@ -102,16 +121,11 @@ class DepthPipeline:
                 }, "reason": None,
             },
             "calibration": calibration,
-            "validation": {
-                "status": "skipped", "reference_source": None, "rmse": None, "mae": None,
-                "correlation": None, "valid_pixel_count": None, "units": None,
-                "artifacts": {"metrics": None, "error_map": None},
-                "reason": "Independent validation module not integrated yet.",
-            },
+            "validation": validation,
             "terrain": terrain,
             "evidence": {
                 "mock": False, "status": "succeeded", "confidence_map": None,
-                "evidence_passport": relative["depth_evidence.json"], "summary": evidence,
+                "evidence_passport": relative["evidence_passport.json"], "summary": evidence,
                 "independent_validation_substitute": False, "reason": None,
             },
             "artifacts": list(relative.values()),
@@ -119,6 +133,52 @@ class DepthPipeline:
         }
         self.store.set_artifacts(job_id, {name: str(job_dir / name) for name in names})
         self.store.set_result(job_id, result)
+
+    def _validate(self, job_id: str, job_dir: Path, calibration: dict,
+                  calibration_reference: Path | None,
+                  validation_reference: Path | None) -> tuple[dict, list[str]]:
+        if validation_reference is None:
+            result = skipped_validation()
+            self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.SKIPPED,
+                                           reason=result["reason"])
+            return result, []
+        if calibration_reference is not None and (
+                calibration_reference.resolve() == validation_reference.resolve()
+                or _sha256(calibration_reference) == _sha256(validation_reference)):
+            result = skipped_validation(
+                "Independent validation rejected: calibration and validation references are the same artifact.")
+            self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.SKIPPED,
+                                           reason=result["reason"])
+            return result, []
+        if not calibration["calibrated"]:
+            result = skipped_validation("Independent validation requires a successfully calibrated metric DSM.")
+            self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.SKIPPED,
+                                           reason=result["reason"])
+            return result, []
+        self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.RUNNING)
+        try:
+            result = validate_rasters(
+                job_dir / "calibrated_dsm.tif", validation_reference, job_dir,
+                reference_source=f"Uploaded independent validation reference: {validation_reference.name}")
+            result["artifacts"] = {
+                "metrics": f"outputs/{job_id}/metrics.json",
+                "error_map": f"outputs/{job_id}/error_map.tif",
+            }
+            (job_dir / "metrics.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
+            self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.SUCCEEDED,
+                                           message="Independent DSM validation completed.")
+            return result, ["metrics.json", "error_map.tif"]
+        except Exception as exc:
+            reason = f"Independent validation failed: {str(exc)}"
+            result = skipped_validation(reason)
+            result["status"] = "failed"
+            result["reference_source"] = f"Uploaded independent validation reference: {validation_reference.name}"
+            self.store.update_stage_status(job_id, PipelineStage.VALIDATION, StageStatus.FAILED, reason=reason)
+            self.store.add_error(job_id, StandardError(
+                code="VALIDATION_FAILED", stage=PipelineStage.VALIDATION,
+                message="Independent validation could not complete; calibrated DSM remains available.",
+                detail={"error_type": type(exc).__name__}, recoverable=True))
+            return result, []
 
     def _calibrate(self, job_id: str, job_dir: Path, depth_path: Path, input_meta: dict,
                    reference_path: Path | None) -> tuple[dict, dict, list[str]]:
@@ -228,6 +288,14 @@ def _inspect_input(path: Path) -> dict:
     return {"width": width, "height": height, "channels": channels, "georeferenced": False,
             "crs": None, "transform": None, "transform_gdal": None, "bounds": None,
             "pixel_size": None, "nodata": None}
+
+
+def _sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as source:
+        for chunk in iter(lambda: source.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _verify_dsm(path: Path, input_meta: dict) -> dict:

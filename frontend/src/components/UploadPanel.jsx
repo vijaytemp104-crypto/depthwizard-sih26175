@@ -2,9 +2,10 @@ import React, { useRef, useState } from 'react'
 
 const ACCEPTED = '.png,.jpg,.jpeg,.tif,.tiff,image/png,image/jpeg,image/tiff'
 
-function UploadPanel({ file, referenceFile, onFileSelected, onReferenceSelected, onRun, busy }) {
+function UploadPanel({ file, referenceFile, validationReferenceFile, onFileSelected, onReferenceSelected, onValidationReferenceSelected, onRun, busy }) {
   const inputRef = useRef(null)
   const referenceRef = useRef(null)
+  const validationReferenceRef = useRef(null)
   const [dragging, setDragging] = useState(false)
 
   const chooseFirst = (files) => {
@@ -19,9 +20,14 @@ function UploadPanel({ file, referenceFile, onFileSelected, onReferenceSelected,
         <span className="active-tag">Active stage</span>
       </div>
       <div className="reference-row">
-        <div><strong>Optional reference DEM</strong><small>{referenceFile ? referenceFile.name : 'Required only for metric GeoTIFF calibration'}</small></div>
+        <div><strong>Calibration Reference DEM</strong><small>{referenceFile ? referenceFile.name : 'Optional · used to fit the metric DSM'}</small></div>
         <input ref={referenceRef} type="file" accept=".tif,.tiff,image/tiff" onChange={(event) => onReferenceSelected(event.target.files?.[0] || null)} aria-label="Select a reference DEM" />
         <button className="outline-button" type="button" onClick={() => referenceRef.current?.click()}>Select DEM</button>
+      </div>
+      <div className="reference-row">
+        <div><strong>Independent Validation Reference</strong><small>{validationReferenceFile ? validationReferenceFile.name : 'Optional · separate withheld elevation GeoTIFF'}</small></div>
+        <input ref={validationReferenceRef} type="file" accept=".tif,.tiff,image/tiff" onChange={(event) => onValidationReferenceSelected(event.target.files?.[0] || null)} aria-label="Select an independent validation reference" />
+        <button className="outline-button" type="button" onClick={() => validationReferenceRef.current?.click()}>Select validation</button>
       </div>
       <p className="upload-intro">Choose one overhead RGB satellite or aerial image. Selection alone does not start the demo pipeline.</p>
       <div

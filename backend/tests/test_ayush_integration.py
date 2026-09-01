@@ -112,3 +112,65 @@ def test_calibration_failure_preserves_real_relative_depth(monkeypatch) -> None:
     assert result["terrain"]["mock"] is True
     assert client.get(f"/jobs/{job_id}/artifacts/depth.npy").status_code == 200
     assert client.get(f"/jobs/{job_id}/artifacts/calibrated_dsm.tif").status_code == 404
+
+
+def test_full_synthetic_geospatial_pipeline_with_independent_validation(monkeypatch) -> None:
+    monkeypatch.setattr(depth_pipeline, "adapter_factory", lambda: GridDepthAdapter())
+    height, width = 4, 5
+    rgb = np.stack([np.full((height, width), value, dtype=np.uint8) for value in (40, 80, 120)])
+    depth = np.arange(width * height, dtype=np.float32).reshape(height, width)
+    calibration_dem = 2 * depth + 10
+    validation_dem = calibration_dem + np.array([[0, 1, 0, -1, 0]] * height, dtype=np.float32)
+    client = TestClient(app)
+    response = client.post("/process", files={
+        "file": ("source.tif", raster_bytes(rgb, count=3), "image/tiff"),
+        "reference_dem": ("calibration.tif", raster_bytes(calibration_dem, count=1), "image/tiff"),
+        "validation_reference": ("withheld.tif", raster_bytes(validation_dem, count=1), "image/tiff"),
+    })
+    job_id = response.json()["job_id"]
+    result = client.get(f"/jobs/{job_id}/result").json()
+    assert result["job_status"] == "succeeded"
+    assert result["calibration"]["status"] == "succeeded"
+    assert result["validation"]["status"] == "succeeded"
+    assert result["validation"]["rmse"] == pytest.approx(np.sqrt(2 / 5))
+    assert result["validation"]["mae"] == pytest.approx(2 / 5)
+    for name in ("metrics.json", "error_map.tif", "evidence_passport.json"):
+        assert client.get(f"/jobs/{job_id}/artifacts/{name}").status_code == 200
+
+
+def test_same_calibration_and_validation_content_is_rejected(monkeypatch) -> None:
+    monkeypatch.setattr(depth_pipeline, "adapter_factory", lambda: GridDepthAdapter())
+    height, width = 4, 5
+    rgb = np.stack([np.full((height, width), value, dtype=np.uint8) for value in (40, 80, 120)])
+    reference = raster_bytes(2 * np.arange(width * height, dtype=np.float32).reshape(height, width) + 10, count=1)
+    client = TestClient(app)
+    response = client.post("/process", files={
+        "file": ("source.tif", raster_bytes(rgb, count=3), "image/tiff"),
+        "reference_dem": ("calibration.tif", reference, "image/tiff"),
+        "validation_reference": ("same-copy.tif", reference, "image/tiff"),
+    })
+    result = client.get(f"/jobs/{response.json()['job_id']}/result").json()
+    assert result["calibration"]["status"] == "succeeded"
+    assert result["validation"]["status"] == "skipped"
+    assert "same artifact" in result["validation"]["reason"]
+
+
+def test_validation_failure_preserves_calibrated_dsm(monkeypatch) -> None:
+    monkeypatch.setattr(depth_pipeline, "adapter_factory", lambda: GridDepthAdapter())
+    height, width = 4, 5
+    rgb = np.stack([np.full((height, width), value, dtype=np.uint8) for value in (40, 80, 120)])
+    depth = np.arange(width * height, dtype=np.float32).reshape(height, width)
+    calibration = raster_bytes(2 * depth + 10, count=1)
+    far = raster_bytes(2 * depth + 11, count=1, transform=from_origin(900000, 900000, 10, 10))
+    client = TestClient(app)
+    response = client.post("/process", files={
+        "file": ("source.tif", raster_bytes(rgb, count=3), "image/tiff"),
+        "reference_dem": ("calibration.tif", calibration, "image/tiff"),
+        "validation_reference": ("far.tif", far, "image/tiff"),
+    })
+    job_id = response.json()["job_id"]
+    result = client.get(f"/jobs/{job_id}/result").json()
+    assert result["job_status"] == "succeeded"
+    assert result["calibration"]["status"] == "succeeded"
+    assert result["validation"]["status"] == "failed"
+    assert client.get(f"/jobs/{job_id}/artifacts/calibrated_dsm.tif").status_code == 200

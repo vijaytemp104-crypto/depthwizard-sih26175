@@ -6,6 +6,7 @@ import FileSummary from './components/FileSummary.jsx'
 import StageCard from './components/StageCard.jsx'
 import DepthResultCard from './components/DepthResultCard.jsx'
 import CalibrationResultCard from './components/CalibrationResultCard.jsx'
+import ValidationResultCard from './components/ValidationResultCard.jsx'
 import MissionView from './components/MissionView.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
@@ -39,6 +40,7 @@ const resultCopy = {
 function App() {
   const [selectedFile, setSelectedFile] = useState(null)
   const [referenceFile, setReferenceFile] = useState(null)
+  const [validationReferenceFile, setValidationReferenceFile] = useState(null)
   const [job, setJob] = useState(null)
   const [result, setResult] = useState(null)
   const [uiState, setUiState] = useState('idle')
@@ -60,6 +62,7 @@ function App() {
     if (file) {
       setSelectedFile(file)
       setReferenceFile(null)
+      setValidationReferenceFile(null)
       setJob(null)
       setResult(null)
       setError('')
@@ -73,7 +76,7 @@ function App() {
     setResult(null)
     setUiState('uploading')
     try {
-      const created = await startDemoPipeline(selectedFile, referenceFile)
+      const created = await startDemoPipeline(selectedFile, referenceFile, validationReferenceFile)
       setJob(created)
       setUiState(created.job_status === 'succeeded' ? 'succeeded' : 'running')
     } catch (requestError) {
@@ -131,7 +134,7 @@ function App() {
       label: result && output ? output.label : null,
       description: result && output ? output.done : card.description,
       downloads: result && key === 'evidence'
-        ? ['depth.npy', 'depth.png', 'model_metadata.json', 'depth_evidence.json'].map((name) => ({ name, href: artifactUrl(job.job_id, name) }))
+        ? ['depth.npy', 'depth.png', 'model_metadata.json', 'evidence_passport.json'].map((name) => ({ name, href: artifactUrl(job.job_id, name) }))
         : [],
     }
   })
@@ -169,12 +172,12 @@ function App() {
 
         <section className="demo-banner" aria-label="Pipeline notice">
           <strong>{result?.calibration?.calibrated ? 'CALIBRATED DSM · METRIC TERRAIN' : result ? 'REAL DEPTH · RELATIVE · NOT METRIC' : 'RELATIVE DEPTH PIPELINE'}</strong>
-          <p>Depth uses Depth Anything V2 Small. Metric output requires a georeferenced GeoTIFF plus reference DEM; independent validation is not integrated.</p>
+          <p>Depth uses Depth Anything V2 Small. Calibration and independent validation use clearly separate reference uploads.</p>
           <span>{job ? `JOB ${job.job_id.slice(0, 8).toUpperCase()}` : 'NO JOB CREATED'}</span>
         </section>
 
         <section className="workspace-grid" ref={workspaceRef}>
-          <UploadPanel file={selectedFile} referenceFile={referenceFile} onFileSelected={handleFile} onReferenceSelected={setReferenceFile} onRun={runDemo} busy={uiState === 'uploading' || uiState === 'running'} />
+          <UploadPanel file={selectedFile} referenceFile={referenceFile} validationReferenceFile={validationReferenceFile} onFileSelected={handleFile} onReferenceSelected={setReferenceFile} onValidationReferenceSelected={setValidationReferenceFile} onRun={runDemo} busy={uiState === 'uploading' || uiState === 'running'} />
           <div className="workspace-side">
             <FileSummary file={selectedFile} onClear={() => setSelectedFile(null)} />
             <section className="flow-card" aria-labelledby="future-flow-title">
@@ -209,6 +212,8 @@ function App() {
               ? <DepthResultCard key={stage.title} depth={result?.depth} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
               : stage.title === 'Calibration / DSM'
                 ? <CalibrationResultCard key={stage.title} calibration={result?.calibration} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
+              : stage.title === 'Proof / Validation'
+                ? <ValidationResultCard key={stage.title} validation={result?.validation} evidence={result?.evidence} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
               : stage.title === '3D MissionView'
                 ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.terrain ? result.terrain.mock : true} state={missionState} errorMessage={error} />
                 : <StageCard key={stage.title} {...stage} />)}

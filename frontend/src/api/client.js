@@ -29,11 +29,12 @@ async function request(path, options) {
   }
 }
 
-export function startDemoPipeline(file, referenceDem = null) {
+export function startDemoPipeline(file, referenceDem = null, validationReference = null) {
   const form = new FormData()
   form.append('file', file)
   form.append('mode', 'real')
   if (referenceDem) form.append('reference_dem', referenceDem)
+  if (validationReference) form.append('validation_reference', validationReference)
   return request('/process', { method: 'POST', body: form })
 }
 
