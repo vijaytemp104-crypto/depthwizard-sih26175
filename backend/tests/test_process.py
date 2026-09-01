@@ -69,3 +69,24 @@ def test_unknown_job_result_returns_404() -> None:
 
     assert response.status_code == 404
     assert response.json()["detail"]["code"] == "JOB_NOT_FOUND"
+
+
+def test_missing_artifact_returns_clean_404() -> None:
+    created = upload_demo()
+    response = client.get(f"/jobs/{created['job_id']}/artifacts/not-generated.tif")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Artifact not found."
+    assert "traceback" not in response.text.lower()
+
+
+def test_corrupt_real_image_fails_cleanly_without_traceback() -> None:
+    response = client.post(
+        "/process", data={"mode": "real"},
+        files={"file": ("corrupt.png", b"not-a-real-png", "image/png")},
+    )
+    assert response.status_code == 202
+    job = client.get(f"/jobs/{response.json()['job_id']}")
+    payload = job.json()
+    assert payload["job_status"] == "failed"
+    assert payload["errors"][0]["code"] == "RELATIVE_DEPTH_FAILED"
+    assert "traceback" not in job.text.lower()

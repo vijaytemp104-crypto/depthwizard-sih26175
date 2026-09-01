@@ -7,7 +7,7 @@ import StageCard from './components/StageCard.jsx'
 import DepthResultCard from './components/DepthResultCard.jsx'
 import CalibrationResultCard from './components/CalibrationResultCard.jsx'
 import ValidationResultCard from './components/ValidationResultCard.jsx'
-import MissionView from './components/MissionView.jsx'
+import MissionView from './components/MissionViewAnalysis.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
 const stages = [

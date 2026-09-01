@@ -158,6 +158,19 @@ main { width: min(1450px, calc(100% - clamp(32px, 7vw, 112px))); margin: 0 auto;
 .artifact-links { display: grid; gap: 6px; margin-top: auto; padding-top: 14px; }
 .artifact-links a { color: var(--cyan); font: 500 8px 'Cascadia Mono', 'Consolas', monospace; text-decoration: none; overflow-wrap: anywhere; }
 .artifact-links a:hover, .artifact-links a:focus-visible { text-decoration: underline; }
+.navigation-toolbar, .analysis-toolbar, .viewer-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.navigation-toolbar { margin: 12px 0; }
+.navigation-toolbar strong, .analysis-toolbar strong { margin-right: auto; color: var(--muted); font: 600 9px 'Cascadia Mono', 'Consolas', monospace; letter-spacing: .08em; }
+.navigation-toolbar button, .analysis-toolbar button { border: 1px solid rgba(128,220,229,.28); background: rgba(8,21,34,.8); color: var(--muted); padding: 7px 10px; font: 600 8px 'Cascadia Mono', 'Consolas', monospace; cursor: pointer; }
+.navigation-toolbar button.active, .analysis-toolbar button.active { border-color: var(--cyan); color: var(--cyan); background: rgba(128,220,229,.1); }
+.viewer-actions { position: absolute; top: 10px; right: 10px; }
+.viewer-actions .viewer-reset { position: static; }
+.analysis-panel { margin-top: 12px; padding: 14px; border: 1px solid rgba(128,220,229,.18); background: rgba(8,21,34,.55); }
+.analysis-panel > p { color: var(--muted); font-size: 10px; }
+.analysis-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 8px; margin: 12px 0 0; }
+.analysis-results div { padding: 9px; border-left: 2px solid rgba(128,220,229,.35); background: rgba(255,255,255,.025); }
+.analysis-results dt { color: var(--muted); font-size: 8px; text-transform: uppercase; letter-spacing: .08em; }
+.analysis-results dd { margin: 5px 0 0; color: var(--paper); font: 600 10px 'Cascadia Mono', 'Consolas', monospace; overflow-wrap: anywhere; }
 .depth-result-card { grid-column: span 2; }
 .calibration-result-card { grid-column: span 2; }
 .calibration-warning { color: var(--amber); font-size: 8px; line-height: 1.45; }
