@@ -2,8 +2,9 @@ import React, { useRef, useState } from 'react'
 
 const ACCEPTED = '.png,.jpg,.jpeg,.tif,.tiff,image/png,image/jpeg,image/tiff'
 
-function UploadPanel({ file, onFileSelected, onRun, busy }) {
+function UploadPanel({ file, referenceFile, onFileSelected, onReferenceSelected, onRun, busy }) {
   const inputRef = useRef(null)
+  const referenceRef = useRef(null)
   const [dragging, setDragging] = useState(false)
 
   const chooseFirst = (files) => {
@@ -16,6 +17,11 @@ function UploadPanel({ file, onFileSelected, onRun, busy }) {
       <div className="section-heading compact">
         <div><p className="micro-label">01 · Mission input</p><h2 id="upload-title">Add overhead imagery</h2></div>
         <span className="active-tag">Active stage</span>
+      </div>
+      <div className="reference-row">
+        <div><strong>Optional reference DEM</strong><small>{referenceFile ? referenceFile.name : 'Required only for metric GeoTIFF calibration'}</small></div>
+        <input ref={referenceRef} type="file" accept=".tif,.tiff,image/tiff" onChange={(event) => onReferenceSelected(event.target.files?.[0] || null)} aria-label="Select a reference DEM" />
+        <button className="outline-button" type="button" onClick={() => referenceRef.current?.click()}>Select DEM</button>
       </div>
       <p className="upload-intro">Choose one overhead RGB satellite or aerial image. Selection alone does not start the demo pipeline.</p>
       <div

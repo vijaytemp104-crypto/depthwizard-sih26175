@@ -64,6 +64,8 @@ def download_artifact(job_id: str, artifact_name: str) -> FileResponse:
         ".json": "application/json",
         ".png": "image/png",
         ".npy": "application/octet-stream",
+        ".tif": "image/tiff",
+        ".tiff": "image/tiff",
     }
     return FileResponse(
         artifact_path,

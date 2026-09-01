@@ -176,7 +176,7 @@ function ViewerCanvas({ terrain, textureUrl, onViewerError }) {
 
   return (
     <div className="mission-canvas-wrap">
-      <div ref={containerRef} className="mission-canvas" aria-label="Interactive synthetic terrain viewer" />
+      <div ref={containerRef} className="mission-canvas" aria-label="Interactive terrain viewer" />
       <button className="viewer-reset" type="button" onClick={() => resetRef.current?.()}>Reset view</button>
       <div className="viewer-hint">Drag to orbit · Scroll to zoom · Right-drag to pan</div>
     </div>
@@ -197,7 +197,9 @@ function MissionView({ terrain, textureUrl, mock = false, state = 'empty', error
     <article className="stage-card mission-view-card">
       <div className="mission-view-header">
         <div><p className="micro-label">05 · Spatial inspection</p><h3>3D MissionView</h3></div>
-        <div className="mission-badges"><span>DEMO</span><span>SYNTHETIC TERRAIN</span><span>NOT METRIC</span></div>
+        <div className="mission-badges">{mock
+          ? <><span>DEMO</span><span>SYNTHETIC TERRAIN</span><span>NOT METRIC</span></>
+          : <><span>CALIBRATED DSM</span><span>METRIC TERRAIN</span><span>GEOREFERENCED</span></>}</div>
       </div>
       {isReady ? (
         <>
@@ -214,7 +216,7 @@ function MissionView({ terrain, textureUrl, mock = false, state = 'empty', error
       ) : (
         <div className="mission-fallback"><span aria-hidden="true">05</span><strong>{state === 'running' ? 'Preparing demo terrain' : 'MissionView unavailable'}</strong><p>{fallback}</p></div>
       )}
-      {!mock && isReady && <p className="mission-warning">Terrain is not marked as demo data. Verify provenance before interpretation.</p>}
+      {!mock && isReady && <p className="mission-warning">Metric terrain is calibration output. Independent validation is not integrated yet.</p>}
     </article>
   )
 }

@@ -29,10 +29,11 @@ async function request(path, options) {
   }
 }
 
-export function startDemoPipeline(file) {
+export function startDemoPipeline(file, referenceDem = null) {
   const form = new FormData()
   form.append('file', file)
   form.append('mode', 'real')
+  if (referenceDem) form.append('reference_dem', referenceDem)
   return request('/process', { method: 'POST', body: form })
 }
 

@@ -25,6 +25,7 @@ def safe_error(status_code: int, code: str, message: str, detail: dict | None = 
 async def process_upload(
     background_tasks: BackgroundTasks,
     file: UploadFile = File(...),
+    reference_dem: UploadFile | None = File(None),
     mode: str = Form("real"),
 ) -> Job:
     supplied_name = file.filename or ""
@@ -48,10 +49,28 @@ async def process_upload(
     pipeline = depth_pipeline if mode == "real" else mock_pipeline
     input_dir = pipeline.output_root / job.job_id / "input"
     input_path = input_dir / filename
+    reference_path = None
     try:
         input_dir.mkdir(parents=True, exist_ok=True)
         with input_path.open("wb") as destination:
             shutil.copyfileobj(file.file, destination)
+        if reference_dem is not None:
+            supplied_reference = reference_dem.filename or ""
+            reference_name = Path(supplied_reference).name
+            if (
+                not reference_name
+                or reference_name != supplied_reference
+                or Path(reference_name).suffix.lower() not in {".tif", ".tiff"}
+            ):
+                raise safe_error(
+                    status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+                    "UNSUPPORTED_REFERENCE_TYPE",
+                    "Reference DEM must be a TIF/TIFF GeoTIFF.",
+                    {"filename": supplied_reference},
+                )
+            reference_path = input_dir / f"reference_{reference_name}"
+            with reference_path.open("wb") as destination:
+                shutil.copyfileobj(reference_dem.file, destination)
     except OSError:
         job_store.update_job_status(job.job_id, JobStatus.FAILED)
         raise safe_error(
@@ -61,6 +80,11 @@ async def process_upload(
         )
     finally:
         await file.close()
+        if reference_dem is not None:
+            await reference_dem.close()
 
-    background_tasks.add_task(pipeline.run, job.job_id, filename, input_path)
+    if mode == "real":
+        background_tasks.add_task(pipeline.run, job.job_id, filename, input_path, reference_path)
+    else:
+        background_tasks.add_task(pipeline.run, job.job_id, filename, input_path)
     return job

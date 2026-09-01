@@ -5,6 +5,7 @@ import UploadPanel from './components/UploadPanel.jsx'
 import FileSummary from './components/FileSummary.jsx'
 import StageCard from './components/StageCard.jsx'
 import DepthResultCard from './components/DepthResultCard.jsx'
+import CalibrationResultCard from './components/CalibrationResultCard.jsx'
 import MissionView from './components/MissionView.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
@@ -37,6 +38,7 @@ const resultCopy = {
 
 function App() {
   const [selectedFile, setSelectedFile] = useState(null)
+  const [referenceFile, setReferenceFile] = useState(null)
   const [job, setJob] = useState(null)
   const [result, setResult] = useState(null)
   const [uiState, setUiState] = useState('idle')
@@ -57,6 +59,7 @@ function App() {
   const handleFile = (file) => {
     if (file) {
       setSelectedFile(file)
+      setReferenceFile(null)
       setJob(null)
       setResult(null)
       setError('')
@@ -70,7 +73,7 @@ function App() {
     setResult(null)
     setUiState('uploading')
     try {
-      const created = await startDemoPipeline(selectedFile)
+      const created = await startDemoPipeline(selectedFile, referenceFile)
       setJob(created)
       setUiState(created.job_status === 'succeeded' ? 'succeeded' : 'running')
     } catch (requestError) {
@@ -165,13 +168,13 @@ function App() {
         <WorkflowStepper stages={stages} stageStates={workflowStates} />
 
         <section className="demo-banner" aria-label="Pipeline notice">
-          <strong>{result ? 'REAL DEPTH · RELATIVE · NOT METRIC' : 'RELATIVE DEPTH PIPELINE'}</strong>
-          <p>Depth inference uses Depth Anything V2 Small. Calibration and independent validation are not yet integrated; the 3D terrain remains synthetic.</p>
+          <strong>{result?.calibration?.calibrated ? 'CALIBRATED DSM · METRIC TERRAIN' : result ? 'REAL DEPTH · RELATIVE · NOT METRIC' : 'RELATIVE DEPTH PIPELINE'}</strong>
+          <p>Depth uses Depth Anything V2 Small. Metric output requires a georeferenced GeoTIFF plus reference DEM; independent validation is not integrated.</p>
           <span>{job ? `JOB ${job.job_id.slice(0, 8).toUpperCase()}` : 'NO JOB CREATED'}</span>
         </section>
 
         <section className="workspace-grid" ref={workspaceRef}>
-          <UploadPanel file={selectedFile} onFileSelected={handleFile} onRun={runDemo} busy={uiState === 'uploading' || uiState === 'running'} />
+          <UploadPanel file={selectedFile} referenceFile={referenceFile} onFileSelected={handleFile} onReferenceSelected={setReferenceFile} onRun={runDemo} busy={uiState === 'uploading' || uiState === 'running'} />
           <div className="workspace-side">
             <FileSummary file={selectedFile} onClear={() => setSelectedFile(null)} />
             <section className="flow-card" aria-labelledby="future-flow-title">
@@ -204,8 +207,10 @@ function App() {
           <div className="stage-grid">
             {futureCards.map((stage) => stage.title === 'Depth'
               ? <DepthResultCard key={stage.title} depth={result?.depth} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
+              : stage.title === 'Calibration / DSM'
+                ? <CalibrationResultCard key={stage.title} calibration={result?.calibration} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
               : stage.title === '3D MissionView'
-                ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.terrain?.mock} state={missionState} errorMessage={error} />
+                ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.terrain ? result.terrain.mock : true} state={missionState} errorMessage={error} />
                 : <StageCard key={stage.title} {...stage} />)}
           </div>
         </section>

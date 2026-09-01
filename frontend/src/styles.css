@@ -103,6 +103,11 @@ main { width: min(1450px, calc(100% - clamp(32px, 7vw, 112px))); margin: 0 auto;
 .run-row > div { display: flex; flex-direction: column; min-width: 0; }
 .run-row strong { font-size: 11px; }
 .run-row small { color: var(--faint); font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 350px; }
+.reference-row { display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; padding: 14px 16px; margin-top: 12px; border: 1px solid var(--line); }
+.reference-row > div { display: flex; flex-direction: column; min-width: 0; }
+.reference-row strong { font-size: 11px; }
+.reference-row small { color: var(--faint); font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reference-row input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 .mode-row article { display: flex; gap: 12px; padding: 14px; border: 1px solid var(--line-soft); }
 .mode-icon { flex: 0 0 25px; height: 25px; display: grid; place-items: center; border: 1px solid var(--cyan); color: var(--cyan); font: 500 9px 'Cascadia Mono', 'Consolas', monospace; }
 .mode-icon.geo { color: var(--amber); border-color: var(--amber); }
@@ -154,6 +159,8 @@ main { width: min(1450px, calc(100% - clamp(32px, 7vw, 112px))); margin: 0 auto;
 .artifact-links a { color: var(--cyan); font: 500 8px 'Cascadia Mono', 'Consolas', monospace; text-decoration: none; overflow-wrap: anywhere; }
 .artifact-links a:hover, .artifact-links a:focus-visible { text-decoration: underline; }
 .depth-result-card { grid-column: span 2; }
+.calibration-result-card { grid-column: span 2; }
+.calibration-warning { color: var(--amber); font-size: 8px; line-height: 1.45; }
 .depth-preview { width: 100%; height: 150px; object-fit: contain; margin: 16px 0 12px; border: 1px solid var(--line-soft); background: #06111d; image-rendering: auto; }
 .depth-badges { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 9px; }
 .depth-badges span { color: var(--amber); border: 1px solid rgba(255,189,85,.45); padding: 4px 6px; font: 600 7px 'Cascadia Mono', 'Consolas', monospace; letter-spacing: .08em; }
