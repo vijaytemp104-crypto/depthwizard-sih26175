@@ -18,11 +18,24 @@ def test_create_and_get_job() -> None:
     assert created["errors"] == []
     assert created["created_at"].endswith("Z")
     assert created["updated_at"].endswith("Z")
-
     get_response = client.get(f"/jobs/{created['job_id']}")
-
     assert get_response.status_code == 200
     assert get_response.json() == created
+
+
+def test_stage_lifecycle_timestamps_follow_status_transitions() -> None:
+    created = client.post("/jobs").json()
+    from backend.schemas.job import PipelineStage, StageStatus
+    from backend.services.job_store import job_store
+
+    running = job_store.update_stage_status(
+        created["job_id"], PipelineStage.INGEST, StageStatus.RUNNING)
+    assert running.stages[PipelineStage.INGEST].started_at is not None
+    assert running.stages[PipelineStage.INGEST].completed_at is None
+    completed = job_store.update_stage_status(
+        created["job_id"], PipelineStage.INGEST, StageStatus.SUCCEEDED)
+    assert completed.stages[PipelineStage.INGEST].started_at is not None
+    assert completed.stages[PipelineStage.INGEST].completed_at is not None
 
 
 def test_unknown_job_returns_contract_compatible_404() -> None:

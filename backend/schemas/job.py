@@ -35,6 +35,8 @@ class StageState(BaseModel):
     status: StageStatus = StageStatus.PENDING
     reason: str | None = None
     message: str | None = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
 
     @model_validator(mode="after")
     def require_skipped_reason(self) -> "StageState":

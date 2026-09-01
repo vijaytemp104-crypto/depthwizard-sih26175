@@ -183,6 +183,11 @@ class RelativeDepthArtifactTests(unittest.TestCase):
             self.assertEqual(preview_size, (5, 4))
             self.assertTrue(np.array_equal(preview_array, np.zeros((4, 5), dtype=np.uint8)))
             self.assertEqual(result.metadata["visualization"]["role"], "preview_only")
+            self.assertEqual(result.metadata["visualization"]["file"], "depth.png")
+            self.assertEqual(result.metadata["visualization"]["source_array"], "depth.npy")
+            self.assertFalse(result.metadata["cache"]["cache_location_disclosed"])
+            self.assertNotIn("hf_hub_cache", result.metadata["cache"])
+            self.assertNotIn("model_cache_paths", result.metadata["cache"])
             self.assertFalse(result.metadata["metric"])
 
     def test_cached_model_writes_reloadable_artifacts(self) -> None:

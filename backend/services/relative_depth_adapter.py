@@ -434,13 +434,13 @@ def _artifact_metadata_payload(
             "Model output restored to original H x W grid before saving.",
         ),
         "visualization": {
-            "file": str(depth_png_path),
+            "file": depth_png_path.name,
             "role": "preview_only",
             "normalization": (
                 "linear min-max normalization of the relative-depth array to "
                 "uint8 0-255 grayscale; constant arrays become all-zero previews"
             ),
-            "source_array": str(depth_npy_path),
+            "source_array": depth_npy_path.name,
         },
         "torch_version": _optional_version("torch"),
         "transformers_version": _optional_version("transformers"),
@@ -463,20 +463,15 @@ def _artifact_metadata_payload(
 def _model_cache_info(checkpoint_id: str | None) -> dict[str, Any]:
     cache_info: dict[str, Any] = {
         "local_files_only": True,
-        "hf_hub_cache": None,
-        "model_cache_paths": [],
+        "cache_location_disclosed": False,
         "cached_revision": None,
     }
     if not checkpoint_id:
         return cache_info
     try:
         from huggingface_hub import scan_cache_dir
-        from huggingface_hub.constants import HF_HUB_CACHE
-
-        cache_info["hf_hub_cache"] = str(HF_HUB_CACHE)
         for repo in scan_cache_dir().repos:
             if repo.repo_id == checkpoint_id:
-                cache_info["model_cache_paths"].append(str(repo.repo_path))
                 for revision in repo.revisions:
                     cache_info["cached_revision"] = revision.commit_hash
                     break

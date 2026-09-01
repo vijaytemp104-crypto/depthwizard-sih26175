@@ -1,0 +1,13 @@
+{
+  "summary_version": "1.0",
+  "purpose": "Software integration evidence; synthetic rows are not real-world accuracy.",
+  "scene_count": 4,
+  "real_scene_count": 0,
+  "synthetic_scene_count": 4,
+  "scenes": [
+    {"scene_id": "synthetic-urban-01", "scene_type": "urban", "synthetic_or_real": "synthetic", "depth_status": "succeeded", "calibration_status": "succeeded", "validation_status": "succeeded", "rmse": 0.5, "mae": 0.5, "correlation": 1.0, "valid_pixel_count": 48, "notes": "SYNTHETIC TEST; orchestration only."},
+    {"scene_id": "synthetic-sparse-01", "scene_type": "sparse", "synthetic_or_real": "synthetic", "depth_status": "succeeded", "calibration_status": "succeeded", "validation_status": "succeeded", "rmse": 0.5, "mae": 0.5, "correlation": 1.0, "valid_pixel_count": 48, "notes": "SYNTHETIC TEST; orchestration only."},
+    {"scene_id": "synthetic-hilly-01", "scene_type": "hilly", "synthetic_or_real": "synthetic", "depth_status": "succeeded", "calibration_status": "succeeded", "validation_status": "succeeded", "rmse": 0.5, "mae": 0.5, "correlation": 1.0, "valid_pixel_count": 48, "notes": "SYNTHETIC TEST; orchestration only."},
+    {"scene_id": "synthetic-forest-01", "scene_type": "forest", "synthetic_or_real": "synthetic", "depth_status": "succeeded", "calibration_status": "succeeded", "validation_status": "succeeded", "rmse": 0.5, "mae": 0.5, "correlation": 1.0, "valid_pixel_count": 48, "notes": "SYNTHETIC TEST; orchestration only."}
+  ]
+}

@@ -8,6 +8,40 @@ export function measurementUnits(terrain) {
     : { metric: false, elevation: 'RELATIVE UNITS', horizontal: 'VIEWER GRID UNITS' }
 }
 
+export function prepareTerrainGrid(terrain) {
+  if (!terrain) return { valid: false, message: 'Terrain data has not arrived yet.' }
+  const { width, height, heights } = terrain
+  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 2 || height < 2) return { valid: false, message: 'Terrain grid dimensions must be at least 2 × 2.' }
+  if (!Array.isArray(heights) || heights.length !== height) return { valid: false, message: 'Terrain rows do not match the declared height.' }
+  const values = []
+  const validMask = []
+  for (const row of heights) {
+    if (!Array.isArray(row) || row.length !== width) return { valid: false, message: 'Terrain columns do not match the declared width.' }
+    for (const value of row) {
+      if (value !== null && !Number.isFinite(value)) return { valid: false, message: 'Terrain contains an invalid height value.' }
+      values.push(value)
+      validMask.push(value !== null)
+    }
+  }
+  const validIndices = validMask.flatMap((valid, index) => valid ? [index] : [])
+  if (validIndices.length === 0) return { valid: false, message: 'Terrain contains no valid elevation samples.' }
+  validMask.forEach((valid, index) => {
+    if (valid) return
+    const row = Math.floor(index / width)
+    const column = index % width
+    let nearest = validIndices[0]
+    let nearestDistance = Infinity
+    for (const candidate of validIndices) {
+      const candidateRow = Math.floor(candidate / width)
+      const candidateColumn = candidate % width
+      const distance = (candidateRow - row) ** 2 + (candidateColumn - column) ** 2
+      if (distance < nearestDistance) { nearest = candidate; nearestDistance = distance }
+    }
+    values[index] = values[nearest]
+  })
+  return { valid: true, values, validMask, nodataCount: values.length - validIndices.length }
+}
+
 export function heightMeasurement(pointA, pointB, terrain) {
   if (!pointA || !pointB) return null
   const units = measurementUnits(terrain)

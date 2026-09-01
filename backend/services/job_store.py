@@ -87,13 +87,24 @@ class InMemoryJobStore:
         reason: str | None = None,
         message: str | None = None,
     ) -> Job | None:
-        new_state = StageState(status=stage_status, reason=reason, message=message)
         with self._lock:
             job = self._jobs.get(job_id)
             if job is None:
                 return None
+            previous = job.stages[stage]
+            now = utc_now()
+            started_at = previous.started_at
+            completed_at = None
+            if stage_status is StageStatus.RUNNING:
+                started_at = started_at or now
+            elif stage_status in {StageStatus.SUCCEEDED, StageStatus.SKIPPED, StageStatus.FAILED}:
+                completed_at = now
+            new_state = StageState(
+                status=stage_status, reason=reason, message=message,
+                started_at=started_at, completed_at=completed_at,
+            )
             job.stages[stage] = new_state
-            job.updated_at = utc_now()
+            job.updated_at = now
             return job.model_copy(deep=True)
 
 

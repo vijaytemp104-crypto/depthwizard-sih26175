@@ -1,0 +1,11 @@
+{
+  "manifest_version": "1.0",
+  "purpose": "Software-integration scenes only; not real-world accuracy benchmarks.",
+  "real_benchmark_status": "PENDING",
+  "scenes": [
+    {"scene_id": "synthetic-urban-01", "scene_type": "urban", "synthetic_or_real": "synthetic", "reference_type": "deterministic planar/grid elevations", "expected_mode": "metric_independent_validation"},
+    {"scene_id": "synthetic-sparse-01", "scene_type": "sparse", "synthetic_or_real": "synthetic", "reference_type": "deterministic sparse elevations", "expected_mode": "metric_independent_validation"},
+    {"scene_id": "synthetic-hilly-01", "scene_type": "hilly", "synthetic_or_real": "synthetic", "reference_type": "deterministic sinusoidal elevations", "expected_mode": "metric_independent_validation"},
+    {"scene_id": "synthetic-forest-01", "scene_type": "forest", "synthetic_or_real": "synthetic", "reference_type": "deterministic textured elevations", "expected_mode": "metric_independent_validation"}
+  ]
+}

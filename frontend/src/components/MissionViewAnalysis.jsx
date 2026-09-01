@@ -2,26 +2,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js'
-import { heightMeasurement, measurementUnits, slopeMeasurement } from '../analysis.js'
+import { heightMeasurement, measurementUnits, prepareTerrainGrid, slopeMeasurement } from '../analysis.js'
 
 const CAMERA_POSITION = new THREE.Vector3(5.8, 4.4, 6.2)
 const TARGET_POSITION = new THREE.Vector3(0, 0, 0)
 const VERTICAL_EXAGGERATION = 1.8
 
 function validateTerrain(terrain) {
-  if (!terrain) return { valid: false, message: 'Terrain data has not arrived yet.' }
-  const { width, height, heights } = terrain
-  if (!Number.isInteger(width) || !Number.isInteger(height) || width < 2 || height < 2) return { valid: false, message: 'Terrain grid dimensions must be at least 2 × 2.' }
-  if (!Array.isArray(heights) || heights.length !== height) return { valid: false, message: 'Terrain rows do not match the declared height.' }
-  const values = []
-  for (const row of heights) {
-    if (!Array.isArray(row) || row.length !== width) return { valid: false, message: 'Terrain columns do not match the declared width.' }
-    for (const value of row) {
-      if (!Number.isFinite(value)) return { valid: false, message: 'Terrain contains a non-numeric height value.' }
-      values.push(value)
-    }
-  }
-  return { valid: true, values }
+  return prepareTerrainGrid(terrain)
 }
 
 function ViewerCanvas({ terrain, textureUrl, navigationMode, measurementMode, onPoint, onViewerError }) {
@@ -92,6 +80,10 @@ function ViewerCanvas({ terrain, textureUrl, navigationMode, measurementMode, on
         const column = Math.max(0, Math.min(terrain.width - 1, Math.round((local.x / width + 0.5) * (terrain.width - 1))))
         const row = Math.max(0, Math.min(terrain.height - 1, Math.round((local.z / depth + 0.5) * (terrain.height - 1))))
         const index = row * terrain.width + column
+        if (!validation.validMask[index]) {
+          onViewerError('That displayed sample is nodata and cannot be used for measurement.')
+          return
+        }
         if (markers.length === 2) markers.splice(0).forEach((marker) => scene.remove(marker))
         const marker = new THREE.Mesh(markerGeometry, markerMaterials[markers.length])
         marker.position.set(positions.getX(index), positions.getY(index) + 0.08, positions.getZ(index))
@@ -201,6 +193,7 @@ function MissionViewAnalysis({ terrain, textureUrl, mock = false, state = 'empty
       </section>
       <div className="mission-meta"><span>{terrain.width} × {terrain.height} grid</span><span>{terrain.height_units || 'units unavailable'}</span><span>{terrain.coordinate_mode || 'coordinate mode unavailable'}</span></div>
       <p className="mission-note">Vertical exaggeration is visual only; measurements use source elevation samples.</p>{viewerError && <p className="mission-warning" role="status">{viewerError}</p>}
+      {validation.nodataCount > 0 && <p className="mission-warning">{validation.nodataCount} nodata sample(s) use nearest valid elevation only for continuous rendering and cannot be measured.</p>}
     </> : <div className="mission-fallback"><span aria-hidden="true">05</span><strong>MissionView unavailable</strong><p>{fallback}</p></div>}
     {!mock && ready && <p className="mission-warning">Metric terrain is calibration output. Accuracy claims require the separate Independent Validation stage.</p>}
   </article>
