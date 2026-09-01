@@ -1,6 +1,6 @@
 .venv/ 
 venv/ 
-pycache/ 
+__pycache__/ 
 node_modules/ 
 .env 
 outputs/ 
