@@ -1,0 +1,121 @@
+{
+  "example_data": true,
+  "example_notice": "All identifiers, timings, elevations, and validation values are illustrative contract data only, not measured SIH performance claims.",
+  "job_id": "JOB-EXAMPLE-001",
+  "job_status": "succeeded",
+  "created_at": "2026-08-31T09:00:00Z",
+  "updated_at": "2026-08-31T09:00:18Z",
+  "input": {
+    "input_id": "INPUT-EXAMPLE-001",
+    "original_filename": "illustrative_site.tif",
+    "file_type": "tif",
+    "width": 1024,
+    "height": 768,
+    "channels": 3,
+    "georeferenced": true,
+    "crs": "EPSG:32643",
+    "transform": [0.5, 0.0, 500000.0, 0.0, -0.5, 2100000.0],
+    "bounds": {"left": 500000.0, "bottom": 2099616.0, "right": 500512.0, "top": 2100000.0},
+    "pixel_size": {"x": 0.5, "y": 0.5, "units": "metres"},
+    "nodata": null,
+    "artifact_path": "outputs/JOB-EXAMPLE-001/input/illustrative_site.tif"
+  },
+  "stages": {
+    "ingest": {"status": "succeeded", "reason": null, "started_at": "2026-08-31T09:00:00Z", "completed_at": "2026-08-31T09:00:01Z"},
+    "depth": {"status": "succeeded", "reason": null, "started_at": "2026-08-31T09:00:01Z", "completed_at": "2026-08-31T09:00:08Z"},
+    "calibration": {"status": "succeeded", "reason": null, "started_at": "2026-08-31T09:00:08Z", "completed_at": "2026-08-31T09:00:12Z"},
+    "validation": {"status": "succeeded", "reason": null, "started_at": "2026-08-31T09:00:12Z", "completed_at": "2026-08-31T09:00:15Z"},
+    "terrain": {"status": "succeeded", "reason": null, "started_at": "2026-08-31T09:00:15Z", "completed_at": "2026-08-31T09:00:17Z"},
+    "evidence": {"status": "succeeded", "reason": null, "started_at": "2026-08-31T09:00:17Z", "completed_at": "2026-08-31T09:00:18Z"}
+  },
+  "depth": {
+    "status": "succeeded",
+    "artifacts": {
+      "array": "outputs/JOB-EXAMPLE-001/depth.npy",
+      "preview": "outputs/JOB-EXAMPLE-001/depth.png",
+      "model_metadata": "outputs/JOB-EXAMPLE-001/model_metadata.json"
+    },
+    "width": 1024,
+    "height": 768,
+    "units": "relative",
+    "array_orientation": "height x width; row-major raster convention",
+    "model_metadata": {
+      "model_name": "illustrative-monocular-depth-model",
+      "model_version": "example-version",
+      "checkpoint": "example-checkpoint",
+      "device": "example-device",
+      "runtime_seconds": 6.7,
+      "preprocessing": {"description": "Illustrative preprocessing metadata only"},
+      "input_shape": [768, 1024, 3],
+      "output_shape": [768, 1024]
+    },
+    "reason": null
+  },
+  "calibration": {
+    "status": "succeeded",
+    "calibrated": true,
+    "units": "metres",
+    "method": "linear E = aD + b",
+    "reference_source": "Illustrative independent reference DEM and example GCP evidence",
+    "scale_a": 18.4,
+    "offset_b": 412.7,
+    "valid_anchor_count": 24,
+    "crs": "EPSG:32643",
+    "transform": [0.5, 0.0, 500000.0, 0.0, -0.5, 2100000.0],
+    "warnings": ["Illustrative values only; not a measured accuracy or calibration claim."],
+    "artifacts": {
+      "calibrated_dsm": "outputs/JOB-EXAMPLE-001/calibrated_dsm.tif",
+      "calibration_metadata": "outputs/JOB-EXAMPLE-001/calibration.json"
+    },
+    "reason": null
+  },
+  "validation": {
+    "status": "succeeded",
+    "reference_source": "Illustrative withheld reference elevation raster",
+    "rmse": 2.4,
+    "mae": 1.7,
+    "correlation": 0.91,
+    "valid_pixel_count": 734210,
+    "units": "metres",
+    "artifacts": {
+      "metrics": "outputs/JOB-EXAMPLE-001/metrics.json",
+      "error_map": "outputs/JOB-EXAMPLE-001/error_map.tif"
+    },
+    "reason": null
+  },
+  "terrain": {
+    "status": "succeeded",
+    "width": 3,
+    "height": 3,
+    "heights": [[412.7, 413.1, 413.8], [412.9, 414.0, 414.6], [413.2, 414.3, 415.1]],
+    "height_units": "metres",
+    "texture_artifact": "outputs/JOB-EXAMPLE-001/terrain_texture.png",
+    "coordinate_mode": "geospatial",
+    "crs": "EPSG:32643",
+    "transform": [256.0, 0.0, 500000.0, 0.0, -192.0, 2100000.0],
+    "artifact_path": "outputs/JOB-EXAMPLE-001/terrain.json",
+    "reason": null
+  },
+  "evidence": {
+    "status": "succeeded",
+    "confidence_map": "outputs/JOB-EXAMPLE-001/confidence_map.tif",
+    "evidence_passport": "outputs/JOB-EXAMPLE-001/evidence_passport.json",
+    "summary": {"example_data": true, "note": "Illustrative provenance summary; independent validation remains separate."},
+    "independent_validation_substitute": false,
+    "reason": null
+  },
+  "artifacts": [
+    "outputs/JOB-EXAMPLE-001/depth.npy",
+    "outputs/JOB-EXAMPLE-001/depth.png",
+    "outputs/JOB-EXAMPLE-001/model_metadata.json",
+    "outputs/JOB-EXAMPLE-001/calibrated_dsm.tif",
+    "outputs/JOB-EXAMPLE-001/calibration.json",
+    "outputs/JOB-EXAMPLE-001/metrics.json",
+    "outputs/JOB-EXAMPLE-001/error_map.tif",
+    "outputs/JOB-EXAMPLE-001/terrain.json",
+    "outputs/JOB-EXAMPLE-001/terrain_texture.png",
+    "outputs/JOB-EXAMPLE-001/confidence_map.tif",
+    "outputs/JOB-EXAMPLE-001/evidence_passport.json"
+  ],
+  "errors": []
+}
