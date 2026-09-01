@@ -6,7 +6,11 @@ client = TestClient(app)
 
 
 def upload_demo(filename: str = "site.png") -> dict:
-    response = client.post("/process", files={"file": (filename, b"demo-image-bytes", "image/png")})
+    response = client.post(
+        "/process",
+        data={"mode": "fallback_mock"},
+        files={"file": (filename, b"demo-image-bytes", "image/png")},
+    )
     assert response.status_code == 202
     return response.json()
 

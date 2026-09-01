@@ -4,6 +4,7 @@ import WorkflowStepper from './components/WorkflowStepper.jsx'
 import UploadPanel from './components/UploadPanel.jsx'
 import FileSummary from './components/FileSummary.jsx'
 import StageCard from './components/StageCard.jsx'
+import DepthResultCard from './components/DepthResultCard.jsx'
 import MissionView from './components/MissionView.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
@@ -27,11 +28,11 @@ const futureStages = [
 const stageKeys = ['ingest', 'depth', 'calibration', 'validation', 'terrain', 'evidence']
 
 const resultCopy = {
-  depth: { label: 'DEMO', title: 'Depth', done: 'Demo placeholder — real depth module not integrated yet' },
+  depth: { label: 'REAL DEPTH', title: 'Depth', done: 'Relative monocular inference — not metric elevation' },
   calibration: { label: 'SKIPPED', title: 'Calibration / DSM', done: 'Skipped — awaiting calibration module' },
   validation: { label: 'SKIPPED', title: 'Proof / Validation', done: 'Skipped — awaiting independent validation' },
   terrain: { label: 'PLACEHOLDER', title: '3D MissionView', done: 'Synthetic 2×2 unitless grid only — no terrain or elevation output' },
-  evidence: { label: 'MOCK', title: 'Downloads / Evidence', done: 'Demo plumbing metadata and placeholder artifacts' },
+  evidence: { label: 'PROVENANCE', title: 'Downloads / Evidence', done: 'Real depth model provenance; not independent validation' },
 }
 
 function App() {
@@ -91,7 +92,7 @@ function App() {
         if (current.job_status === 'succeeded') setUiState('succeeded')
         if (current.job_status === 'failed') {
           setUiState('error')
-          setError('The demo pipeline could not complete. No scientific output was produced.')
+        setError('Relative-depth inference could not complete. No fake success output was produced.')
         }
       } catch (pollError) {
         failures += 1
@@ -127,7 +128,7 @@ function App() {
       label: result && output ? output.label : null,
       description: result && output ? output.done : card.description,
       downloads: result && key === 'evidence'
-        ? ['mock_depth.json', 'mock_terrain.json', 'mock_evidence.json'].map((name) => ({ name, href: artifactUrl(job.job_id, name) }))
+        ? ['depth.npy', 'depth.png', 'model_metadata.json', 'depth_evidence.json'].map((name) => ({ name, href: artifactUrl(job.job_id, name) }))
         : [],
     }
   })
@@ -163,9 +164,9 @@ function App() {
 
         <WorkflowStepper stages={stages} stageStates={workflowStates} />
 
-        <section className="demo-banner" aria-label="Mock pipeline notice">
-          <strong>DEMO PIPELINE</strong>
-          <p>This checkpoint exercises upload, job states and artifacts only. No scientific processing or claims are produced.</p>
+        <section className="demo-banner" aria-label="Pipeline notice">
+          <strong>{result ? 'REAL DEPTH · RELATIVE · NOT METRIC' : 'RELATIVE DEPTH PIPELINE'}</strong>
+          <p>Depth inference uses Depth Anything V2 Small. Calibration and independent validation are not yet integrated; the 3D terrain remains synthetic.</p>
           <span>{job ? `JOB ${job.job_id.slice(0, 8).toUpperCase()}` : 'NO JOB CREATED'}</span>
         </section>
 
@@ -187,7 +188,7 @@ function App() {
           </div>
         </section>
 
-        {error && <div className="error-banner" role="alert"><strong>Demo pipeline error</strong><span>{error}</span></div>}
+        {error && <div className="error-banner" role="alert"><strong>Depth pipeline error</strong><span>{error}</span></div>}
 
         <section className="guardrail-strip" aria-label="Scientific data rules">
           <div><span>PNG · JPG</span><p>Relative mode by default. Exact metric claims require valid external calibration evidence.</p></div>
@@ -201,14 +202,16 @@ function App() {
             <p>Each surface remains deliberately empty until real processing is connected.</p>
           </div>
           <div className="stage-grid">
-            {futureCards.map((stage) => stage.title === '3D MissionView'
-              ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.mock} state={missionState} errorMessage={error} />
-              : <StageCard key={stage.title} {...stage} />)}
+            {futureCards.map((stage) => stage.title === 'Depth'
+              ? <DepthResultCard key={stage.title} depth={result?.depth} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
+              : stage.title === '3D MissionView'
+                ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.terrain?.mock} state={missionState} errorMessage={error} />
+                : <StageCard key={stage.title} {...stage} />)}
           </div>
         </section>
       </main>
 
-      <footer><span>DepthWizard · Smart India Hackathon 2026</span><span>Demo plumbing · No scientific processing</span></footer>
+      <footer><span>DepthWizard · Smart India Hackathon 2026</span><span>Relative depth · No metric claim without calibration</span></footer>
     </div>
   )
 }

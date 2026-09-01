@@ -32,6 +32,7 @@ async function request(path, options) {
 export function startDemoPipeline(file) {
   const form = new FormData()
   form.append('file', file)
+  form.append('mode', 'real')
   return request('/process', { method: 'POST', body: form })
 }
 

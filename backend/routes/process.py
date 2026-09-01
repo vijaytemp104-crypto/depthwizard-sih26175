@@ -3,14 +3,16 @@
 import shutil
 from pathlib import Path
 
-from fastapi import APIRouter, BackgroundTasks, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile, status
 
 from backend.schemas.job import Job, JobStatus, StandardError
 from backend.services.job_store import job_store
+from backend.services.depth_pipeline import DepthPipeline
 from backend.services.mock_pipeline import MockPipeline
 
 router = APIRouter(tags=["process"])
 mock_pipeline = MockPipeline(job_store)
+depth_pipeline = DepthPipeline(job_store)
 SUPPORTED_EXTENSIONS = {".png", ".jpg", ".jpeg", ".tif", ".tiff"}
 
 
@@ -20,7 +22,11 @@ def safe_error(status_code: int, code: str, message: str, detail: dict | None = 
 
 
 @router.post("/process", response_model=Job, status_code=status.HTTP_202_ACCEPTED)
-async def process_upload(background_tasks: BackgroundTasks, file: UploadFile = File(...)) -> Job:
+async def process_upload(
+    background_tasks: BackgroundTasks,
+    file: UploadFile = File(...),
+    mode: str = Form("real"),
+) -> Job:
     supplied_name = file.filename or ""
     filename = Path(supplied_name).name
     extension = Path(filename).suffix.lower()
@@ -31,9 +37,16 @@ async def process_upload(background_tasks: BackgroundTasks, file: UploadFile = F
             "Select a PNG, JPG/JPEG, or TIF/TIFF image.",
             {"filename": supplied_name},
         )
+    if mode not in {"real", "fallback_mock"}:
+        raise safe_error(
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            "UNSUPPORTED_PROCESSING_MODE",
+            "Processing mode must be 'real' or 'fallback_mock'.",
+        )
 
     job = job_store.create_job()
-    input_dir = mock_pipeline.output_root / job.job_id / "input"
+    pipeline = depth_pipeline if mode == "real" else mock_pipeline
+    input_dir = pipeline.output_root / job.job_id / "input"
     input_path = input_dir / filename
     try:
         input_dir.mkdir(parents=True, exist_ok=True)
@@ -49,5 +62,5 @@ async def process_upload(background_tasks: BackgroundTasks, file: UploadFile = F
     finally:
         await file.close()
 
-    background_tasks.add_task(mock_pipeline.run, job.job_id, filename, input_path)
+    background_tasks.add_task(pipeline.run, job.job_id, filename, input_path)
     return job

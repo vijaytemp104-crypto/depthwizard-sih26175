@@ -153,6 +153,14 @@ main { width: min(1450px, calc(100% - clamp(32px, 7vw, 112px))); margin: 0 auto;
 .artifact-links { display: grid; gap: 6px; margin-top: auto; padding-top: 14px; }
 .artifact-links a { color: var(--cyan); font: 500 8px 'Cascadia Mono', 'Consolas', monospace; text-decoration: none; overflow-wrap: anywhere; }
 .artifact-links a:hover, .artifact-links a:focus-visible { text-decoration: underline; }
+.depth-result-card { grid-column: span 2; }
+.depth-preview { width: 100%; height: 150px; object-fit: contain; margin: 16px 0 12px; border: 1px solid var(--line-soft); background: #06111d; image-rendering: auto; }
+.depth-badges { display: flex; flex-wrap: wrap; gap: 5px; margin: 0 0 9px; }
+.depth-badges span { color: var(--amber); border: 1px solid rgba(255,189,85,.45); padding: 4px 6px; font: 600 7px 'Cascadia Mono', 'Consolas', monospace; letter-spacing: .08em; }
+.depth-metadata { display: grid; gap: 5px; margin: 0; }
+.depth-metadata div { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 7px; font: 500 8px 'Cascadia Mono', 'Consolas', monospace; }
+.depth-metadata dt { color: var(--faint); }
+.depth-metadata dd { margin: 0; color: var(--muted); overflow-wrap: anywhere; }
 .error-banner { margin: 0 0 20px; border: 1px solid #c96161; background: rgba(201,97,97,.1); padding: 14px 18px; display: flex; gap: 18px; align-items: center; color: #ffb2b2; font-size: 11px; }
 .error-banner strong { color: #ffd0d0; }
 .mission-view-card { grid-column: span 2; min-height: 420px; padding: 16px; }

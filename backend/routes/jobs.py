@@ -60,7 +60,16 @@ def download_artifact(job_id: str, artifact_name: str) -> FileResponse:
     artifact_path = job_store.get_artifact(job_id, artifact_name)
     if artifact_path is None or not Path(artifact_path).is_file():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Artifact not found.")
-    return FileResponse(artifact_path, filename=artifact_name, media_type="application/json")
+    media_types = {
+        ".json": "application/json",
+        ".png": "image/png",
+        ".npy": "application/octet-stream",
+    }
+    return FileResponse(
+        artifact_path,
+        filename=artifact_name,
+        media_type=media_types.get(Path(artifact_name).suffix.lower(), "application/octet-stream"),
+    )
 
 
 def _job_not_found(job_id: str) -> HTTPException:

@@ -3,3 +3,8 @@ uvicorn[standard]
 pytest
 httpx
 python-multipart
+transformers==5.16.1
+torch
+torchvision
+numpy
+pillow
