@@ -1,0 +1,40 @@
+{
+  "method": "ordinary_least_squares",
+  "valid_pixels": 1000000,
+  "rmse_metres": 121.10797152682125,
+  "r_squared": 0.09177051410150283,
+  "coefficients": {
+    "a": -138.37686793865515,
+    "b": 1623.490467889024
+  },
+  "model": "elevation = a * depth + b",
+  "reference": {
+    "path": "sample_data/phase2_real/forest/calibration_dem.tif",
+    "metadata": {
+      "crs": "EPSG:32610",
+      "transform": [
+        10.0,
+        0.0,
+        480761.209,
+        0.0,
+        -10.0,
+        5289044.632
+      ],
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        480761.209,
+        5288044.632,
+        481761.209,
+        5289044.632
+      ],
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null
+    },
+    "resampled_or_reprojected": true,
+    "target_grid_source": "depth sidecar"
+  }
+}

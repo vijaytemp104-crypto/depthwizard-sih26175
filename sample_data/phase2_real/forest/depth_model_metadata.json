@@ -1,0 +1,26 @@
+{
+  "checkpoint": "depth-anything/Depth-Anything-V2-Small-hf",
+  "cached_revision": "5426e4f0f36572d16453bbda7a8389317b1bef99",
+  "license": "apache-2.0",
+  "device": "cpu",
+  "runtime_seconds": 1.2080157169993981,
+  "input_shape": [
+    1000,
+    1000,
+    3
+  ],
+  "output_shape": [
+    1000,
+    1000
+  ],
+  "output_dtype": "float32",
+  "units": "relative_arbitrary",
+  "metric": false,
+  "output_convention": "relative disparity-like monocular depth",
+  "array_statistics": {
+    "min": 1.3819242715835571,
+    "max": 2.8677570819854736,
+    "mean": 2.109886407852173,
+    "std": 0.2782037854194641
+  }
+}

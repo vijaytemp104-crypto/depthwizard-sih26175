@@ -1,0 +1,59 @@
+{
+  "model_name": "Depth Anything V2 Small",
+  "checkpoint": "depth-anything/Depth-Anything-V2-Small-hf",
+  "cached_revision": "5426e4f0f36572d16453bbda7a8389317b1bef99",
+  "source": "https://huggingface.co/depth-anything/Depth-Anything-V2-Small-hf",
+  "licence": "apache-2.0",
+  "device": "cpu",
+  "runtime_seconds": 1.7612758100003703,
+  "runtime_scope": "preprocessing, model forward pass, postprocessing, and artifact writing; excludes model load when a preloaded adapter is supplied",
+  "original_input_shape": [
+    2000,
+    2000,
+    3
+  ],
+  "model_input_shape": [
+    1,
+    3,
+    518,
+    518
+  ],
+  "raw_output_shape": [
+    1,
+    518,
+    518
+  ],
+  "final_output_shape": [
+    2000,
+    2000
+  ],
+  "output_dtype": "float32",
+  "units": "relative_arbitrary",
+  "metric": false,
+  "output_convention": "relative disparity-like monocular depth; values are arbitrary and must not be interpreted as metric distance, elevation, or DSM height",
+  "preprocessing_summary": "Input converted to RGB; checkpoint image processor handles resize, rescale, and normalization.",
+  "postprocessing_summary": "processor.post_process_depth_estimation with target_sizes=(H, W)",
+  "visualization": {
+    "file": "sample_data/real_demo/depth/depth.png",
+    "role": "preview_only",
+    "normalization": "linear min-max normalization of the relative-depth array to uint8 0-255 grayscale; constant arrays become all-zero previews",
+    "source_array": "sample_data/real_demo/depth/depth.npy"
+  },
+  "torch_version": "2.13.0",
+  "transformers_version": "5.16.1",
+  "cache": {
+    "local_files_only": true,
+    "hf_hub_cache": "/home/ayush/depthwizard-sih26175/sample_data/real_demo/hf_cache/hub",
+    "model_cache_paths": [
+      "/home/ayush/depthwizard-sih26175/sample_data/real_demo/hf_cache/hub/models--depth-anything--Depth-Anything-V2-Small-hf"
+    ],
+    "cached_revision": "5426e4f0f36572d16453bbda7a8389317b1bef99"
+  },
+  "warning": "This output is relative monocular depth in arbitrary units. It is not absolute elevation, metres, terrain height, calibrated DSM, or independently validated elevation; downstream calibration is required for metric products.",
+  "array_statistics": {
+    "min": 0.7241935133934021,
+    "max": 1.7969858646392822,
+    "mean": 1.2393958568572998,
+    "std": 0.2200080007314682
+  }
+}

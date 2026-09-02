@@ -19,3 +19,8 @@ sample_data/input/*.npy
 sample_data/reference/*.tif
 sample_data/mock_outputs/*
 !sample_data/mock_outputs/.gitkeep
+sample_data/phase2_real/*/depth_preview.png
+sample_data/phase2_real/*/calibration_output/terrain.json
+sample_data/real_demo/hf_cache/
+sample_data/real_demo/depth/depth.png
+sample_data/real_demo/calibration_output/terrain.json

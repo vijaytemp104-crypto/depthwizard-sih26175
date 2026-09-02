@@ -1,0 +1,40 @@
+{
+  "method": "ordinary_least_squares",
+  "valid_pixels": 4000000,
+  "rmse_metres": 13.864442820901756,
+  "r_squared": 0.09227471626482786,
+  "coefficients": {
+    "a": -20.09222787124832,
+    "b": 1654.4049154429756
+  },
+  "model": "elevation = a * depth + b",
+  "reference": {
+    "path": "sample_data/real_demo/real_calibration_dem.tif",
+    "metadata": {
+      "crs": "EPSG:32613",
+      "transform": [
+        10.0,
+        0.0,
+        475915.239344975,
+        0.0,
+        -10.0,
+        4430457.112618952
+      ],
+      "width": 200,
+      "height": 200,
+      "bounds": [
+        475915.239344975,
+        4428457.112618952,
+        477915.239344975,
+        4430457.112618952
+      ],
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null
+    },
+    "resampled_or_reprojected": true,
+    "target_grid_source": "depth sidecar"
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "method": "ordinary_least_squares",
+  "valid_pixels": 1000000,
+  "rmse_metres": 14.173215954498643,
+  "r_squared": 0.42385695021934233,
+  "coefficients": {
+    "a": 44.46157428987416,
+    "b": 723.3093218457063
+  },
+  "model": "elevation = a * depth + b",
+  "reference": {
+    "path": "sample_data/phase2_real/hilly/calibration_dem.tif",
+    "metadata": {
+      "crs": "EPSG:32613",
+      "transform": [
+        10.0,
+        0.0,
+        700777.861,
+        0.0,
+        -10.0,
+        4847644.066
+      ],
+      "width": 100,
+      "height": 100,
+      "bounds": [
+        700777.861,
+        4846644.066,
+        701777.861,
+        4847644.066
+      ],
+      "resolution": [
+        10.0,
+        10.0
+      ],
+      "nodata": null
+    },
+    "resampled_or_reprojected": true,
+    "target_grid_source": "depth sidecar"
+  }
+}
