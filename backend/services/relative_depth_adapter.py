@@ -7,6 +7,7 @@ outputs are not metres, elevations, DSMs, or calibrated terrain heights.
 from __future__ import annotations
 
 import json
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -24,6 +25,11 @@ OUTPUT_CONVENTION = (
     "relative disparity-like monocular depth; values are arbitrary and must not "
     "be interpreted as metric distance, elevation, or DSM height"
 )
+_DEFAULT_ADAPTER_CACHE_LOCK = threading.Lock()
+_DEFAULT_ADAPTER_CACHE: dict[
+    tuple[str, bool, str],
+    "DepthAnythingV2SmallAdapter",
+] = {}
 
 
 class RelativeDepthError(Exception):
@@ -105,7 +111,7 @@ class DepthAnythingV2SmallAdapter:
         self,
         device: str = "auto",
         model_id: str = DEFAULT_MODEL_ID,
-        local_files_only: bool = False,
+        local_files_only: bool = True,
     ) -> None:
         self.model_id = model_id
         self.device = self._resolve_device(device)
@@ -263,7 +269,7 @@ class DepthAnythingV2SmallAdapter:
 
 def load_default_adapter(
     device: str = "auto",
-    local_files_only: bool = False,
+    local_files_only: bool = True,
 ) -> DepthAnythingV2SmallAdapter:
     """Load the selected Depth Anything V2 Small relative-depth adapter."""
 
@@ -273,10 +279,36 @@ def load_default_adapter(
     )
 
 
+def _get_cached_default_adapter(
+    device: str = "auto",
+    local_files_only: bool = True,
+    model_id: str = DEFAULT_MODEL_ID,
+) -> DepthAnythingV2SmallAdapter:
+    key = (device, local_files_only, model_id)
+    cached = _DEFAULT_ADAPTER_CACHE.get(key)
+    if cached is not None:
+        return cached
+
+    with _DEFAULT_ADAPTER_CACHE_LOCK:
+        cached = _DEFAULT_ADAPTER_CACHE.get(key)
+        if cached is not None:
+            return cached
+        adapter = DepthAnythingV2SmallAdapter(
+            device=device,
+            model_id=model_id,
+            local_files_only=local_files_only,
+        )
+        _DEFAULT_ADAPTER_CACHE[key] = adapter
+        return adapter
+
+
 def predict_depth(image: ImageInput) -> tuple[DepthArray, RelativeDepthMetadata]:
     """Load the default adapter and return relative monocular depth."""
 
-    return load_default_adapter(device="auto", local_files_only=True).predict_depth(image)
+    return _get_cached_default_adapter(
+        device="auto",
+        local_files_only=True,
+    ).predict_depth(image)
 
 
 def write_depth_artifacts(
@@ -289,7 +321,7 @@ def write_depth_artifacts(
     import numpy as np
     from PIL import Image
 
-    selected_adapter = adapter or load_default_adapter(
+    selected_adapter = adapter or _get_cached_default_adapter(
         device="auto",
         local_files_only=True,
     )

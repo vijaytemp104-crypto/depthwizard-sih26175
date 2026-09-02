@@ -6,8 +6,13 @@ not download model weights unexpectedly.
 
 from __future__ import annotations
 
+import os
+import socket
+import subprocess
+import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -21,13 +26,18 @@ from backend.services.relative_depth_adapter import (
     DepthAnythingV2SmallAdapter,
     DepthArtifactResult,
     ImageInputError,
+    LoadedDepthAnythingV2Small,
     ModelLoadError,
     RelativeDepthInferenceError,
     RelativeDepthMetadata,
     RelativeDepthOutputError,
+    _get_cached_default_adapter,
     _load_rgb_image,
+    load_default_adapter,
+    predict_depth,
     write_depth_artifacts,
 )
+import backend.services.relative_depth_adapter as relative_depth_adapter
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -78,6 +88,30 @@ def _fake_adapter(predicted_depth: torch.Tensor, fail_forward: bool = False) -> 
     return adapter
 
 
+def _fake_loaded_components(predicted_depth: torch.Tensor | None = None) -> LoadedDepthAnythingV2Small:
+    if predicted_depth is None:
+        predicted_depth = torch.ones((4, 5), dtype=torch.float32)
+    return LoadedDepthAnythingV2Small(
+        processor=_FakeProcessor(predicted_depth),
+        model=_FakeModel(),
+        metadata=RelativeDepthMetadata(
+            model_name="fake",
+            checkpoint_id=DEFAULT_MODEL_ID,
+            device="cpu",
+            output_units="relative_arbitrary",
+            metric_depth=False,
+            extra={"local_files_only": True, "depth_estimation_type": "relative"},
+        ),
+    )
+
+
+def _path_stats(path: Path) -> tuple[bool, int, int]:
+    if not path.exists():
+        return (False, 0, 0)
+    files = [item for item in path.rglob("*") if item.is_file()]
+    return (True, len(files), sum(item.stat().st_size for item in files))
+
+
 class RelativeDepthInputErrorTests(unittest.TestCase):
     def test_missing_file_raises_file_not_found(self) -> None:
         with self.assertRaisesRegex(FileNotFoundError, "Input image not found"):
@@ -111,6 +145,56 @@ class RelativeDepthModelErrorTests(unittest.TestCase):
                 local_files_only=True,
             )
 
+    def test_empty_offline_cache_fails_without_touching_real_cache(self) -> None:
+        import json
+
+        real_cache = (
+            Path.home()
+            / ".cache"
+            / "huggingface"
+            / "hub"
+            / "models--depth-anything--Depth-Anything-V2-Small-hf"
+        )
+        before = _path_stats(real_cache)
+        code = """
+import json
+from backend.services.relative_depth_adapter import DepthAnythingV2SmallAdapter
+
+try:
+    DepthAnythingV2SmallAdapter(device='cpu', local_files_only=True)
+    payload = {'error_type': None, 'message': 'load unexpectedly succeeded'}
+except Exception as exc:
+    payload = {'error_type': type(exc).__name__, 'message': str(exc)}
+print(json.dumps(payload))
+"""
+
+        with tempfile.TemporaryDirectory(prefix="empty_hf_cache_") as cache_dir:
+            cache_path = Path(cache_dir)
+            env = {
+                **os.environ,
+                "HF_HOME": str(cache_path / "hf_home"),
+                "HF_HUB_CACHE": str(cache_path / "hf_hub"),
+                "TRANSFORMERS_CACHE": str(cache_path / "transformers"),
+                "HF_HUB_OFFLINE": "1",
+                "TRANSFORMERS_OFFLINE": "1",
+            }
+            completed = subprocess.run(
+                [sys.executable, "-B", "-c", code],
+                cwd=REPO_ROOT,
+                env=env,
+                capture_output=True,
+                text=True,
+                timeout=60,
+                check=False,
+            )
+
+        after = _path_stats(real_cache)
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        payload = json.loads(completed.stdout)
+        self.assertEqual(payload["error_type"], "ModelLoadError")
+        self.assertIn("local_files_only=True", payload["message"])
+        self.assertEqual(before, after)
+
     def test_inference_failure_is_classified(self) -> None:
         adapter = _fake_adapter(torch.ones((4, 5), dtype=torch.float32), fail_forward=True)
         image = Image.new("RGB", (5, 4))
@@ -134,6 +218,131 @@ class RelativeDepthModelErrorTests(unittest.TestCase):
         image = Image.new("RGB", (5, 4))
         with self.assertRaisesRegex(RelativeDepthOutputError, "shape mismatch"):
             adapter.predict_depth(image)
+
+
+class RelativeDepthAdapterCacheTests(unittest.TestCase):
+    def setUp(self) -> None:
+        relative_depth_adapter._DEFAULT_ADAPTER_CACHE.clear()
+
+    def tearDown(self) -> None:
+        relative_depth_adapter._DEFAULT_ADAPTER_CACHE.clear()
+
+    def test_predict_depth_reuses_one_cached_adapter(self) -> None:
+        calls: list[bool] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append(local_files_only)
+            return _fake_loaded_components()
+
+        image = Image.new("RGB", (5, 4))
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            depth_one, _ = predict_depth(image)
+            depth_two, _ = predict_depth(image)
+            adapter_one = _get_cached_default_adapter()
+            adapter_two = _get_cached_default_adapter()
+
+        self.assertEqual(calls, [True])
+        self.assertIs(adapter_one, adapter_two)
+        self.assertIs(adapter_one.model, adapter_two.model)
+        self.assertIs(adapter_one.processor, adapter_two.processor)
+        self.assertEqual(depth_one.shape, (4, 5))
+        self.assertEqual(depth_two.shape, (4, 5))
+
+    def test_different_cache_keys_create_separate_adapters(self) -> None:
+        calls: list[tuple[str, bool, str]] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append((self.device, local_files_only, self.model_id))
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            cpu_local = _get_cached_default_adapter(device="cpu", local_files_only=True)
+            cpu_download_opt_in = _get_cached_default_adapter(
+                device="cpu",
+                local_files_only=False,
+            )
+            alternate_model = _get_cached_default_adapter(
+                device="cpu",
+                local_files_only=True,
+                model_id="alternate/model",
+            )
+
+        self.assertIsNot(cpu_local, cpu_download_opt_in)
+        self.assertIsNot(cpu_local, alternate_model)
+        self.assertEqual(
+            calls,
+            [
+                ("cpu", True, DEFAULT_MODEL_ID),
+                ("cpu", False, DEFAULT_MODEL_ID),
+                ("cpu", True, "alternate/model"),
+            ],
+        )
+
+    def test_failed_load_is_not_cached_and_retry_can_succeed(self) -> None:
+        calls = 0
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise ModelLoadError("forced missing-cache failure")
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            with self.assertRaisesRegex(ModelLoadError, "forced missing-cache"):
+                _get_cached_default_adapter(device="cpu", local_files_only=True)
+            self.assertEqual(relative_depth_adapter._DEFAULT_ADAPTER_CACHE, {})
+            adapter = _get_cached_default_adapter(device="cpu", local_files_only=True)
+
+        self.assertIsInstance(adapter, DepthAnythingV2SmallAdapter)
+        self.assertEqual(calls, 2)
+
+    def test_adapter_and_loader_default_to_local_files_only(self) -> None:
+        calls: list[bool] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append(local_files_only)
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            DepthAnythingV2SmallAdapter(device="cpu")
+            load_default_adapter(device="cpu")
+            DepthAnythingV2SmallAdapter(device="cpu", local_files_only=False)
+            load_default_adapter(device="cpu", local_files_only=False)
+
+        self.assertEqual(calls, [True, True, False, False])
+
+    def test_injected_adapter_bypasses_default_cache(self) -> None:
+        adapter = _fake_adapter(torch.full((4, 5), 3.0, dtype=torch.float32))
+        image = Image.new("RGB", (5, 4))
+
+        with tempfile.TemporaryDirectory() as output_dir:
+            with patch.object(
+                DepthAnythingV2SmallAdapter,
+                "_load_model",
+                side_effect=AssertionError("default cache should not load"),
+            ):
+                result = write_depth_artifacts(image, output_dir, adapter=adapter)
+
+        self.assertTrue(np.array_equal(result.depth, np.full((4, 5), 3.0, dtype=np.float32)))
+        self.assertEqual(relative_depth_adapter._DEFAULT_ADAPTER_CACHE, {})
+
+    def test_write_depth_artifacts_uses_cached_adapter_when_none_supplied(self) -> None:
+        calls: list[bool] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append(local_files_only)
+            return _fake_loaded_components(torch.full((4, 5), 2.0, dtype=torch.float32))
+
+        image = Image.new("RGB", (5, 4))
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            with tempfile.TemporaryDirectory() as output_one:
+                result_one = write_depth_artifacts(image, output_one)
+            with tempfile.TemporaryDirectory() as output_two:
+                result_two = write_depth_artifacts(image, output_two)
+
+        self.assertEqual(calls, [True])
+        self.assertTrue(np.array_equal(result_one.depth, result_two.depth))
 
 
 class RelativeDepthCachedSmokeTest(unittest.TestCase):
@@ -161,6 +370,83 @@ class RelativeDepthCachedSmokeTest(unittest.TestCase):
         self.assertFalse(metadata.metric_depth)
         self.assertEqual(metadata.extra["depth_estimation_type"], "relative")
         self.assertEqual(metadata.extra["final_output_shape"], depth.shape)
+
+    def test_cached_offline_inference_uses_no_network_sockets(self) -> None:
+        if not SMOKE_IMAGE.exists():
+            self.skipTest(f"smoke image is unavailable: {SMOKE_IMAGE}")
+        if try_to_load_from_cache(DEFAULT_MODEL_ID, "config.json") is None:
+            self.skipTest(
+                f"{DEFAULT_MODEL_ID} is not cached locally; refusing to download in tests"
+            )
+
+        old_env = {
+            "HF_HUB_OFFLINE": os.environ.get("HF_HUB_OFFLINE"),
+            "TRANSFORMERS_OFFLINE": os.environ.get("TRANSFORMERS_OFFLINE"),
+        }
+        attempts = {"count": 0}
+        original_socket = socket.socket
+
+        class GuardedSocket(original_socket):
+            def __new__(cls, *args, **kwargs):
+                attempts["count"] += 1
+                raise RuntimeError("network socket blocked during offline test")
+
+        try:
+            os.environ["HF_HUB_OFFLINE"] = "1"
+            os.environ["TRANSFORMERS_OFFLINE"] = "1"
+            with Image.open(SMOKE_IMAGE) as opened:
+                image = opened.convert("RGB")
+            socket.socket = GuardedSocket
+            adapter = DepthAnythingV2SmallAdapter(device="auto", local_files_only=True)
+            depth, _ = adapter.predict_depth(image)
+        finally:
+            socket.socket = original_socket
+            for name, value in old_env.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
+
+        self.assertEqual(attempts["count"], 0)
+        self.assertEqual(depth.shape, (image.height, image.width))
+        self.assertEqual(depth.dtype, np.float32)
+        self.assertTrue(np.isfinite(depth).all())
+
+    def test_cpu_cached_inference_contract(self) -> None:
+        if not SMOKE_IMAGE.exists():
+            self.skipTest(f"smoke image is unavailable: {SMOKE_IMAGE}")
+        if try_to_load_from_cache(DEFAULT_MODEL_ID, "config.json") is None:
+            self.skipTest(
+                f"{DEFAULT_MODEL_ID} is not cached locally; refusing to download in tests"
+            )
+
+        adapter = DepthAnythingV2SmallAdapter(device="cpu", local_files_only=True)
+        with Image.open(SMOKE_IMAGE) as opened:
+            image = opened.convert("RGB")
+        depth, _ = adapter.predict_depth(image)
+
+        self.assertEqual(depth.shape, (image.height, image.width))
+        self.assertEqual(depth.dtype, np.float32)
+        self.assertTrue(np.isfinite(depth).all())
+
+    def test_gpu_cached_inference_contract_if_available(self) -> None:
+        if not torch.cuda.is_available():
+            self.skipTest("CUDA is unavailable")
+        if not SMOKE_IMAGE.exists():
+            self.skipTest(f"smoke image is unavailable: {SMOKE_IMAGE}")
+        if try_to_load_from_cache(DEFAULT_MODEL_ID, "config.json") is None:
+            self.skipTest(
+                f"{DEFAULT_MODEL_ID} is not cached locally; refusing to download in tests"
+            )
+
+        adapter = DepthAnythingV2SmallAdapter(device="cuda", local_files_only=True)
+        with Image.open(SMOKE_IMAGE) as opened:
+            image = opened.convert("RGB")
+        depth, _ = adapter.predict_depth(image)
+
+        self.assertEqual(depth.shape, (image.height, image.width))
+        self.assertEqual(depth.dtype, np.float32)
+        self.assertTrue(np.isfinite(depth).all())
 
 
 class RelativeDepthArtifactTests(unittest.TestCase):
