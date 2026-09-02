@@ -31,12 +31,21 @@ class GridDepthAdapter:
 
 
 def raster_bytes(array: np.ndarray, *, count: int, crs="EPSG:32643",
-                 transform=from_origin(500000, 2200000, 10, 10), nodata=None) -> bytes:
+                 transform=from_origin(500000, 2200000, 10, 10), nodata=None,
+                 vertical_units="metres", vertical_datum="NAVD88 / GEOID18",
+                 vertical_crs="EPSG:5703") -> bytes:
     height, width = array.shape[-2:]
     with MemoryFile() as memory:
         with memory.open(driver="GTiff", width=width, height=height, count=count,
                          dtype=str(array.dtype), crs=crs, transform=transform, nodata=nodata) as dataset:
             dataset.write(array if count > 1 else array.reshape(1, height, width))
+            if count == 1 and vertical_units:
+                dataset.set_band_unit(1, vertical_units)
+                dataset.update_tags(
+                    VERTICAL_UNITS=vertical_units,
+                    VERTICAL_DATUM=vertical_datum,
+                    VERTICAL_CRS=vertical_crs,
+                )
         return memory.read()
 
 
@@ -52,17 +61,33 @@ def test_known_linear_calibration_recovers_two_and_ten() -> None:
 def test_geotiff_and_terrain_exports_preserve_grid(tmp_path) -> None:
     elevation = np.array([[10, 11, 12], [13, np.nan, 15]], dtype=np.float32)
     transform = from_origin(500000, 2200000, 5, 5)
-    dsm_path = write_dsm(tmp_path / "calibrated_dsm.tif", elevation, rasterio.crs.CRS.from_epsg(32643), transform)
-    terrain_path = write_terrain_json(tmp_path / "terrain.json", elevation, rasterio.crs.CRS.from_epsg(32643), transform)
+    dsm_path = write_dsm(
+        tmp_path / "calibrated_dsm.tif", elevation,
+        rasterio.crs.CRS.from_epsg(32643), transform,
+        vertical_units="metres", vertical_datum="NAVD88 / GEOID18",
+        vertical_crs="EPSG:5703",
+    )
+    terrain_path = write_terrain_json(
+        tmp_path / "terrain.json", elevation,
+        rasterio.crs.CRS.from_epsg(32643), transform,
+        vertical_units="metres", vertical_datum="NAVD88 / GEOID18",
+        vertical_crs="EPSG:5703",
+    )
     with rasterio.open(dsm_path) as dsm:
         assert dsm.shape == elevation.shape
         assert dsm.crs.to_epsg() == 32643
         assert dsm.transform == transform
         assert dsm.dtypes[0] == "float32"
         assert dsm.nodata == -9999.0
+        assert dsm.units[0] == "metres"
+        assert dsm.tags()["VERTICAL_DATUM"] == "NAVD88 / GEOID18"
+        assert dsm.tags()["VERTICAL_CRS"] == "EPSG:5703"
     terrain = json.loads(terrain_path.read_text(encoding="utf-8"))
     assert terrain["elevation"][0] == [10.0, 11.0, 12.0]
     assert terrain["elevation"][1][1] is None
+    assert terrain["transform_order"] == "GDAL(c, a, b, f, d, e)"
+    assert terrain["vertical_units"] == "metres"
+    assert terrain["vertical_datum"] == "NAVD88 / GEOID18"
 
 
 def test_geotiff_reference_produces_metric_result_but_not_validation(monkeypatch) -> None:
@@ -88,6 +113,14 @@ def test_geotiff_reference_produces_metric_result_but_not_validation(monkeypatch
     assert result["validation"]["status"] == "skipped"
     assert result["validation"]["rmse"] is None
     assert result["calibration"]["fit_rmse_metres"] is not None
+    assert result["calibration"]["fit_scope"] == "calibration_fit"
+    assert result["calibration"]["fit_is_independent_validation"] is False
+    assert result["calibration"]["reference_units_verified"] is True
+    assert result["calibration"]["reference_vertical_units"] == "metres"
+    assert result["calibration"]["reference_vertical_datum"] == "NAVD88 / GEOID18"
+    assert result["calibration"]["transform_order"] == "Affine(a, b, c, d, e, f)"
+    assert result["evidence"]["summary"]["calibration"]["fit_scope"] == "calibration_fit"
+    assert result["evidence"]["summary"]["vertical_datum"] == "NAVD88 / GEOID18"
     for name in ("calibrated_dsm.tif", "terrain.json", "calibration.json"):
         assert client.get(f"/jobs/{job_id}/artifacts/{name}").status_code == 200
 
@@ -112,6 +145,57 @@ def test_calibration_failure_preserves_real_relative_depth(monkeypatch) -> None:
     assert result["terrain"]["mock"] is True
     assert client.get(f"/jobs/{job_id}/artifacts/depth.npy").status_code == 200
     assert client.get(f"/jobs/{job_id}/artifacts/calibrated_dsm.tif").status_code == 404
+
+
+@pytest.mark.parametrize("vertical_units", [None, "US survey foot"])
+def test_missing_or_non_metric_reference_units_fall_back_to_relative(
+    monkeypatch, vertical_units
+) -> None:
+    monkeypatch.setattr(depth_pipeline, "adapter_factory", lambda: GridDepthAdapter())
+    height, width = 4, 5
+    rgb = np.stack([np.full((height, width), value, dtype=np.uint8) for value in (40, 80, 120)])
+    dem = 2 * np.arange(width * height, dtype=np.float32).reshape(height, width) + 10
+    client = TestClient(app)
+    response = client.post("/process", files={
+        "file": ("source.tif", raster_bytes(rgb, count=3), "image/tiff"),
+        "reference_dem": (
+            "reference.tif",
+            raster_bytes(dem, count=1, vertical_units=vertical_units),
+            "image/tiff",
+        ),
+    })
+    result = client.get(f"/jobs/{response.json()['job_id']}/result").json()
+
+    assert result["depth"]["status"] == "succeeded"
+    assert result["calibration"]["status"] == "failed"
+    assert result["calibration"]["calibrated"] is False
+    assert result["calibration"]["units"] == "relative"
+    assert result["calibration"]["reference_units_verified"] is False
+    assert result["terrain"]["mock"] is True
+
+
+def test_projected_horizontal_units_are_reported_without_assuming_metres(monkeypatch) -> None:
+    monkeypatch.setattr(depth_pipeline, "adapter_factory", lambda: GridDepthAdapter())
+    height, width = 4, 5
+    rgb = np.stack([np.full((height, width), value, dtype=np.uint8) for value in (40, 80, 120)])
+    depth = np.arange(width * height, dtype=np.float32).reshape(height, width)
+    dem = 2 * depth + 10
+    response = TestClient(app).post("/process", files={
+        "file": (
+            "source-feet.tif",
+            raster_bytes(rgb, count=3, crs="EPSG:2230"),
+            "image/tiff",
+        ),
+        "reference_dem": (
+            "reference-feet.tif",
+            raster_bytes(dem, count=1, crs="EPSG:2230"),
+            "image/tiff",
+        ),
+    })
+    result = TestClient(app).get(f"/jobs/{response.json()['job_id']}/result").json()
+
+    assert "foot" in result["input"]["pixel_size"]["units"].lower()
+    assert "foot" in result["calibration"]["horizontal_units"].lower()
 
 
 def test_full_synthetic_geospatial_pipeline_with_independent_validation(monkeypatch) -> None:

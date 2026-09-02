@@ -42,7 +42,10 @@ def test_real_depth_pipeline_writes_contract_artifacts(monkeypatch) -> None:
     assert result["depth"]["mock"] is False
     assert (result["depth"]["height"], result["depth"]["width"]) == (5, 7)
     assert result["depth"]["units"] == "relative"
+    assert result["input"]["transform_order"] is None
     assert result["calibration"]["status"] == "skipped"
+    assert result["calibration"]["reference_units_verified"] is False
+    assert result["calibration"]["fit_is_independent_validation"] is False
     assert result["validation"]["status"] == "skipped"
     assert result["terrain"]["mock"] is True
     for name in ("depth.npy", "depth.png", "model_metadata.json"):

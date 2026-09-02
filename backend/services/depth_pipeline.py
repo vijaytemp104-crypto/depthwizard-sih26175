@@ -14,6 +14,8 @@ from PIL import Image
 os.environ.setdefault("HF_HOME", str(Path(__file__).resolve().parents[2] / "outputs" / ".hf_cache"))
 
 from backend.schemas.job import JobStatus, PipelineStage, StageStatus, StandardError
+from backend.services.ayush.export import DEFAULT_NODATA
+from backend.services.ayush.geospatial import horizontal_units
 from backend.services.ayush.pipeline import run_pipeline as run_ayush_pipeline
 from backend.services.job_store import InMemoryJobStore
 from backend.services.relative_depth_adapter import RelativeDepthAdapter, load_default_adapter, write_depth_artifacts
@@ -63,11 +65,24 @@ class DepthPipeline:
             "calibration": {"status": calibration["status"], "method": calibration["method"],
                             "reference_source": calibration["reference_source"],
                             "scale_a": calibration["scale_a"], "offset_b": calibration["offset_b"],
+                            "fit_scope": calibration.get("fit_scope"),
+                            "fit_rmse_metres": calibration.get("fit_rmse_metres"),
+                            "fit_r_squared": calibration.get("fit_r_squared"),
+                            "fit_is_independent_validation": False,
+                            "reference_vertical_units": calibration.get("reference_vertical_units"),
+                            "reference_vertical_datum": calibration.get("reference_vertical_datum"),
+                            "reference_vertical_crs": calibration.get("reference_vertical_crs"),
+                            "reference_units_verified": calibration.get("reference_units_verified"),
                             "artifact": "calibrated_dsm.tif" if calibration["calibrated"] else None},
             "validation": {key: validation.get(key) for key in (
                 "status", "reference_source", "rmse", "mae", "correlation", "valid_pixel_count", "reason")},
             "error_map_artifact": "error_map.tif" if validation["status"] == "succeeded" else None,
-            "crs": calibration.get("crs"), "units": calibration.get("units"),
+            "crs": calibration.get("crs"), "horizontal_units": calibration.get("horizontal_units"),
+            "vertical_units": calibration.get("units"),
+            "vertical_datum": calibration.get("vertical_datum"),
+            "vertical_crs": calibration.get("vertical_crs"),
+            "transform": calibration.get("transform"),
+            "transform_order": calibration.get("transform_order"),
             "confidence": None, "confidence_reason": "Confidence map is not implemented.",
             "calibration_fit_is_independent_validation": False,
             "warnings": calibration.get("warnings", []) + validation.get("warnings", []),
@@ -200,6 +215,11 @@ class DepthPipeline:
             if (terrain_json["height"], terrain_json["width"]) != tuple(dsm["shape"]):
                 raise ValueError("terrain.json grid does not match calibrated DSM orientation.")
             viewer = _viewer_terrain(terrain_json)
+            reference_metadata = fit["reference"]["metadata"]
+            output_metadata = fit["output"]
+            warnings = ["RMSE and R² below are calibration-fit diagnostics, not independent validation."]
+            if not reference_metadata.get("vertical_datum"):
+                warnings.append("Reference vertical datum is not encoded; only metre units were verified.")
             calibration = {
                 "status": "succeeded", "calibrated": True, "units": "metres",
                 "method": "linear E = aD + b (ordinary least squares)",
@@ -207,13 +227,27 @@ class DepthPipeline:
                 "scale_a": fit["coefficients"]["a"], "offset_b": fit["coefficients"]["b"],
                 "valid_anchor_count": fit["valid_pixels"], "crs": dsm["crs"],
                 "transform": dsm["transform"],
-                "warnings": ["RMSE and R² below are calibration-fit diagnostics, not independent validation."],
+                "transform_order": "Affine(a, b, c, d, e, f)",
+                "horizontal_units": output_metadata["horizontal_units"],
+                "vertical_datum": output_metadata.get("vertical_datum"),
+                "vertical_crs": output_metadata.get("vertical_crs"),
+                "reference_units_verified": fit["reference"]["vertical_units_verified"],
+                "reference_vertical_units": reference_metadata["vertical_units"],
+                "reference_vertical_datum": reference_metadata.get("vertical_datum"),
+                "reference_vertical_crs": reference_metadata.get("vertical_crs"),
+                "fit_scope": fit["fit_scope"],
+                "fit_is_independent_validation": fit["fit_is_independent_validation"],
+                "warnings": warnings,
                 "fit_rmse_metres": fit["rmse_metres"], "fit_r_squared": fit["r_squared"],
                 "reason": None,
             }
             terrain = {
                 "mock": False, "status": "succeeded", **viewer, "height_units": "metres",
                 "texture_artifact": None, "coordinate_mode": "geospatial", "crs": dsm["crs"],
+                "horizontal_units": output_metadata["horizontal_units"],
+                "vertical_datum": output_metadata.get("vertical_datum"),
+                "vertical_crs": output_metadata.get("vertical_crs"),
+                "transform_order": "Affine(a, b, c, d, e, f)",
                 "reason": None, "full_raster_width": terrain_json["width"],
                 "full_raster_height": terrain_json["height"],
             }
@@ -248,6 +282,11 @@ class DepthPipeline:
             "status": status, "calibrated": False, "units": "relative", "method": None,
             "reference_source": None, "scale_a": None, "offset_b": None,
             "valid_anchor_count": None, "crs": None, "transform": None, "warnings": [],
+            "transform_order": None, "horizontal_units": None,
+            "vertical_datum": None, "vertical_crs": None,
+            "reference_units_verified": False, "reference_vertical_units": None,
+            "reference_vertical_datum": None, "reference_vertical_crs": None,
+            "fit_scope": None, "fit_is_independent_validation": False,
             "fit_rmse_metres": None, "fit_r_squared": None, "reason": reason,
         }
         return calibration, terrain, ["mock_terrain.json"]
@@ -275,18 +314,20 @@ def _inspect_input(path: Path) -> dict:
                 "georeferenced": georeferenced,
                 "crs": source.crs.to_string() if georeferenced else None,
                 "transform": list(source.transform)[:6] if georeferenced else None,
+                "transform_order": "Affine(a, b, c, d, e, f)" if georeferenced else None,
                 "transform_gdal": list(source.transform.to_gdal()) if georeferenced else None,
                 "bounds": {"left": bounds.left, "bottom": bounds.bottom,
                            "right": bounds.right, "top": bounds.top},
                 "pixel_size": {"x": abs(source.res[0]), "y": abs(source.res[1]),
-                               "units": "metres" if source.crs and source.crs.is_projected else "crs_units"},
+                               "units": horizontal_units(source.crs)},
                 "nodata": source.nodata,
             }
     with Image.open(path) as source:
         width, height, channels = source.width, source.height, len(source.getbands())
         source.verify()
     return {"width": width, "height": height, "channels": channels, "georeferenced": False,
-            "crs": None, "transform": None, "transform_gdal": None, "bounds": None,
+            "crs": None, "transform": None, "transform_gdal": None,
+            "transform_order": None, "bounds": None,
             "pixel_size": None, "nodata": None}
 
 
@@ -314,8 +355,17 @@ def _verify_dsm(path: Path, input_meta: dict) -> dict:
             raise ValueError("Calibrated DSM shape does not match the source grid.")
         if np.isfinite(data).sum() < 2:
             raise ValueError("Calibrated DSM has insufficient finite pixels.")
+        if dsm.nodata != DEFAULT_NODATA:
+            raise ValueError("Calibrated DSM nodata metadata is invalid.")
+        if dsm.descriptions[0] != "calibrated_elevation_metres":
+            raise ValueError("Calibrated DSM band description is invalid.")
+        if str(dsm.units[0] or "").lower() not in {"m", "meter", "metre", "meters", "metres"}:
+            raise ValueError("Calibrated DSM must explicitly declare metre vertical units.")
+        tags = dsm.tags()
         return {"shape": list(data.shape), "crs": dsm.crs.to_string(),
-                "transform": list(dsm.transform)[:6], "nodata": dsm.nodata}
+                "transform": list(dsm.transform)[:6], "nodata": dsm.nodata,
+                "vertical_units": dsm.units[0], "vertical_datum": tags.get("VERTICAL_DATUM"),
+                "vertical_crs": tags.get("VERTICAL_CRS")}
 
 
 def _viewer_terrain(payload: dict, maximum: int = 128) -> dict:

@@ -22,6 +22,10 @@ class RasterMetadata:
     bounds: tuple[float, float, float, float]
     resolution: tuple[float, float]
     nodata: float | None
+    horizontal_units: str
+    vertical_units: str | None
+    vertical_datum: str | None
+    vertical_crs: str | None
 
     def to_dict(self) -> dict:
         return asdict(self)
@@ -32,6 +36,14 @@ def _metadata(dataset: rasterio.io.DatasetReader) -> RasterMetadata:
         raise ValueError("Reference DEM must declare a CRS")
     if dataset.count < 1:
         raise ValueError("Reference DEM has no raster bands")
+    tags = {str(key).upper(): str(value).strip() for key, value in dataset.tags().items()}
+    band_tags = {
+        str(key).upper(): str(value).strip() for key, value in dataset.tags(1).items()
+    }
+    unit = dataset.units[0] if dataset.units else None
+    vertical_units = unit or tags.get("VERTICAL_UNITS") or band_tags.get("VERTICAL_UNITS")
+    vertical_datum = tags.get("VERTICAL_DATUM") or band_tags.get("VERTICAL_DATUM")
+    vertical_crs = tags.get("VERTICAL_CRS") or band_tags.get("VERTICAL_CRS")
     return RasterMetadata(
         crs=dataset.crs.to_string(),
         transform=tuple(dataset.transform)[:6],
@@ -40,7 +52,32 @@ def _metadata(dataset: rasterio.io.DatasetReader) -> RasterMetadata:
         bounds=tuple(dataset.bounds),
         resolution=tuple(abs(v) for v in dataset.res),
         nodata=dataset.nodata,
+        horizontal_units=horizontal_units(dataset.crs),
+        vertical_units=vertical_units,
+        vertical_datum=vertical_datum,
+        vertical_crs=vertical_crs,
     )
+
+
+def horizontal_units(crs: CRS) -> str:
+    """Return factual horizontal units without assuming every projected CRS is metric."""
+    try:
+        units = crs.linear_units if crs.is_projected else crs.angular_units
+    except Exception:
+        return "unknown"
+    normalized = str(units or "unknown").strip()
+    return "metres" if normalized.lower() in {"m", "meter", "metre", "meters", "metres"} else normalized
+
+
+def verify_metric_reference(metadata: RasterMetadata) -> None:
+    """Reject calibration references whose elevation units are absent or non-metric."""
+    units = str(metadata.vertical_units or "").strip().lower()
+    if not units:
+        raise ValueError(
+            "Reference DEM must explicitly declare vertical units in band units or VERTICAL_UNITS metadata"
+        )
+    if units not in {"m", "meter", "metre", "meters", "metres"}:
+        raise ValueError(f"Reference DEM vertical units must be metres, got {metadata.vertical_units!r}")
 
 
 def load_dem(path: str | Path) -> tuple[np.ndarray, RasterMetadata]:
