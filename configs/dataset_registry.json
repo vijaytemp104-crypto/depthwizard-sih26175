@@ -1,0 +1,367 @@
+{
+  "schema_version": "1.0",
+  "protected_final_withheld_geographies": [
+    {
+      "geographic_identity_id": "us-co-boulder",
+      "reason": "Development data; never eligible for final withheld validation."
+    }
+  ],
+  "datasets": [
+    {
+      "dataset_id": "final-withheld-acadia-terrain-v1",
+      "dataset_version": "1.0",
+      "dataset_role": "final_withheld_validation",
+      "validation_type": "terrain",
+      "geographic_identity": {
+        "geographic_identity_id": "us-me-mount-desert-island-cadillac-mountain-final-v1",
+        "canonical_name": "Cadillac Mountain / central Mount Desert Island, Maine, United States",
+        "country_code": "US",
+        "admin1": "Maine",
+        "locality": "Mount Desert Island"
+      },
+      "provenance": {
+        "provider": "USDA FSA NAIP / NOAA Digital Coast and USGS 3DEP",
+        "source_dataset_id": "NAIP:m_4406847_nw_19_060_20210920+USGS_3DEP:USGS_LPC_ME_MidCoast_2021_B21_19TEK561911",
+        "rgb_product": {
+          "dataset": "2021 USDA NAIP 4-Band 8-Bit Imagery: Maine",
+          "product_id": "m_4406847_nw_19_060_20210920",
+          "acquired_on": "2021-09-20",
+          "source_crs": "EPSG:26919",
+          "source_resolution_m": 0.6
+        },
+        "reference_product": {
+          "dataset": "ME_MidCoast_2021_B21",
+          "work_unit": "ME_MidCoast_1_2021 / WU220045",
+          "product_id": "USGS_LPC_ME_MidCoast_2021_B21_19TEK561911",
+          "tile_id": "19TEK561911",
+          "acquisition_interval": [
+            "2021-05-09",
+            "2021-05-27"
+          ]
+        },
+        "provenance_report_path": "external/final_validation_data/acadia/metadata/README_ACADIA_FINAL_VALIDATION.md",
+        "checksum_manifest_path": "external/final_validation_data/checksums.json"
+      },
+      "independence": {
+        "attestation": "This fixed Acadia terrain dataset was selected and prepared without model output and is excluded from all development, calibration, selection, tuning, and qualitative comparison activity.",
+        "excluded_from": [
+          "model training",
+          "model selection",
+          "calibration-method selection",
+          "hyperparameter tuning",
+          "threshold tuning",
+          "architecture selection",
+          "smoothing-scale selection",
+          "qualitative model comparison"
+        ],
+        "used_for_development": false,
+        "used_for_calibration": false,
+        "eligible_for_final_withheld_validation": true
+      },
+      "rgb_descriptor": {
+        "artifact_uri_or_path": "external/final_validation_data/acadia/derived/acadia_rgb_crop.tif",
+        "format": "GeoTIFF",
+        "bands": "RGB",
+        "crs": "EPSG:6348",
+        "resolution_m": 0.6,
+        "transform": [
+          0.6,
+          0.0,
+          561000.0,
+          0.0,
+          -0.6,
+          4912500.0
+        ],
+        "bounds": [
+          561000.0,
+          4911000.0,
+          562500.0,
+          4912500.0
+        ],
+        "nodata": null,
+        "sha256": "c07307e06702064875e27e86daa8374001d6cc76e0df7c0ea30bcb15b1def98d"
+      },
+      "reference_descriptor": {
+        "artifact_uri_or_path": "external/final_validation_data/acadia/derived/acadia_terrain_dtm.tif",
+        "reference_type": "terrain DTM",
+        "format": "GeoTIFF",
+        "units": "metres",
+        "crs": "EPSG:6348",
+        "vertical_datum": "NAVD88 / GEOID18 (EPSG:5703)",
+        "resolution_m": 1.0,
+        "transform": [
+          1.0,
+          0.0,
+          561000.0,
+          0.0,
+          -1.0,
+          4912500.0
+        ],
+        "bounds": [
+          561000.0,
+          4911000.0,
+          562500.0,
+          4912500.0
+        ],
+        "nodata": -9999.0,
+        "sha256": "aa3234a0cbf044becc5490709e69365e954d99dc8c961f446b119fc9abe76d22"
+      },
+      "source_checksums": {
+        "original_rgb_sha256": "72db6c0179003b9d1fbdcb0e02cef1fe590c89dc56144558e0c74e03c161bea8",
+        "original_lidar_sha256": "6cb2fe359e5bccffbdc4eb288b70af054ebe6f4efa451327fa572e53a3e7b110"
+      },
+      "limitations": [
+        "Terrain validation only; this dataset must not be used for primary surface, canopy, DSM, or nDSM validation.",
+        "LiDAR was acquired 2021-05-09 through 2021-05-27 and RGB on 2021-09-20, creating an approximately 116-134 day canopy-season mismatch.",
+        "The DTM contains 1902637 directly supported cells and 347363 cells filled with bounded 10 m interpolation."
+      ],
+      "freeze": {
+        "status": "frozen",
+        "frozen_on": "2026-09-02",
+        "prohibited_model_performance_driven_changes": [
+          "location",
+          "source products",
+          "crop",
+          "grid",
+          "resolution",
+          "reference rasterization",
+          "interpolation",
+          "masking",
+          "nodata treatment",
+          "thresholds"
+        ],
+        "integrity_bug_policy": "Create a new dataset version and document the correction."
+      }
+    },
+    {
+      "dataset_id": "final-withheld-baltimore-terrain-surface-v1",
+      "dataset_version": "1.0",
+      "dataset_role": "final_withheld_validation",
+      "validation_type": "terrain + surface/nDSM",
+      "geographic_identity": {
+        "geographic_identity_id": "us-md-baltimore-downtown-final-v1",
+        "canonical_name": "Downtown Baltimore, Maryland, United States",
+        "country_code": "US",
+        "admin1": "Maryland",
+        "locality": "Baltimore",
+        "approved_wgs84_bounds": [
+          -76.6185,
+          39.2895,
+          -76.6122,
+          39.294
+        ]
+      },
+      "provenance": {
+        "provider": "Maryland iMAP / Maryland Department of Information Technology and USGS 3DEP",
+        "source_dataset_id": "Maryland_iMAP_ThreeInch_2025:tile_45290117/frame_3113-84718+USGS_3DEP:USGS_LPC_MD_4County_D24_18suj600500",
+        "rgb_product": {
+          "dataset": "Maryland Three Inch Imagery 2025",
+          "tile_id": "45290117",
+          "frame_id": "3113-84718",
+          "acquired_on": "2025-03-12",
+          "published_service_crs": "EPSG:3857",
+          "canonical_crs": "EPSG:6347",
+          "canonical_resolution_m": 0.0762
+        },
+        "reference_product": {
+          "dataset": "MD_4County_D24",
+          "work_unit": "MD_4County_2_D24",
+          "product_id": "USGS_LPC_MD_4County_D24_18suj600500",
+          "tile_id": "18suj600500",
+          "acquisition_interval": [
+            "2024-12-17",
+            "2024-12-30"
+          ]
+        },
+        "temporal_gap_days": [
+          72,
+          85
+        ],
+        "provenance_report_path": "external/final_validation_data/baltimore/metadata/README_BALTIMORE_FINAL_VALIDATION.md",
+        "checksum_manifest_path": "external/final_validation_data/checksums.json"
+      },
+      "independence": {
+        "attestation": "This fixed Baltimore terrain and surface/nDSM dataset was selected and prepared without model output and is excluded from all development, calibration, selection, tuning, and qualitative comparison activity.",
+        "excluded_from": [
+          "model training",
+          "model selection",
+          "calibration-method selection",
+          "hyperparameter tuning",
+          "threshold tuning",
+          "architecture selection",
+          "smoothing-scale selection",
+          "qualitative model comparison"
+        ],
+        "used_for_development": false,
+        "used_for_calibration": false,
+        "eligible_for_final_withheld_validation": true
+      },
+      "rgb_descriptor": {
+        "artifact_uri_or_path": "external/final_validation_data/baltimore/derived/baltimore_rgb_crop.tif",
+        "format": "GeoTIFF",
+        "bands": "RGB",
+        "crs": "EPSG:6347",
+        "resolution_m": 0.0762,
+        "transform": [
+          0.0762,
+          0.0,
+          360420.3612,
+          0.0,
+          -0.0762,
+          4350651.573
+        ],
+        "bounds": [
+          360420.3612,
+          4350142.3284,
+          360972.735,
+          4350651.573
+        ],
+        "nodata": null,
+        "sha256": "e93d4d4a805abf4c948c7d75189c15100a4e5aa16e807b455a20ca6a27afbae1"
+      },
+      "reference_descriptor": {
+        "artifact_uri_or_path": "external/final_validation_data/baltimore/derived/baltimore_dtm.tif",
+        "reference_type": "terrain DTM with co-registered DSM and nDSM",
+        "format": "GeoTIFF",
+        "units": "metres",
+        "crs": "EPSG:6347",
+        "vertical_datum": "NAVD88 / GEOID18 (EPSG:5703)",
+        "resolution_m": 1.0,
+        "transform": [
+          1.0,
+          0.0,
+          360420.0,
+          0.0,
+          -1.0,
+          4350652.0
+        ],
+        "bounds": [
+          360420.0,
+          4350142.0,
+          360973.0,
+          4350652.0
+        ],
+        "nodata": -9999.0,
+        "artifacts": {
+          "dtm": {
+            "artifact_uri_or_path": "external/final_validation_data/baltimore/derived/baltimore_dtm.tif",
+            "sha256": "f39e91afe8d243b2a47a342be40480d80db40cf0f55dd8004a033a850a581fa8"
+          },
+          "dsm": {
+            "artifact_uri_or_path": "external/final_validation_data/baltimore/derived/baltimore_dsm.tif",
+            "sha256": "781d8c2347e5b30a0c1363a9c7b524757a8854f7d53c5beefacc283cb5d5c811"
+          },
+          "ndsm": {
+            "artifact_uri_or_path": "external/final_validation_data/baltimore/derived/baltimore_ndsm.tif",
+            "sha256": "235221ed7d6c1b92666cf4bb6d9488bc802da34b801592da19b039cfbd207a18"
+          }
+        }
+      },
+      "source_checksums": {
+        "original_lidar_sha256": "d9bc657dac4d5f53a55599bee08867cae6573dc519f2c0ca02920ea5c56e5a22"
+      },
+      "limitations": [
+        "RGB follows LiDAR by 72-85 days; construction, demolition, vehicles, vegetation, and other urban change remain possible.",
+        "The DTM contains 126566 directly supported ground cells and 155464 cells filled with bounded 50 m interpolation.",
+        "DSM voids remain nodata; no DSM interpolation was performed.",
+        "The nDSM retains 2454 negative values without clipping."
+      ],
+      "freeze": {
+        "status": "frozen",
+        "frozen_on": "2026-09-02",
+        "prohibited_model_performance_driven_changes": [
+          "location",
+          "source products",
+          "crop",
+          "grid",
+          "resolution",
+          "reference rasterization",
+          "interpolation",
+          "masking",
+          "nodata treatment",
+          "thresholds"
+        ],
+        "integrity_bug_policy": "Create a new dataset version and document the correction."
+      }
+    },
+    {
+      "dataset_id": "final-evaluation-calibration-copernicus-glo30-v1",
+      "dataset_version": "1.0",
+      "dataset_role": "calibration",
+      "purpose": "final_evaluation_calibration_only",
+      "geographic_identity": {
+        "geographic_identity_id": "us-me-acadia-us-md-baltimore-copernicus-glo30-calibration-v1",
+        "canonical_name": "Acadia, Maine and Baltimore, Maryland final-evaluation calibration footprints",
+        "country_code": "US"
+      },
+      "provenance": {
+        "provider": "Copernicus Programme / European Space Agency",
+        "source_dataset_id": "COP-DEM_GLO-30_PUBLIC_2021:N44W069+N39W077",
+        "dataset": "Copernicus DEM GLO-30 Public",
+        "product_type": "Digital Surface Model",
+        "release": "2021",
+        "source_acquisition_interval": [
+          "2011-01-01",
+          "2015-12-31"
+        ],
+        "doi": "https://doi.org/10.5270/ESA-c5d3d65",
+        "protocol_manifest_path": "external/final_validation_calibration_data/calibration_manifest.json",
+        "checksum_manifest_path": "external/final_validation_calibration_data/checksums.json"
+      },
+      "independence": {
+        "attestation": "The Copernicus GLO-30 calibration source was selected before withheld-scene inference, is independent of the withheld 2021 Acadia and 2024 Baltimore LiDAR, and is used only to fit the frozen affine calibration.",
+        "used_for_development": false,
+        "used_for_calibration": true,
+        "eligible_for_final_withheld_validation": false,
+        "withheld_lidar_used_for_fitting": false,
+        "model_output_inspected_during_selection": false
+      },
+      "calibration_method": {
+        "method": "ordinary_least_squares_affine",
+        "equation": "metric = a * relative_depth + b",
+        "nonlinear_fitting": false,
+        "per_model_tuning": false,
+        "status": "frozen before first withheld inference"
+      },
+      "vertical_reference": {
+        "source": "EPSG:3855 EGM2008 height",
+        "prepared": "EPSG:5703 NAVD88 height / GEOID18",
+        "units": "metres",
+        "method": "EPSG/PROJ compound-CRS grid transformation"
+      },
+      "artifacts": {
+        "acadia": {
+          "artifact_uri_or_path": "external/final_validation_calibration_data/acadia/acadia_copernicus_glo30_calibration_navd88.tif",
+          "source_tile_id": "Copernicus_DSM_COG_10_N44_00_W069_00_DEM",
+          "crs": "EPSG:6348",
+          "vertical_datum": "NAVD88 / GEOID18 (EPSG:5703)",
+          "units": "metres",
+          "resolution_m": 30.0,
+          "sha256": "53a123f035f2850afb74bd4a35ddcfdfeebc62a4e406bb1ee75f0baeb7d4b612"
+        },
+        "baltimore": {
+          "artifact_uri_or_path": "external/final_validation_calibration_data/baltimore/baltimore_copernicus_glo30_calibration_navd88.tif",
+          "source_tile_id": "Copernicus_DSM_COG_10_N39_00_W077_00_DEM",
+          "crs": "EPSG:6347",
+          "vertical_datum": "NAVD88 / GEOID18 (EPSG:5703)",
+          "units": "metres",
+          "resolution_m": 30.0,
+          "sha256": "6f24c066b6240d6b141681fda37b473331c6dce3de469c2c292ab537a7d9a1fa"
+        }
+      },
+      "freeze": {
+        "status": "frozen",
+        "frozen_on": "2026-09-02",
+        "prohibited_model_performance_driven_changes": [
+          "calibration source",
+          "calibration crop",
+          "calibration grid",
+          "calibration method",
+          "vertical transformation",
+          "masking",
+          "nodata treatment"
+        ]
+      }
+    }
+  ]
+}
