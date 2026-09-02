@@ -1,6 +1,6 @@
 # Judge Q&A
 
-**Why not just use Depth Anything?** It produces useful relative structure, but not georeferenced metric elevation or independent accuracy evidence. DepthWizard adds guarded calibration, validation, artifacts, and inspection.
+**Why not just use Depth Anything?** It produces useful relative structure, but not georeferenced metric elevation or independent accuracy evidence. ChakraVIEW adds guarded calibration, validation, artifacts, and inspection.
 
 **Why is PNG/JPG not metric?** A monocular image has scale/offset ambiguity and lacks a geospatial grid. Its values are relative arbitrary units.
 

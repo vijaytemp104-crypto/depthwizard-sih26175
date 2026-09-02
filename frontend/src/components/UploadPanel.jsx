@@ -42,11 +42,11 @@ function UploadPanel({ file, referenceFile, validationReferenceFile, onFileSelec
         <h3>Drop a single image here</h3>
         <p>or browse a local file to inspect its basic metadata</p>
         <button className="primary-button" type="button" onClick={() => inputRef.current?.click()}>Select image <span aria-hidden="true">↗</span></button>
-        <small>PNG · JPG/JPEG · GeoTIFF/TIF/TIFF</small>
+        <small>PNG / JPG for relative depth · GeoTIFF for georeferenced terrain analysis</small>
       </div>
       <div className="run-row">
-        <div><strong>{file ? 'Ready for demo upload' : 'Select an image to continue'}</strong><small>{file ? file.name : 'No file selected'}</small></div>
-        <button className="primary-button" type="button" disabled={!file || busy} onClick={onRun}>{busy ? 'Running demo…' : 'Run demo pipeline'} <span aria-hidden="true">→</span></button>
+        <div><strong>{file ? 'Ready for terrain analysis' : 'Select an image to continue'}</strong><small>{file ? file.name : 'No file selected'}</small></div>
+        <button className="primary-button" type="button" disabled={!file || busy} onClick={onRun}>{busy ? 'Analyzing terrain…' : 'Analyze Terrain'} <span aria-hidden="true">→</span></button>
       </div>
       <div className="mode-row">
         <article><span className="mode-icon">R</span><div><strong>Relative mode</strong><p>Ordinary PNG/JPG inputs remain in arbitrary relative units unless calibration evidence is supplied.</p></div></article>

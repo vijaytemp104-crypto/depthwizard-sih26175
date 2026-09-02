@@ -3,7 +3,7 @@ import React from 'react'
 function WorkflowStepper({ stages, stageStates }) {
   const keys = ['ingest', 'depth', 'calibration', 'validation', 'terrain', 'evidence']
   return (
-    <nav className="workflow" aria-label="DepthWizard workflow">
+    <nav className="workflow" aria-label="ChakraVIEW workflow">
       <div className="workflow-track" aria-hidden="true" />
       {stages.map((stage, index) => {
         const backendState = stageStates[keys[index]] || 'waiting'

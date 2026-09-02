@@ -1,4 +1,4 @@
-# DepthWizard architecture
+# ChakraVIEW architecture
 
 ## End-to-end flow
 

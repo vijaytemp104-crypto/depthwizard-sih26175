@@ -1,4 +1,4 @@
-# DepthWizard Baseline Coverage
+# ChakraVIEW Baseline Coverage
 
 Checkpoint 11 freezes the integrated software baseline. Synthetic tests below prove software behavior only; they are not real-world accuracy claims.
 

@@ -25,7 +25,7 @@ async function request(path, options) {
     return await readResponse(await fetch(`${API_BASE_URL}${path}`, options))
   } catch (error) {
     if (error instanceof ApiError) throw error
-    throw new ApiError('The DepthWizard API is unavailable. Start the backend and try again.')
+    throw new ApiError('The ChakraVIEW service is unavailable. Start the backend and try again.')
   }
 }
 

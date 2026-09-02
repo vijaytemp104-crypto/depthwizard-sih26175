@@ -20,20 +20,20 @@ const stages = [
 ]
 
 const futureStages = [
-  { index: '02', eyebrow: 'Relative surface', title: 'Depth', description: 'A source-grid depth layer and model metadata will appear here after inference is integrated.' },
-  { index: '03', eyebrow: 'Metric alignment', title: 'Calibration / DSM', description: 'Calibration evidence and geospatial DSM artifacts will be shown only when they legitimately exist.' },
-  { index: '04', eyebrow: 'Independent reference', title: 'Proof / Validation', description: 'RMSE, MAE and correlation remain absent until an independent elevation reference is available.' },
-  { index: '05', eyebrow: 'Spatial inspection', title: '3D MissionView', description: 'This workspace is reserved for a future textured terrain flythrough and measurement tools.' },
-  { index: '06', eyebrow: 'Traceable delivery', title: 'Downloads / Evidence', description: 'Verified artifacts, provenance and evidence exports will be collected here after processing.' },
+  { index: '02', eyebrow: 'Relative surface', title: 'Depth', description: 'A source-grid relative depth layer and model metadata will appear here after depth extraction.' },
+  { index: '03', eyebrow: 'Metric alignment', title: 'Calibration / DSM', description: 'Calibration evidence and geospatial DSM artifacts will be shown when reference elevation data is provided.' },
+  { index: '04', eyebrow: 'Independent reference', title: 'Proof / Validation', description: 'RMSE, MAE and correlation metrics appear when an independent validation reference is supplied.' },
+  { index: '05', eyebrow: 'Spatial inspection', title: '3D MissionView', description: 'Interactive 3D terrain visualizer with flythrough navigation and elevation/slope measurement tools.' },
+  { index: '06', eyebrow: 'Traceable delivery', title: 'Downloads / Evidence', description: 'Verified artifacts, provenance logs, and evidence exports will be collected here after processing.' },
 ]
 
 const stageKeys = ['ingest', 'depth', 'calibration', 'validation', 'terrain', 'evidence']
 
 const resultCopy = {
   depth: { label: 'REAL DEPTH', title: 'Depth', done: 'Relative monocular inference — not metric elevation' },
-  calibration: { label: 'SKIPPED', title: 'Calibration / DSM', done: 'Skipped — awaiting calibration module' },
-  validation: { label: 'SKIPPED', title: 'Proof / Validation', done: 'Skipped — awaiting independent validation' },
-  terrain: { label: 'PLACEHOLDER', title: '3D MissionView', done: 'Synthetic 2×2 unitless grid only — no terrain or elevation output' },
+  calibration: { label: 'SKIPPED', title: 'Calibration / DSM', done: 'Awaiting calibration reference' },
+  validation: { label: 'SKIPPED', title: 'Proof / Validation', done: 'Awaiting independent validation reference' },
+  terrain: { label: 'SYNTHETIC', title: '3D MissionView', done: 'Awaiting terrain pipeline output' },
   evidence: { label: 'PROVENANCE', title: 'Downloads / Evidence', done: 'Real depth model provenance; not independent validation' },
 }
 
@@ -155,9 +155,9 @@ function App() {
       <main>
         <section className="intro" aria-labelledby="workspace-title">
           <div className="intro-copy">
-            <p className="kicker"><span>SIH26175</span> · Single-view height estimation</p>
-            <h1 id="workspace-title">From overhead imagery to <em>defensible</em> terrain evidence.</h1>
-            <p className="intro-lede">A transparent scientific workflow for relative depth, evidence-based calibration, independent validation and future 3D mission review.</p>
+            <p className="kicker"><span>SIH26175</span> · AI-Powered 3D Terrain Intelligence for Disaster Management</p>
+            <h1 id="workspace-title">From <em>Orbit</em> to Action.</h1>
+            <p className="intro-lede">Rapid elevation & slope analysis for landslide assessment, flash-flood terrain assessment, GLOF risk inspection, and emergency terrain accessibility — backed by transparent scientific calibration and independent validation.</p>
           </div>
           <aside className="principle-card" aria-label="Core scientific principle">
             <span className="principle-number">01</span>
@@ -182,7 +182,7 @@ function App() {
             <FileSummary file={selectedFile} onClear={() => setSelectedFile(null)} />
             <section className="flow-card" aria-labelledby="future-flow-title">
               <div className="section-heading compact">
-                <div><p className="micro-label">Future pipeline</p><h2 id="future-flow-title">What happens next</h2></div>
+                <div><p className="micro-label">Pipeline Lifecycle</p><h2 id="future-flow-title">Execution Pipeline</h2></div>
                 <span className={job ? 'active-tag' : 'not-live-tag'}>{job ? job.job_status : 'Not started'}</span>
               </div>
               <ol className="flow-list">
@@ -204,8 +204,8 @@ function App() {
 
         <section className="future-section" aria-labelledby="future-stages-title">
           <div className="section-heading">
-            <div><p className="micro-label">Downstream workspaces</p><h2 id="future-stages-title">Built for the full mission workflow</h2></div>
-            <p>Each surface remains deliberately empty until real processing is connected.</p>
+            <div><p className="micro-label">Spatial Workspaces</p><h2 id="future-stages-title">Built for disaster mission workflows</h2></div>
+            <p>Each workspace updates dynamically as processing stages complete.</p>
           </div>
           <div className="stage-grid">
             {futureCards.map((stage) => stage.title === 'Depth'
@@ -221,7 +221,7 @@ function App() {
         </section>
       </main>
 
-      <footer><span>DepthWizard · Smart India Hackathon 2026</span><span>Relative depth · No metric claim without calibration</span></footer>
+      <footer><span>ChakraVIEW · Smart India Hackathon 2026</span><span>Relative depth · No metric claim without calibration</span></footer>
     </div>
   )
 }

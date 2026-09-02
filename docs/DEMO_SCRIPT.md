@@ -1,6 +1,8 @@
-# Judge demo script (2–4 minutes)
+# ChakraVIEW judge demo script (2–4 minutes)
 
-1. **Problem (15s):** “A single overhead image gives visual structure, not defensible metric elevation. DepthWizard keeps that boundary visible.”
+**From Orbit to Action.**
+
+1. **Problem (15s):** “A single overhead image gives visual structure, not defensible metric elevation. ChakraVIEW keeps that boundary visible.”
 2. **Relative depth (25s):** Upload `demo_rgb.png`. Show the REAL Depth Anything V2 Small result and its `RELATIVE / NOT METRIC` label. Arbitrary values cannot be read as metres.
 3. **Geospatial input (25s):** Upload `demo_geotiff.tif`. Point out preserved CRS, transform, resolution, dimensions, and nodata.
 4. **Metric calibration (30s):** Add `demo_calibration_dem.tif`. Show the calibrated DSM and scale/offset. Describe fit RMSE/R² as calibration diagnostics—not final accuracy.

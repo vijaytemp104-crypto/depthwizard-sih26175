@@ -1,4 +1,10 @@
-# DepthWizard
+# ChakraVIEW
+
+**From Orbit to Action.**
+
+**AI-Powered 3D Terrain Intelligence for Disaster Management**
+
+Smart India Hackathon problem statement: **SIH26175**
 
 ## Problem
 
@@ -6,7 +12,7 @@ Single overhead images do not directly provide defensible metric terrain. Monocu
 
 ## What the system does
 
-DepthWizard accepts PNG/JPG imagery or an RGB GeoTIFF, runs Depth Anything V2 Small, and preserves relative output as explicitly non-metric. For a georeferenced GeoTIFF, a compatible elevation reference can fit a metric DSM. A different withheld raster can then independently validate that DSM. The application exposes artifacts, provenance, and an interactive Three.js MissionView.
+ChakraVIEW accepts PNG/JPG imagery or an RGB GeoTIFF, runs Depth Anything V2 Small, and preserves relative output as explicitly non-metric. For a georeferenced GeoTIFF, a compatible elevation reference can fit a metric DSM. A different withheld raster can then independently validate that DSM. The application exposes artifacts, provenance, and an interactive Three.js MissionView.
 
 ## Architecture
 
