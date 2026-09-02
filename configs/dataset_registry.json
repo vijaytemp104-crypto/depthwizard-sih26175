@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "protected_final_withheld_geographies": [
+    {
+      "geographic_identity_id": "us-co-boulder",
+      "reason": "Development data; never eligible for final withheld validation."
+    }
+  ],
+  "datasets": []
+}
