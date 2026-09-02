@@ -278,6 +278,49 @@ class RelativeDepthAdapterCacheTests(unittest.TestCase):
             ],
         )
 
+    def test_load_default_adapter_reuses_same_cache_key(self) -> None:
+        calls: list[bool] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append(local_files_only)
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            first = load_default_adapter(device="cpu", local_files_only=True)
+            second = load_default_adapter(device="cpu", local_files_only=True)
+
+        self.assertIs(first, second)
+        self.assertIs(first.model, second.model)
+        self.assertIs(first.processor, second.processor)
+        self.assertEqual(calls, [True])
+
+    def test_load_default_adapter_separates_relevant_cache_keys(self) -> None:
+        calls: list[tuple[str, bool, str]] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append((self.device, local_files_only, self.model_id))
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            cpu_local = load_default_adapter(device="cpu", local_files_only=True)
+            cpu_download_opt_in = load_default_adapter(device="cpu", local_files_only=False)
+            alternate_model = load_default_adapter(
+                device="cpu",
+                local_files_only=True,
+                model_id="alternate/model",
+            )
+
+        self.assertIsNot(cpu_local, cpu_download_opt_in)
+        self.assertIsNot(cpu_local, alternate_model)
+        self.assertEqual(
+            calls,
+            [
+                ("cpu", True, DEFAULT_MODEL_ID),
+                ("cpu", False, DEFAULT_MODEL_ID),
+                ("cpu", True, "alternate/model"),
+            ],
+        )
+
     def test_failed_load_is_not_cached_and_retry_can_succeed(self) -> None:
         calls = 0
 
@@ -296,6 +339,40 @@ class RelativeDepthAdapterCacheTests(unittest.TestCase):
 
         self.assertIsInstance(adapter, DepthAnythingV2SmallAdapter)
         self.assertEqual(calls, 2)
+
+    def test_load_default_adapter_failed_load_is_not_cached_and_retry_can_succeed(self) -> None:
+        calls = 0
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            nonlocal calls
+            calls += 1
+            if calls == 1:
+                raise ModelLoadError("forced missing-cache failure")
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            with self.assertRaisesRegex(ModelLoadError, "forced missing-cache"):
+                load_default_adapter(device="cpu", local_files_only=True)
+            self.assertEqual(relative_depth_adapter._DEFAULT_ADAPTER_CACHE, {})
+            adapter = load_default_adapter(device="cpu", local_files_only=True)
+
+        self.assertIsInstance(adapter, DepthAnythingV2SmallAdapter)
+        self.assertEqual(calls, 2)
+
+    def test_direct_adapter_construction_remains_fresh(self) -> None:
+        calls: list[int] = []
+
+        def fake_load(self: DepthAnythingV2SmallAdapter, local_files_only: bool) -> LoadedDepthAnythingV2Small:
+            calls.append(id(self))
+            return _fake_loaded_components()
+
+        with patch.object(DepthAnythingV2SmallAdapter, "_load_model", fake_load):
+            first = DepthAnythingV2SmallAdapter(device="cpu")
+            second = DepthAnythingV2SmallAdapter(device="cpu")
+
+        self.assertIsNot(first, second)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(relative_depth_adapter._DEFAULT_ADAPTER_CACHE, {})
 
     def test_adapter_and_loader_default_to_local_files_only(self) -> None:
         calls: list[bool] = []

@@ -270,11 +270,13 @@ class DepthAnythingV2SmallAdapter:
 def load_default_adapter(
     device: str = "auto",
     local_files_only: bool = True,
+    model_id: str = DEFAULT_MODEL_ID,
 ) -> DepthAnythingV2SmallAdapter:
     """Load the selected Depth Anything V2 Small relative-depth adapter."""
 
-    return DepthAnythingV2SmallAdapter(
+    return _get_cached_default_adapter(
         device=device,
+        model_id=model_id,
         local_files_only=local_files_only,
     )
 
