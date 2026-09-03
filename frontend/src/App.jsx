@@ -147,6 +147,12 @@ function App() {
       : job.job_status === 'succeeded' && !result
         ? 'loading'
         : job.job_status
+  const previewArtifact = result?.input?.texture_preview?.artifact
+  const missionTextureUrl = previewArtifact && job?.job_id
+    ? artifactUrl(job.job_id, previewArtifact)
+    : ['tif', 'tiff'].includes(result?.input?.file_type)
+      ? null
+      : textureUrl
 
   return (
     <div className="app-shell">
@@ -215,7 +221,7 @@ function App() {
               : stage.title === 'Proof / Validation'
                 ? <ValidationResultCard key={stage.title} validation={result?.validation} evidence={result?.evidence} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
               : stage.title === '3D MissionView'
-                ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={textureUrl} mock={result?.terrain ? result.terrain.mock : true} state={missionState} errorMessage={error} />
+                ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={missionTextureUrl} mock={result?.terrain ? result.terrain.mock : true} state={missionState} errorMessage={error} />
                 : <StageCard key={stage.title} {...stage} />)}
           </div>
         </section>

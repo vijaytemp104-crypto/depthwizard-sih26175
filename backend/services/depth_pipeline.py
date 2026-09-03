@@ -37,6 +37,7 @@ class DepthPipeline:
             self.store.update_job_status(job_id, JobStatus.RUNNING)
             self.store.update_stage_status(job_id, PipelineStage.INGEST, StageStatus.RUNNING)
             input_meta = _inspect_input(input_path)
+            texture_preview = _write_rgb_texture_preview(input_path, job_dir / "input_preview.png")
             width, height = input_meta["width"], input_meta["height"]
             self.store.update_stage_status(job_id, PipelineStage.INGEST, StageStatus.SUCCEEDED,
                 message="RGB source image and available geospatial metadata verified.")
@@ -59,7 +60,8 @@ class DepthPipeline:
         self.store.update_stage_status(job_id, PipelineStage.EVIDENCE, StageStatus.RUNNING)
         evidence = {
             "input": {"filename": original_filename, "file_type": input_path.suffix.lower().lstrip("."),
-                      "georeferenced": input_meta["georeferenced"]},
+                      "georeferenced": input_meta["georeferenced"],
+                      "texture_preview": texture_preview},
             "depth": {"status": "succeeded", "mode": "relative", "model": model_meta.get("model_name"),
                       "checkpoint": model_meta.get("checkpoint"), "artifact": "depth.npy"},
             "calibration": {"status": calibration["status"], "method": calibration["method"],
@@ -94,7 +96,9 @@ class DepthPipeline:
         job = self.store.update_job_status(job_id, JobStatus.SUCCEEDED)
         if job is None:
             return
-        names = ["depth.npy", "depth.png", "model_metadata.json", *extra_names, "evidence_passport.json"]
+        preview_names = [texture_preview["artifact"]] if texture_preview["artifact"] else []
+        names = ["depth.npy", "depth.png", "model_metadata.json", *preview_names,
+                 *extra_names, "evidence_passport.json"]
         relative = {name: f"outputs/{job_id}/{name}" for name in names}
         calibration["artifacts"] = {
             "calibrated_dsm": relative.get("calibrated_dsm.tif"),
@@ -118,6 +122,7 @@ class DepthPipeline:
                 "file_type": input_path.suffix.lower().lstrip("."),
                 **{key: value for key, value in input_meta.items() if key != "transform_gdal"},
                 "artifact_path": f"outputs/{job_id}/input/{original_filename}",
+                "texture_preview": texture_preview,
             },
             "stages": {stage.value: state.model_dump(mode="json") for stage, state in job.stages.items()},
             "depth": {
@@ -329,6 +334,69 @@ def _inspect_input(path: Path) -> dict:
             "crs": None, "transform": None, "transform_gdal": None,
             "transform_order": None, "bounds": None,
             "pixel_size": None, "nodata": None}
+
+
+def _write_rgb_texture_preview(input_path: Path, output_path: Path) -> dict:
+    """Write a browser texture for GeoTIFF display without changing scientific rasters."""
+    metadata = {
+        "status": "not_required",
+        "artifact": None,
+        "role": "display_texture_only",
+        "scientific_raster": False,
+    }
+    if input_path.suffix.lower() not in {".tif", ".tiff"}:
+        return metadata
+
+    try:
+        import numpy as np
+        import rasterio
+
+        with rasterio.open(input_path) as source:
+            if source.count < 3:
+                raise ValueError("Source GeoTIFF has fewer than three visible bands.")
+            source_dtype = np.dtype(source.dtypes[0])
+            bands = source.read((1, 2, 3), masked=True)
+
+        values = np.ma.filled(bands, 0)
+        invalid = np.any(np.ma.getmaskarray(bands), axis=0)
+        if source_dtype == np.dtype("uint8"):
+            display = np.clip(values, 0, 255).astype(np.uint8)
+            conversion = {"method": "none", "detail": "Source UInt8 RGB values preserved."}
+        else:
+            display = np.zeros(values.shape, dtype=np.uint8)
+            band_ranges = []
+            for index in range(3):
+                valid = ~np.ma.getmaskarray(bands[index]) & np.isfinite(values[index])
+                if not np.any(valid):
+                    raise ValueError(f"RGB band {index + 1} has no finite display pixels.")
+                low = float(np.min(values[index][valid]))
+                high = float(np.max(values[index][valid]))
+                band_ranges.append({"band": index + 1, "minimum": low, "maximum": high})
+                if high > low:
+                    scaled = (values[index].astype(np.float64) - low) * (255.0 / (high - low))
+                    display[index] = np.clip(scaled, 0, 255).astype(np.uint8)
+            conversion = {
+                "method": "per_band_finite_min_max",
+                "detail": "Deterministic display-only conversion to UInt8.",
+                "band_ranges": band_ranges,
+            }
+        display[:, invalid] = 0
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        Image.fromarray(np.moveaxis(display, 0, -1), mode="RGB").save(output_path, format="PNG")
+        return {
+            **metadata,
+            "status": "succeeded",
+            "artifact": output_path.name,
+            "source_bands": [1, 2, 3],
+            "source_dtype": str(source_dtype),
+            "display_conversion": conversion,
+        }
+    except Exception:
+        return {
+            **metadata,
+            "status": "unavailable",
+            "reason": "A browser-compatible RGB display preview could not be generated.",
+        }
 
 
 def _sha256(path: Path) -> str:
