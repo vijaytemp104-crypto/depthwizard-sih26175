@@ -1,43 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Header from './components/Header.jsx'
-import WorkflowStepper from './components/WorkflowStepper.jsx'
+import SidebarRail from './components/SidebarRail.jsx'
+import SpatialDrawer from './components/SpatialDrawer.jsx'
 import UploadPanel from './components/UploadPanel.jsx'
-import FileSummary from './components/FileSummary.jsx'
-import StageCard from './components/StageCard.jsx'
-import DepthResultCard from './components/DepthResultCard.jsx'
-import CalibrationResultCard from './components/CalibrationResultCard.jsx'
-import ValidationResultCard from './components/ValidationResultCard.jsx'
+import ProcessingWorkspace from './components/ProcessingWorkspace.jsx'
 import MissionView from './components/MissionViewAnalysis.jsx'
+import ValidationWorkspace from './components/ValidationWorkspace.jsx'
+import EvidencePassportWorkspace from './components/EvidencePassportWorkspace.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
 
-const stages = [
-  { name: 'Input', detail: 'Single RGB image' },
-  { name: 'Depth', detail: 'Relative surface' },
-  { name: 'Calibration', detail: 'Metric alignment' },
-  { name: 'Validation', detail: 'Independent proof' },
-  { name: 'MissionView', detail: 'Textured 3D' },
-  { name: 'Evidence', detail: 'Artifacts & provenance' },
-]
-
-const futureStages = [
-  { index: '02', eyebrow: 'Relative surface', title: 'Depth', description: 'A source-grid relative depth layer and model metadata will appear here after depth extraction.' },
-  { index: '03', eyebrow: 'Metric alignment', title: 'Calibration / DSM', description: 'Calibration evidence and geospatial DSM artifacts will be shown when reference elevation data is provided.' },
-  { index: '04', eyebrow: 'Independent reference', title: 'Proof / Validation', description: 'RMSE, MAE and correlation metrics appear when an independent validation reference is supplied.' },
-  { index: '05', eyebrow: 'Spatial inspection', title: '3D MissionView', description: 'Interactive 3D terrain visualizer with flythrough navigation and elevation/slope measurement tools.' },
-  { index: '06', eyebrow: 'Traceable delivery', title: 'Downloads / Evidence', description: 'Verified artifacts, provenance logs, and evidence exports will be collected here after processing.' },
-]
-
-const stageKeys = ['ingest', 'depth', 'calibration', 'validation', 'terrain', 'evidence']
-
-const resultCopy = {
-  depth: { label: 'REAL DEPTH', title: 'Depth', done: 'Relative monocular inference — not metric elevation' },
-  calibration: { label: 'SKIPPED', title: 'Calibration / DSM', done: 'Awaiting calibration reference' },
-  validation: { label: 'SKIPPED', title: 'Proof / Validation', done: 'Awaiting independent validation reference' },
-  terrain: { label: 'SYNTHETIC', title: '3D MissionView', done: 'Awaiting terrain pipeline output' },
-  evidence: { label: 'PROVENANCE', title: 'Downloads / Evidence', done: 'Real depth model provenance; not independent validation' },
-}
-
-function App() {
+export default function App() {
+  const [activeTab, setActiveTab] = useState('setup')
   const [selectedFile, setSelectedFile] = useState(null)
   const [referenceFile, setReferenceFile] = useState(null)
   const [validationReferenceFile, setValidationReferenceFile] = useState(null)
@@ -46,8 +19,8 @@ function App() {
   const [uiState, setUiState] = useState('idle')
   const [error, setError] = useState('')
   const [textureUrl, setTextureUrl] = useState(null)
-  const workspaceRef = useRef(null)
 
+  // Manage texture preview URL
   useEffect(() => {
     if (!selectedFile) {
       setTextureUrl(null)
@@ -57,6 +30,23 @@ function App() {
     setTextureUrl(objectUrl)
     return () => URL.revokeObjectURL(objectUrl)
   }, [selectedFile])
+
+  // Global Keyboard Shortcuts (Cmd/Ctrl + 1..5)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      const tag = document.activeElement?.tagName?.toLowerCase()
+      if (tag === 'input' || tag === 'textarea' || tag === 'select') return
+
+      if ((e.metaKey || e.ctrlKey) && e.key >= '1' && e.key <= '5') {
+        e.preventDefault()
+        const tabMap = { '1': 'setup', '2': 'processing', '3': 'missionview', '4': 'validation', '5': 'evidence' }
+        const target = tabMap[e.key]
+        if (target) setActiveTab(target)
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
 
   const handleFile = (file) => {
     if (file) {
@@ -75,30 +65,40 @@ function App() {
     setError('')
     setResult(null)
     setUiState('uploading')
+    setActiveTab('processing')
+
     try {
       const created = await startDemoPipeline(selectedFile, referenceFile, validationReferenceFile)
       setJob(created)
       setUiState(created.job_status === 'succeeded' ? 'succeeded' : 'running')
+      if (created.job_status === 'succeeded') {
+        setActiveTab('missionview')
+      }
     } catch (requestError) {
       setUiState('error')
       setError(requestError.message)
     }
   }
 
+  // Job status polling
   useEffect(() => {
     if (!job?.job_id || !['running', 'pending'].includes(job.job_status)) return undefined
     let cancelled = false
     let failures = 0
+
     const poll = async () => {
       try {
         const current = await getJob(job.job_id)
         if (cancelled) return
         failures = 0
         setJob(current)
-        if (current.job_status === 'succeeded') setUiState('succeeded')
+        if (current.job_status === 'succeeded') {
+          setUiState('succeeded')
+          setActiveTab('missionview')
+        }
         if (current.job_status === 'failed') {
           setUiState('error')
-        setError('Relative-depth inference could not complete. No fake success output was produced.')
+          setError('Relative-depth inference could not complete. No fake success output was produced.')
         }
       } catch (pollError) {
         failures += 1
@@ -108,11 +108,16 @@ function App() {
         }
       }
     }
+
     poll()
     const timer = window.setInterval(poll, 800)
-    return () => { cancelled = true; window.clearInterval(timer) }
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
   }, [job?.job_id, job?.job_status])
 
+  // Result retrieval on job completion
   useEffect(() => {
     if (job?.job_status !== 'succeeded' || result) return
     getJobResult(job.job_id)
@@ -123,113 +128,110 @@ function App() {
       })
   }, [job?.job_id, job?.job_status, result])
 
-  const workflowStates = Object.fromEntries(stageKeys.map((key) => [key, job?.stages?.[key]?.status || 'waiting']))
-  const futureCards = futureStages.map((card, index) => {
-    const key = stageKeys[index + 1]
-    const output = resultCopy[key]
-    const status = workflowStates[key]
-    return {
-      ...card,
-      status,
-      label: result && output ? output.label : null,
-      description: result && output ? output.done : card.description,
-      downloads: result && key === 'evidence'
-        ? ['depth.npy', 'depth.png', 'model_metadata.json', 'evidence_passport.json'].map((name) => ({ name, href: artifactUrl(job.job_id, name) }))
-        : [],
-    }
-  })
-
-  const scrollToWorkspace = () => workspaceRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   const missionState = error
     ? 'error'
     : !job
-      ? 'empty'
-      : job.job_status === 'succeeded' && !result
-        ? 'loading'
-        : job.job_status
+    ? 'empty'
+    : job.job_status === 'succeeded' && !result
+    ? 'loading'
+    : job.job_status
+
   const previewArtifact = result?.input?.texture_preview?.artifact
-  const missionTextureUrl = previewArtifact && job?.job_id
-    ? artifactUrl(job.job_id, previewArtifact)
-    : ['tif', 'tiff'].includes(result?.input?.file_type)
-      ? null
-      : textureUrl
+  const effectiveTextureUrl = previewArtifact && job?.job_id ? artifactUrl(job.job_id, previewArtifact) : textureUrl
 
   return (
-    <div className="app-shell">
-      <Header onOpenWorkspace={scrollToWorkspace} />
+    <div className="stitch-app-shell">
+      {/* 1. Global App Bar */}
+      <Header job={job} result={result} onSelectTab={setActiveTab} />
 
-      <main>
-        <section className="intro" aria-labelledby="workspace-title">
-          <div className="intro-copy">
-            <p className="kicker"><span>SIH26175</span> · AI-Powered 3D Terrain Intelligence for Disaster Management</p>
-            <h1 id="workspace-title">From <em>Orbit</em> to Action.</h1>
-            <p className="intro-lede">Rapid elevation & slope analysis for landslide assessment, flash-flood terrain assessment, GLOF risk inspection, and emergency terrain accessibility — backed by transparent scientific calibration and independent validation.</p>
-          </div>
-          <aside className="principle-card" aria-label="Core scientific principle">
-            <span className="principle-number">01</span>
-            <div>
-              <p className="micro-label">Core principle</p>
-              <p>Relative depth is a useful geometric signal. It is <strong>not exact metres</strong> without trustworthy calibration evidence.</p>
+      {/* 2. Workspace Layout (Sidebar Rail + Main Content Canvas + Spatial Drawer) */}
+      <div className="stitch-body-layout">
+        {/* Left Workflow Rail */}
+        <SidebarRail
+          activeTab={activeTab}
+          onSelectTab={setActiveTab}
+          job={job}
+          result={result}
+          onVectorize={() => setActiveTab('missionview')}
+        />
+
+        {/* Central Workspace Canvas */}
+        <main className="stitch-main-canvas" id="main-content">
+          {/* TAB 1: Mission Setup */}
+          {activeTab === 'setup' && (
+            <div className="workspace-tab-pane">
+              <UploadPanel
+                file={selectedFile}
+                referenceFile={referenceFile}
+                validationReferenceFile={validationReferenceFile}
+                onFileSelected={handleFile}
+                onReferenceSelected={setReferenceFile}
+                onValidationReferenceSelected={setValidationReferenceFile}
+                onRun={runDemo}
+                busy={uiState === 'uploading' || uiState === 'running'}
+              />
             </div>
-          </aside>
-        </section>
+          )}
 
-        <WorkflowStepper stages={stages} stageStates={workflowStates} />
+          {/* TAB 2: Processing Pipeline */}
+          {activeTab === 'processing' && (
+            <div className="workspace-tab-pane">
+              <ProcessingWorkspace
+                job={job}
+                result={result}
+                onNavigateMissionView={() => setActiveTab('missionview')}
+              />
+            </div>
+          )}
 
-        <section className="demo-banner" aria-label="Pipeline notice">
-          <strong>{result?.calibration?.calibrated ? 'CALIBRATED DSM · METRIC TERRAIN' : result ? 'REAL DEPTH · RELATIVE · NOT METRIC' : 'RELATIVE DEPTH PIPELINE'}</strong>
-          <p>Depth uses Depth Anything V2 Small. Calibration and independent validation use clearly separate reference uploads.</p>
-          <span>{job ? `JOB ${job.job_id.slice(0, 8).toUpperCase()}` : 'NO JOB CREATED'}</span>
-        </section>
-
-        <section className="workspace-grid" ref={workspaceRef}>
-          <UploadPanel file={selectedFile} referenceFile={referenceFile} validationReferenceFile={validationReferenceFile} onFileSelected={handleFile} onReferenceSelected={setReferenceFile} onValidationReferenceSelected={setValidationReferenceFile} onRun={runDemo} busy={uiState === 'uploading' || uiState === 'running'} />
-          <div className="workspace-side">
-            <FileSummary file={selectedFile} onClear={() => setSelectedFile(null)} />
-            <section className="flow-card" aria-labelledby="future-flow-title">
-              <div className="section-heading compact">
-                <div><p className="micro-label">Pipeline Lifecycle</p><h2 id="future-flow-title">Execution Pipeline</h2></div>
-                <span className={job ? 'active-tag' : 'not-live-tag'}>{job ? job.job_status : 'Not started'}</span>
+          {/* TAB 3: 3D Analysis / MissionView */}
+          {activeTab === 'missionview' && (
+            <div className="workspace-tab-pane h-full flex flex-row">
+              <div className="flex-1 h-full min-w-0 relative">
+                <MissionView
+                  terrain={result?.terrain}
+                  textureUrl={effectiveTextureUrl}
+                  mock={!result?.calibration?.calibrated}
+                  state={missionState}
+                  errorMessage={error}
+                />
               </div>
-              <ol className="flow-list">
-                {['RGB image', 'Relative depth', 'Calibration', 'DSM', 'Independent validation', 'Textured 3D', 'Measurements & evidence'].map((item, index) => (
-                  <li key={item}><span>{String(index + 1).padStart(2, '0')}</span>{item}</li>
-                ))}
-              </ol>
-            </section>
-          </div>
-        </section>
+              {/* Right Spatial Information Drawer */}
+              <SpatialDrawer file={selectedFile} job={job} result={result} />
+            </div>
+          )}
 
-        {error && <div className="error-banner" role="alert"><strong>Depth pipeline error</strong><span>{error}</span></div>}
+          {/* TAB 4: Validation */}
+          {activeTab === 'validation' && (
+            <div className="workspace-tab-pane">
+              <ValidationWorkspace
+                job={job}
+                result={result}
+                artifactUrl={artifactUrl}
+              />
+            </div>
+          )}
 
-        <section className="guardrail-strip" aria-label="Scientific data rules">
-          <div><span>PNG · JPG</span><p>Relative mode by default. Exact metric claims require valid external calibration evidence.</p></div>
-          <div><span>GeoTIFF</span><p>May preserve CRS, affine transform and pixel scale for geospatial processing.</p></div>
-          <div><span>Validation</span><p>Metrics appear only against an independent reference elevation source.</p></div>
-        </section>
+          {/* TAB 5: Evidence Passport */}
+          {activeTab === 'evidence' && (
+            <div className="workspace-tab-pane">
+              <EvidencePassportWorkspace
+                job={job}
+                result={result}
+                artifactUrl={artifactUrl}
+              />
+            </div>
+          )}
+        </main>
+      </div>
 
-        <section className="future-section" aria-labelledby="future-stages-title">
-          <div className="section-heading">
-            <div><p className="micro-label">Spatial Workspaces</p><h2 id="future-stages-title">Built for disaster mission workflows</h2></div>
-            <p>Each workspace updates dynamically as processing stages complete.</p>
-          </div>
-          <div className="stage-grid">
-            {futureCards.map((stage) => stage.title === 'Depth'
-              ? <DepthResultCard key={stage.title} depth={result?.depth} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
-              : stage.title === 'Calibration / DSM'
-                ? <CalibrationResultCard key={stage.title} calibration={result?.calibration} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
-              : stage.title === 'Proof / Validation'
-                ? <ValidationResultCard key={stage.title} validation={result?.validation} evidence={result?.evidence} jobId={job?.job_id} status={stage.status} artifactUrl={artifactUrl} />
-              : stage.title === '3D MissionView'
-                ? <MissionView key={stage.title} terrain={result?.terrain} textureUrl={missionTextureUrl} mock={result?.terrain ? result.terrain.mock : true} state={missionState} errorMessage={error} />
-                : <StageCard key={stage.title} {...stage} />)}
-          </div>
-        </section>
-      </main>
-
-      <footer><span>ChakraVIEW · Smart India Hackathon 2026</span><span>Relative depth · No metric claim without calibration</span></footer>
+      {/* Error banner if present */}
+      {error && (
+        <div className="global-error-toast" role="alert">
+          <span>{error}</span>
+          <button type="button" onClick={() => setError('')}>✕</button>
+        </div>
+      )}
     </div>
   )
 }
-
-export default App
