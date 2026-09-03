@@ -13,3 +13,9 @@ outputs/
 .DS_Store 
 .pytest_cache/
 .venv312/
+
+# Local development datasets and experiment bundles
+/experiments/
+/phase2_boulder/
+/phase2_boulder.zip
+/sample_data/real_demo/
