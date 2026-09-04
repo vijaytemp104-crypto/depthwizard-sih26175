@@ -8,6 +8,7 @@ import MissionView from './components/MissionViewAnalysis.jsx'
 import ValidationWorkspace from './components/ValidationWorkspace.jsx'
 import EvidencePassportWorkspace from './components/EvidencePassportWorkspace.jsx'
 import { artifactUrl, getJob, getJobResult, startDemoPipeline } from './api/client.js'
+import { loadMissionTerrain } from './relativeTerrain.js'
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('setup')
@@ -19,6 +20,8 @@ export default function App() {
   const [uiState, setUiState] = useState('idle')
   const [error, setError] = useState('')
   const [textureUrl, setTextureUrl] = useState(null)
+  const [relativeView, setRelativeView] = useState(null)
+  const selectionVersion = useRef(0)
 
   // Manage texture preview URL
   useEffect(() => {
@@ -50,11 +53,13 @@ export default function App() {
 
   const handleFile = (file) => {
     if (file) {
+      selectionVersion.current += 1
       setSelectedFile(file)
       setReferenceFile(null)
       setValidationReferenceFile(null)
       setJob(null)
       setResult(null)
+      setRelativeView(null)
       setError('')
       setUiState('idle')
     }
@@ -62,6 +67,7 @@ export default function App() {
 
   const runDemo = async () => {
     if (!selectedFile || uiState === 'uploading' || uiState === 'running') return
+    const version = selectionVersion.current
     setError('')
     setResult(null)
     setUiState('uploading')
@@ -69,12 +75,14 @@ export default function App() {
 
     try {
       const created = await startDemoPipeline(selectedFile, referenceFile, validationReferenceFile)
+      if (version !== selectionVersion.current) return
       setJob(created)
       setUiState(created.job_status === 'succeeded' ? 'succeeded' : 'running')
       if (created.job_status === 'succeeded') {
         setActiveTab('missionview')
       }
     } catch (requestError) {
+      if (version !== selectionVersion.current) return
       setUiState('error')
       setError(requestError.message)
     }
@@ -120,19 +128,41 @@ export default function App() {
   // Result retrieval on job completion
   useEffect(() => {
     if (job?.job_status !== 'succeeded' || result) return
+    let cancelled = false
     getJobResult(job.job_id)
-      .then(setResult)
+      .then((loaded) => { if (!cancelled) setResult(loaded) })
       .catch((resultError) => {
+        if (cancelled) return
         setUiState('error')
         setError(`Result retrieval failed: ${resultError.message}`)
       })
+    return () => { cancelled = true }
   }, [job?.job_id, job?.job_status, result])
 
-  const missionState = error
+  // The no-DEM result's terrain is a placeholder, not the actual depth artifact.
+  useEffect(() => {
+    if (!result || result.calibration?.calibrated) return undefined
+    const controller = new AbortController()
+    loadMissionTerrain(result, async (name) => {
+      const response = await fetch(artifactUrl(result.job_id, name), { signal: controller.signal })
+      if (!response.ok) throw new Error(`Relative depth artifact could not be loaded (${response.status}).`)
+      return response.arrayBuffer()
+    }).then((terrain) => {
+      if (!controller.signal.aborted) setRelativeView({ result, terrain })
+    }).catch((loadError) => {
+      if (!controller.signal.aborted) setRelativeView({ result, error: loadError.message })
+    })
+    return () => controller.abort()
+  }, [result])
+
+  const relativeReady = relativeView?.result === result ? relativeView : null
+  const missionTerrain = result?.calibration?.calibrated ? result.terrain : relativeReady?.terrain
+  const relativeError = !result?.calibration?.calibrated ? relativeReady?.error : null
+  const missionState = error || relativeError
     ? 'error'
     : !job
     ? 'empty'
-    : job.job_status === 'succeeded' && !result
+    : job.job_status === 'succeeded' && (!result || (!result.calibration?.calibrated && !missionTerrain))
     ? 'loading'
     : job.job_status
 
@@ -189,15 +219,15 @@ export default function App() {
             <div className="workspace-tab-pane h-full flex flex-row">
               <div className="flex-1 h-full min-w-0 relative">
                 <MissionView
-                  terrain={result?.terrain}
+                  terrain={missionTerrain}
                   textureUrl={effectiveTextureUrl}
                   mock={!result?.calibration?.calibrated}
                   state={missionState}
-                  errorMessage={error}
+                  errorMessage={error || relativeError}
                 />
               </div>
               {/* Right Spatial Information Drawer */}
-              <SpatialDrawer file={selectedFile} job={job} result={result} />
+              <SpatialDrawer file={selectedFile} job={job} result={result && !result.calibration?.calibrated ? { ...result, terrain: missionTerrain } : result} />
             </div>
           )}
 

@@ -78,7 +78,7 @@ export default function SpatialDrawer({ file, job, result }) {
           <span className="spatial-sub">
             {isMetric
               ? `Scale α=${Number(calibration.scale_a).toFixed(2)} • Bias β=${Number(calibration.offset_b).toFixed(2)}m (R²=${Number(calibration.fit_r_squared || 0).toFixed(3)})`
-              : 'Relative scale [0.0 - 1.0] (Non-metric)'}
+              : 'Relative depth · unitless (Non-metric)'}
           </span>
         </div>
 
@@ -86,25 +86,25 @@ export default function SpatialDrawer({ file, job, result }) {
         <div className="spatial-info-card">
           <span className="spatial-label">DATUM &amp; VERTICAL REFERENCE</span>
           <span className="spatial-value">
-            {calibration.crs || 'EPSG:32619 / WGS84'}
+            {isMetric ? (calibration.crs || 'EPSG:32619 / WGS84') : 'No calibrated spatial reference'}
           </span>
           <span className="spatial-sub">
-            {calibration.vertical_datum || 'EGM2008 Orthometric Height'}
+            {isMetric ? (calibration.vertical_datum || 'EGM2008 Orthometric Height') : 'Unitless relative depth'}
           </span>
         </div>
 
         {/* Calculated Terrain Bounds Card */}
         <div className="spatial-bounds-card">
           <span className="font-sans text-[11px] font-bold block mb-1.5 text-graphite">
-            Calculated Terrain Bounds
+            {isMetric ? 'Calculated Terrain Bounds' : 'Relative Depth Bounds'}
           </span>
           <div className="grid grid-cols-2 gap-2 text-[10px] font-mono">
             <div>
-              <span className="text-graphite-muted block text-[9px]">MIN ELEV</span>
+              <span className="text-graphite-muted block text-[9px]">{isMetric ? 'MIN ELEV' : 'MIN DEPTH'}</span>
               <span className="text-graphite font-bold">{bounds ? `${bounds.min} ${bounds.unit}` : '—'}</span>
             </div>
             <div>
-              <span className="text-graphite-muted block text-[9px]">MAX ELEV</span>
+              <span className="text-graphite-muted block text-[9px]">{isMetric ? 'MAX ELEV' : 'MAX DEPTH'}</span>
               <span className="text-graphite font-bold">{bounds ? `${bounds.max} ${bounds.unit}` : '—'}</span>
             </div>
             <div>
@@ -126,11 +126,11 @@ export default function SpatialDrawer({ file, job, result }) {
         </span>
         <div className="flex items-center justify-between text-[11px] py-0.5">
           <span className="text-graphite font-medium">3D MissionView Viewport</span>
-          <span className="font-mono text-pine font-bold">READY</span>
+          <span className="font-mono text-pine font-bold">{isMetric || terrain ? 'READY' : 'UNAVAILABLE'}</span>
         </div>
         <div className="flex items-center justify-between text-[11px] py-0.5">
           <span className="text-graphite font-medium">Measurement Math</span>
-          <span className="font-mono text-pine font-bold">ACTIVE</span>
+          <span className="font-mono text-pine font-bold">{isMetric ? 'ACTIVE' : 'REQUIRES CALIBRATION'}</span>
         </div>
         <div className="flex items-center justify-between text-[11px] py-0.5">
           <span className="text-graphite font-medium">Air-Gapped Execution</span>

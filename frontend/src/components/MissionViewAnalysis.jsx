@@ -65,7 +65,8 @@ function ViewerCanvas({
       }
 
       const width = 6
-      const depth = width * ((terrain.height - 1) / (terrain.width - 1))
+      const relativeGrid = terrain.coordinate_mode === 'relative' ? terrain.relative_display_grid : null
+      const depth = width * (relativeGrid?.aspect ?? ((terrain.height - 1) / (terrain.width - 1)))
       const geometry = new THREE.PlaneGeometry(width, depth, terrain.width - 1, terrain.height - 1)
       geometry.rotateX(-Math.PI / 2)
 
@@ -75,6 +76,16 @@ function ViewerCanvas({
       validation.values.forEach((value, index) =>
         positions.setY(index, ((value - minimum) / range - 0.5) * VERTICAL_EXAGGERATION)
       )
+      if (relativeGrid) {
+        validation.values.forEach((_, index) => {
+          const u = relativeGrid.columns[index % terrain.width]
+          const v = relativeGrid.rows[Math.floor(index / terrain.width)]
+          positions.setX(index, (u - 0.5) * width)
+          positions.setZ(index, (v - 0.5) * depth)
+          geometry.attributes.uv.setXY(index, u, 1 - v)
+        })
+        geometry.attributes.uv.needsUpdate = true
+      }
       positions.needsUpdate = true
       geometry.computeVertexNormals()
 
@@ -295,7 +306,7 @@ export default function MissionViewAnalysis({
               terrain={terrain}
               textureUrl={textureUrl}
               navigationMode={navigationMode}
-              measurementMode={measurementMode}
+              measurementMode={mock ? 'none' : measurementMode}
               onPoint={addPoint}
               onViewerError={setViewerError}
               resetTriggerRef={resetTriggerRef}
@@ -371,6 +382,8 @@ export default function MissionViewAnalysis({
               <div className="flex items-center gap-1 bg-white/95 backdrop-blur border border-line p-1 rounded shadow-xs">
                 <button
                   type="button"
+                  disabled={mock}
+                  title={mock ? 'Metric height requires elevation calibration' : undefined}
                   className={`flex items-center gap-1 px-2.5 py-1 font-mono text-[10.5px] font-medium rounded transition-colors ${
                     measurementMode === 'height' ? 'bg-coral text-white font-bold' : 'text-graphite hover:bg-alabaster'
                   }`}
@@ -380,6 +393,8 @@ export default function MissionViewAnalysis({
                 </button>
                 <button
                   type="button"
+                  disabled={mock}
+                  title={mock ? 'Metric slope requires elevation calibration' : undefined}
                   className={`flex items-center gap-1 px-2.5 py-1 font-mono text-[10.5px] font-bold rounded shadow-xs transition-colors ${
                     measurementMode === 'slope' ? 'bg-coral text-white' : 'text-graphite hover:bg-alabaster'
                   }`}
@@ -400,7 +415,13 @@ export default function MissionViewAnalysis({
               </div>
 
               {/* Active Measurement Card */}
-              {measurementMode !== 'none' && (
+              {mock && (
+                <div className="bg-white/95 border border-line p-2 rounded font-mono text-[10px] text-graphite">
+                  <div>Metric height requires elevation calibration</div>
+                  <div>Metric slope requires elevation calibration</div>
+                </div>
+              )}
+              {!mock && measurementMode !== 'none' && (
                 <div className="w-64 bg-white/95 backdrop-blur border border-line p-2.5 rounded shadow-xs font-mono text-[11px]">
                   <div className="flex items-center justify-between pb-1 border-b border-line">
                     <span className="font-bold text-graphite flex items-center gap-1">
@@ -452,14 +473,12 @@ export default function MissionViewAnalysis({
             {/* Elevation Colorbar Legend */}
             <div className="bg-white/95 backdrop-blur border border-line p-2 rounded shadow-xs w-72 pointer-events-auto">
               <div className="flex justify-between font-mono text-[9px] text-graphite-muted font-semibold mb-1">
-                <span>ELEVATION: Low</span>
+                <span>{mock ? 'RELATIVE DEPTH: Low' : 'ELEVATION: Low'}</span>
                 <span>High</span>
               </div>
               <div className="h-2 w-full rounded bg-gradient-to-r from-pine via-[#8cd3d2] to-white border border-line" />
               <div className="flex justify-between font-mono text-[8px] text-graphite-muted mt-0.5">
-                <span>Valley floor</span>
-                <span>Mid-slope</span>
-                <span>Peak</span>
+                {mock ? <span>Display normalization only · unitless</span> : <><span>Valley floor</span><span>Mid-slope</span><span>Peak</span></>}
               </div>
             </div>
 

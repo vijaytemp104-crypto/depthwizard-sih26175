@@ -64,6 +64,17 @@ export default function UploadPanel({
               Accepts orthorectified GeoTIFF, PNG, or JPG from Copernicus Sentinel-2, Landsat-8/9, or UAV photogrammetry.
             </p>
 
+            <input
+              ref={inputRef}
+              type="file"
+              accept={ACCEPTED}
+              className="hidden"
+              onChange={(e) => {
+                chooseFirst(e.target.files)
+                e.target.value = ''
+              }}
+              aria-label="Select an overhead image"
+            />
             {file ? (
               <div className="p-3 border border-pine bg-pine-subtle/30 rounded">
                 <div className="flex items-start justify-between">
@@ -99,14 +110,6 @@ export default function UploadPanel({
                 onDragLeave={(e) => { e.preventDefault(); setDragging(false) }}
                 onDrop={(e) => { e.preventDefault(); setDragging(false); chooseFirst(e.dataTransfer.files) }}
               >
-                <input
-                  ref={inputRef}
-                  type="file"
-                  accept={ACCEPTED}
-                  className="hidden"
-                  onChange={(e) => chooseFirst(e.target.files)}
-                  aria-label="Select an overhead image"
-                />
                 <span className="text-pine text-2xl font-bold block mb-1">↑</span>
                 <h4 className="font-sans text-xs font-bold text-graphite">Drop overhead satellite image here</h4>
                 <p className="font-body text-[11px] text-graphite-muted mt-0.5">or browse your local filesystem</p>
