@@ -19,3 +19,11 @@ outputs/
 /phase2_boulder/
 /phase2_boulder.zip
 /sample_data/real_demo/
+
+# GeoGuard research data and generated artifacts
+/research/geoguard/data/
+/research/geoguard/cache/
+/research/geoguard/checkpoints/
+/research/geoguard/.pytest_tmp/
+*.las
+*.laz

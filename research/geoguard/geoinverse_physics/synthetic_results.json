@@ -1,0 +1,285 @@
+{
+  "seed": "no randomness",
+  "sun": {
+    "azimuth": 110.0,
+    "elevation": 20.0,
+    "pixel_size": 1.0
+  },
+  "shape": [
+    48,
+    48
+  ],
+  "anchors": 20,
+  "candidates": {
+    "truth": {
+      "mae_m": 0.0,
+      "objective": {
+        "total": 0.0,
+        "constraints": [
+          {
+            "name": "anchor",
+            "available_evidence": true,
+            "units": "m\u00b2",
+            "weight": 1.0,
+            "loss": 0.0,
+            "status": "active",
+            "limitations": [
+              "Anchor datum/units must be harmonized externally; no provider truth assumed.",
+              "Normalized inverse-variance weights preserve m\u00b2 loss units."
+            ]
+          },
+          {
+            "name": "shadow",
+            "available_evidence": true,
+            "units": "dimensionless",
+            "weight": 10.0,
+            "loss": 0.0,
+            "status": "active",
+            "limitations": [
+              "Finite-domain blockers only; external occlusion unobserved.",
+              "Geometric mask is not RGB radiance; requires independent observed shadow mask and sun metadata.",
+              "Global vertical offset is unidentifiable from shadows."
+            ]
+          }
+        ],
+        "active": [
+          "anchor",
+          "shadow"
+        ],
+        "certainty": "not calibrated",
+        "status": "constrained",
+        "weight_note": "Losses have different units; coefficients carry reciprocal units or deliberate normalization. No universal weights or confidence inferred."
+      },
+      "shadow_metrics": {
+        "iou": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "disagreement": 0.0,
+        "pixels": 2304
+      }
+    },
+    "offset_plus_5": {
+      "mae_m": 5.0,
+      "objective": {
+        "total": 4.5,
+        "constraints": [
+          {
+            "name": "anchor",
+            "available_evidence": true,
+            "units": "m\u00b2",
+            "weight": 1.0,
+            "loss": 4.5,
+            "status": "active",
+            "limitations": [
+              "Anchor datum/units must be harmonized externally; no provider truth assumed.",
+              "Normalized inverse-variance weights preserve m\u00b2 loss units."
+            ]
+          },
+          {
+            "name": "shadow",
+            "available_evidence": true,
+            "units": "dimensionless",
+            "weight": 10.0,
+            "loss": 0.0,
+            "status": "active",
+            "limitations": [
+              "Finite-domain blockers only; external occlusion unobserved.",
+              "Geometric mask is not RGB radiance; requires independent observed shadow mask and sun metadata.",
+              "Global vertical offset is unidentifiable from shadows."
+            ]
+          }
+        ],
+        "active": [
+          "anchor",
+          "shadow"
+        ],
+        "certainty": "not calibrated",
+        "status": "constrained",
+        "weight_note": "Losses have different units; coefficients carry reciprocal units or deliberate normalization. No universal weights or confidence inferred."
+      },
+      "shadow_metrics": {
+        "iou": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "disagreement": 0.0,
+        "pixels": 2304
+      }
+    },
+    "relief_scale_1_4": {
+      "mae_m": 0.48902524021999866,
+      "objective": {
+        "total": 0.9285682341084833,
+        "constraints": [
+          {
+            "name": "anchor",
+            "available_evidence": true,
+            "units": "m\u00b2",
+            "weight": 1.0,
+            "loss": 0.5943668452195945,
+            "status": "active",
+            "limitations": [
+              "Anchor datum/units must be harmonized externally; no provider truth assumed.",
+              "Normalized inverse-variance weights preserve m\u00b2 loss units."
+            ]
+          },
+          {
+            "name": "shadow",
+            "available_evidence": true,
+            "units": "dimensionless",
+            "weight": 10.0,
+            "loss": 0.03342013888888889,
+            "status": "active",
+            "limitations": [
+              "Finite-domain blockers only; external occlusion unobserved.",
+              "Geometric mask is not RGB radiance; requires independent observed shadow mask and sun metadata.",
+              "Global vertical offset is unidentifiable from shadows."
+            ]
+          }
+        ],
+        "active": [
+          "anchor",
+          "shadow"
+        ],
+        "certainty": "not calibrated",
+        "status": "constrained",
+        "weight_note": "Losses have different units; coefficients carry reciprocal units or deliberate normalization. No universal weights or confidence inferred."
+      },
+      "shadow_metrics": {
+        "iou": 0.9014084507042254,
+        "precision": 0.9014084507042254,
+        "recall": 1.0,
+        "f1": 0.9481481481481481,
+        "disagreement": 0.03342013888888889,
+        "pixels": 2304
+      }
+    },
+    "ridge_plus_6": {
+      "mae_m": 0.2781377977108353,
+      "objective": {
+        "total": 1.2978259729052894,
+        "constraints": [
+          {
+            "name": "anchor",
+            "available_evidence": true,
+            "units": "m\u00b2",
+            "weight": 1.0,
+            "loss": 0.5729995840164005,
+            "status": "active",
+            "limitations": [
+              "Anchor datum/units must be harmonized externally; no provider truth assumed.",
+              "Normalized inverse-variance weights preserve m\u00b2 loss units."
+            ]
+          },
+          {
+            "name": "shadow",
+            "available_evidence": true,
+            "units": "dimensionless",
+            "weight": 10.0,
+            "loss": 0.0724826388888889,
+            "status": "active",
+            "limitations": [
+              "Finite-domain blockers only; external occlusion unobserved.",
+              "Geometric mask is not RGB radiance; requires independent observed shadow mask and sun metadata.",
+              "Global vertical offset is unidentifiable from shadows."
+            ]
+          }
+        ],
+        "active": [
+          "anchor",
+          "shadow"
+        ],
+        "certainty": "not calibrated",
+        "status": "constrained",
+        "weight_note": "Losses have different units; coefficients carry reciprocal units or deliberate normalization. No universal weights or confidence inferred."
+      },
+      "shadow_metrics": {
+        "iou": 0.8082663605051664,
+        "precision": 0.8082663605051664,
+        "recall": 1.0,
+        "f1": 0.893968253968254,
+        "disagreement": 0.0724826388888889,
+        "pixels": 2304
+      }
+    },
+    "local_bump": {
+      "mae_m": 0.10908307818635565,
+      "objective": {
+        "total": 0.564308871702436,
+        "constraints": [
+          {
+            "name": "anchor",
+            "available_evidence": true,
+            "units": "m\u00b2",
+            "weight": 1.0,
+            "loss": 7.276059132485658e-05,
+            "status": "active",
+            "limitations": [
+              "Anchor datum/units must be harmonized externally; no provider truth assumed.",
+              "Normalized inverse-variance weights preserve m\u00b2 loss units."
+            ]
+          },
+          {
+            "name": "shadow",
+            "available_evidence": true,
+            "units": "dimensionless",
+            "weight": 10.0,
+            "loss": 0.05642361111111111,
+            "status": "active",
+            "limitations": [
+              "Finite-domain blockers only; external occlusion unobserved.",
+              "Geometric mask is not RGB radiance; requires independent observed shadow mask and sun metadata.",
+              "Global vertical offset is unidentifiable from shadows."
+            ]
+          }
+        ],
+        "active": [
+          "anchor",
+          "shadow"
+        ],
+        "certainty": "not calibrated",
+        "status": "constrained",
+        "weight_note": "Losses have different units; coefficients carry reciprocal units or deliberate normalization. No universal weights or confidence inferred."
+      },
+      "shadow_metrics": {
+        "iou": 0.8408812729498164,
+        "precision": 0.85875,
+        "recall": 0.9758522727272727,
+        "f1": 0.913563829787234,
+        "disagreement": 0.05642361111111111,
+        "pixels": 2304
+      }
+    }
+  },
+  "offset_recovery": {
+    "mode": "offset",
+    "parameters": [
+      -4.999999999999999
+    ],
+    "usable_anchors": 20,
+    "huber_delta_m": 1.0,
+    "relief_effect": "Affine deliberately rescales relief; offset preserves all elevation differences; plane preserves relief only relative to its fitted plane.",
+    "max_error_m": 0.0
+  },
+  "affine_recovery": {
+    "mode": "affine",
+    "parameters": [
+      0.714285714285715,
+      24.999999999999968
+    ],
+    "usable_anchors": 20,
+    "huber_delta_m": 1.0,
+    "relief_effect": "Affine deliberately rescales relief; offset preserves all elevation differences; plane preserves relief only relative to its fitted plane.",
+    "max_error_m": 5.684341886080802e-14
+  },
+  "combined_grid_recovery": {
+    "scale": 0.7142857142857143,
+    "offset": -3.5714285714285694,
+    "loss": 5.048709793414476e-30,
+    "mae_m": 1.1719020815487764e-16
+  },
+  "evaluations": 4,
+  "runtime_seconds": 0.05950739997206256,
+  "identifiability": "Uniform offset leaves shadows unchanged. Synthetic shared renderer is an internal consistency check, not independent physical validation."
+}

@@ -1,0 +1,2756 @@
+{
+  "schema_version": "1.0",
+  "repository": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175",
+  "branch": "research/geoguard-sprint",
+  "HEAD": "2ee8cbe02d0c61cf30123b8a045f5b8fe6408f1e",
+  "canonical_root": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data",
+  "transfer_root": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard",
+  "pilots": [
+    {
+      "region": "wake",
+      "canonical_aoi": {
+        "CRS": "EPSG:6346",
+        "bounds": [
+          717954,
+          3944392,
+          718954,
+          3945392
+        ]
+      },
+      "manifest_entry": {
+        "aoi_id": "wake_nc_train",
+        "region": "Wake County",
+        "state": "North Carolina",
+        "country": "United States",
+        "role": "train",
+        "domain": "forest",
+        "rgb_source": "USDA-FSA NAIP tile m_3507828_nw_17_1_20140618 via Microsoft Planetary Computer NAIP archive",
+        "rgb_path": "research/geoguard/data/wake_pilot/derived/rgb_aligned.tif",
+        "rgb_date": "2014-06-18",
+        "rgb_crs": "EPSG:6346 (aligned from native EPSG:26917)",
+        "rgb_gsd_m": 1.0,
+        "reference_source": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N35_00_W079_00_DEM",
+        "reference_path": "research/geoguard/data/wake_pilot/derived/reference_aligned.tif",
+        "reference_type": "DSM",
+        "reference_date": "2011-01-01",
+        "reference_crs": "EPSG:6346 (aligned from native EPSG:4326)",
+        "reference_vertical_datum": "NAVD88 (Geoid12A), converted from EGM2008 with NOAA VDatum",
+        "reference_units": "metre",
+        "reference_resolution_m": 30.0,
+        "truth_source": "USGS 3DEP LPC NC_Phase2_2014 tile LA_37_20162803_, maximum-Z surface raster",
+        "truth_path": "research/geoguard/data/wake_pilot/derived/truth_aligned.tif",
+        "truth_type": "DSM",
+        "truth_date": "2014-02-09",
+        "truth_crs": "EPSG:6346 (aligned from native EPSG:6543)",
+        "truth_vertical_datum": "NAVD88 (Geoid12A)",
+        "truth_units": "metre",
+        "truth_resolution_m": 1.0,
+        "license": "NAIP and USGS data: US public domain; Copernicus DEM: free Copernicus DEM licence with attribution required",
+        "acquisition_gap_days": 129,
+        "valid_truth_fraction": 0.962159,
+        "status": "verified_pilot",
+        "exclusion_reason": null,
+        "rgb_checksum_sha256": "a0828aa36ff4d33a7e807db1ce704d1d26c3664d606b57df2353eec0df4a0bc8",
+        "reference_checksum_sha256": "5782c883488abb444264b7d8fb4072b008297d806d93af66c2e846088767c57c",
+        "truth_checksum_sha256": "92e8304c1ef8e51e74ab8f2de4af81c1341ce45a498103e7c30f95fc35f87355",
+        "notes": "Verified 1 km x 1 km Wake pilot at EPSG:6346 bounds 717954,3944392,718954,3945392. Native NAIP is 4-band RGBNIR at 1 m; aligned product contains RGB bands 1-3. Copernicus acquisition epoch is 2011-2015 (reference_date stores range start), native datum EGM2008. NOAA VDatum corner offsets were bilinearly applied (0.273-0.277 m) to NAVD88/Geoid12A; API uncertainty was NaN, so conversion uncertainty is unquantified. Truth uses LiDAR classes 1,2,3,4,5,6,9,10,13,14 and excludes noise/overlap classes 7,11,17,18. Source URLs and raw checksums are recorded under data/wake_pilot/metadata. Same-year leaf-off LiDAR versus leaf-on NAIP creates vegetation-phenology mismatch; suitable for development training only, not blind test."
+      },
+      "reference_product": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N35_00_W079_00_DEM",
+      "truth_product": "USGS 3DEP LPC NC_Phase2_2014 tile LA_37_20162803_, maximum-Z surface raster",
+      "RGB_acquisition_date": "2014-06-18",
+      "LiDAR_acquisition_date": "2014-02-09",
+      "vertical_datum": "NAVD88 (Geoid12A), converted from EGM2008 with NOAA VDatum",
+      "existing_source_metadata": null,
+      "wake_provenance_text": "# Wake GeoGuard pilot provenance\n\n## AOI\n\n- Role: `train`\n- Status: `verified_pilot`\n- Geography: southern Wake County, North Carolina, United States\n- Evaluation CRS: NAD83(2011) / UTM zone 17N (`EPSG:6346`)\n- Evaluation bounds: `717954, 3944392, 718954, 3945392`\n- Evaluation size: exactly 1,000 m \u00c3\u2014 1,000 m\n- WGS84 bounding box (axis-aligned envelope): `-78.5934617121, 35.6190853456, -78.5821576525, 35.6283148797`\n\nThe U.S. Census TIGERweb State/County service returned only Wake County (`GEOID 37183`) for the evaluation envelope.\n\n## Source metadata table\n\n| Role | Provider and exact product | Acquisition | Native grid/reference | Licence/access |\n| --- | --- | --- | --- | --- |\n| RGB | USDA-FSA NAIP `m_3507828_nw_17_1_20140618` | 2014-06-18 | 1 m, 4-band RGBNIR, NAD83 / UTM 17N (`EPSG:26917`) | U.S. public domain; open cloud mirror used |\n| Coarse reference | Copernicus DEM GLO-30 `Copernicus_DSM_COG_10_N35_00_W079_00_DEM` | TanDEM-X source epoch 2011\u00e2\u20ac\u201c2015 | DSM, 1 arc-second (~30 m), WGS84-G1150 / geographic (`EPSG:4326`), EGM2008 (`EPSG:3855`), metres | Free Copernicus DEM licence; attribution required; public COG endpoint used |\n| Independent truth | USGS 3DEP LPC `NC_Phase2_2014`, tile `LA_37_20162803_` | 2014-02-09 for this tile; project range 2014-01-30 to 2014-03-13 | Classified LAS 1.3, nominal 0.7 m post spacing, NAD83(2011) / NC ftUS (`EPSG:6543`), NAVD88/Geoid12A, US survey feet | U.S. public-domain government data; USGS use/disclaimer terms apply |\n\nRGB and truth are separated by 129 days. They are same-year acquisitions, but LiDAR was leaf-off and NAIP was leaf-on; vegetation surfaces can therefore differ materially. Copernicus GLO-30 is an independent radar-derived product and does not use this USGS LiDAR tile as its source.\n\n## Exact source URLs\n\n- NAIP STAC item: `https://planetarycomputer.microsoft.com/api/stac/v1/collections/naip/items/nc_m_3507828_nw_17_1_20140618_20141118`\n- NAIP image: `https://naipeuwest.blob.core.windows.net/naip/v002/nc/2014/nc_100cm_2014/35078/m_3507828_nw_17_1_20140618.tif`\n- NAIP FGDC metadata: `https://naipeuwest.blob.core.windows.net/naip/v002/nc/2014/nc_fgdc_2014/35078/m_3507828_nw_17_1_20140618.txt`\n- Copernicus GLO-30 tile: `https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N35_00_W079_00_DEM/Copernicus_DSM_COG_10_N35_00_W079_00_DEM.tif`\n- Copernicus product documentation: `https://dataspace.copernicus.eu/sites/default/files/media/files/2024-06/geo1988-copernicusdem-spe-002_producthandbook_i5.0.pdf`\n- USGS TNM product API: `https://tnmaccess.nationalmap.gov/api/v1/products?bbox=-78.5934617121%2C35.6190853456%2C-78.5821576525%2C35.6283148797&datasets=Lidar+Point+Cloud+%28LPC%29&max=100`\n- USGS LAZ: `https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/NC_Phase2_2014/NC_JohnstonCo_2014/LAZ/USGS_LPC_NC_Phase2_2014_LA_37_20162803_.laz`\n- USGS classified-point metadata: `https://prd-tnm.s3.amazonaws.com/StagedProducts/Elevation/metadata/NC_Phase2_2014/NC_JohnstonCo_2014/reports/xmls/ngtoc_created_xml/NC_Phase2_ClassifiedPointCloud.xml`\n- NOAA VDatum API documentation: `https://vdatum.noaa.gov/docs/services.html`\n\n## Surface-truth derivation\n\nThe truth is a surface DSM, not a bare-earth DTM. The source contains classes 1 (unclassified), 2 (ground), 3\u00e2\u20ac\u201c5 (vegetation), 6 (building), 7 (noise), 13 (road), 17 (overlap default), and 18 (overlap ground) within this AOI. The rasterizer accepts classes `1,2,3,4,5,6,9,10,13,14`, excludes noise classes `7,11`, excludes overlap duplicates `17,18`, and excludes withheld points. Each 1 m cell stores the maximum accepted Z. Cells without an accepted point remain nodata (`-9999`). Z values are converted from US survey feet using exactly `0.3048006096012192` metres per US survey foot.\n\n- Accepted points: 3,297,861\n- Valid truth cells: 962,159 / 1,000,000 (96.2159%)\n- Valid-cell point density: minimum 1, median 3, maximum 20 points per 1 m cell\n- Truth elevation range: 58.506477\u00e2\u20ac\u201c131.518417 m NAVD88/Geoid12A\n\n## Alignment and vertical conversion\n\nAll aligned products use the exact truth grid: 1 m pixels, 1,000 \u00c3\u2014 1,000 cells, `EPSG:6346`, with no truth-driven registration optimization.\n\n- RGB: bands 1\u00e2\u20ac\u201c3, bilinear horizontal reprojection.\n- Reference: bilinear horizontal reprojection from the native GLO-30 grid. This interpolation does not create new independent spatial information; the effective source resolution remains ~30 m.\n- Truth: direct maximum-Z binning of classified LiDAR points; no image resize and no elevation interpolation.\n- Valid mask: `1` only where RGB, reference, and truth are all valid.\n\nGLO-30 elevations were converted from EGM2008 metres to NAVD88/Geoid12A metres with NOAA VDatum. VDatum requires the EGM2008-associated WGS84-G1674 realization; Copernicus documents WGS84-G1150 horizontally. This realization difference is negligible relative to a 30 m cell but is recorded as an approximation. VDatum returned these corner corrections, bilinearly interpolated across the AOI:\n\n- top-left: +0.273 m\n- top-right: +0.275 m\n- bottom-left: +0.275 m\n- bottom-right: +0.277 m\n\nThe NOAA API returned `NaN` for transformation uncertainty, so vertical-conversion uncertainty is unquantified and must not be represented as zero.\n\n## Checksums\n\n- Raw NAIP AOI crop: `09a39ec87dff6dfe53a32a1c2159e885677544eb664d8541356ae9ab8b7105f5`\n- Raw GLO-30 AOI crop: `9670e72079ffbffef167d03eb53789b059fcb8d95172f3c080b2a9e78b0b2bc7`\n- Raw USGS LAZ tile: `47d2e62a80d989519458a62504f790fbf3c6cf1bdb56d537952b8681f5215392`\n- Aligned RGB: `a0828aa36ff4d33a7e807db1ce704d1d26c3664d606b57df2353eec0df4a0bc8`\n- Aligned reference: `5782c883488abb444264b7d8fb4072b008297d806d93af66c2e846088767c57c`\n- Aligned truth: `92e8304c1ef8e51e74ab8f2de4af81c1341ce45a498103e7c30f95fc35f87355`\n\n## Scientific limitations\n\n- The RGB\u00e2\u20ac\u201ctruth phenology mismatch makes canopy-level residuals partly temporal, not purely model error.\n- GLO-30 is a coarse DSM; its 1 m aligned raster is an interpolated analytical copy, not 1 m source information.\n- GLO-30\u00e2\u20ac\u2122s multi-year acquisition epoch cannot be reduced to an exact date for this cell.\n- VDatum supplied a correction but no numeric uncertainty.\n- Maximum-return rasterization is sensitive to sparse high returns and does not guarantee a watertight roof/canopy surface in every cell.\n- This is a development/training pilot only. It is not a blind-test geography and must not be used to claim generalization.\n",
+      "inference_mask": "Not stored separately; V1 computes RGB/reference/DAV2 validity only in memory. Do not use truth/scoring mask for inference.",
+      "scoring_mask": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\valid_mask.tif",
+      "input_valid_pixels": 1000000,
+      "scoring_pixels": 962159,
+      "truth_valid_fraction": 0.962159,
+      "baseline_metrics": {
+        "mae": 6.799877095577242,
+        "rmse": 8.93521184361109,
+        "bias": -1.4214115713683408,
+        "pearson": 0.8363725191954904,
+        "spearman": 0.8445758520800164,
+        "valid_pixel_count": 962159
+      },
+      "baseline_match": "PASS",
+      "triplet_QA": "PASS",
+      "triplet_QA_output": "\nRGB:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\rgb_aligned.tif\n  shape: (1000, 1000)\n  bands: 3\n  dtype: uint8, uint8, uint8\n  CRS: EPSG:6346\n  bounds: (717954, 3944392, 718954, 3945392)\n  pixel size: (1, 1)\n  nodata: (0.0, 0.0, 0.0)\n  nodata/non-finite percentage: 0.000000%\n\nREFERENCE:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\reference_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6346\n  bounds: (717954, 3944392, 718954, 3945392)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 0.000000%\n  finite min/max: 58.53681564 / 117.8812485\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid12A)\n  elevation type from metadata: DSM\n\nTRUTH:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\truth_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6346\n  bounds: (717954, 3944392, 718954, 3945392)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 3.784100%\n  finite min/max: 58.50647736 / 131.5184174\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid12A)\n  elevation type from metadata: DSM\n\nALIGNMENT:\n  geographic overlap: PASS\n  bounds plausibly intersect: YES\n  CRS compatibility: EXACT MATCH\n  reference/RGB resolution ratio: 1\n  truth/RGB resolution ratio: 1\n\nWARNINGS:\n- none\n\nSCIENTIFIC BLOCKERS:\n- none\nRESULT: PASS \u2014 metadata supports further comparison; target-type provenance still requires manifest review\n",
+      "truth_construction": "Existing maximum accepted LiDAR Z per 1 m cell; no interpolation. Wake accepts classes 1,2,3,4,5,6,9,10,13,14 and excludes 17/18 overlap classes and withheld. Other pilots accept 1,2,3,4,5,6,9,10,13,14,17 and exclude withheld/overlap flags; see unchanged source metadata and preparation script. Not regenerated."
+    },
+    {
+      "region": "polk",
+      "canonical_aoi": {
+        "CRS": "EPSG:6344",
+        "bounds": [
+          458000,
+          4615000,
+          459000,
+          4616000
+        ]
+      },
+      "manifest_entry": {
+        "aoi_id": "polk_ia_train",
+        "region": "Polk County",
+        "state": "Iowa",
+        "country": "United States",
+        "role": "train",
+        "domain": "open",
+        "rgb_source": "USDA-FSA NAIP 2019 products ia_m_4109321_sw/nw and ia_m_4109320_se/ne via Microsoft Planetary Computer NAIP archive",
+        "rgb_path": "research/geoguard/data/polk_pilot/derived/rgb_aligned.tif",
+        "rgb_date": "2019-08-22",
+        "rgb_crs": "EPSG:6344 (aligned from native EPSG:26915)",
+        "rgb_gsd_m": 0.6,
+        "reference_source": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N41_00_W094_00_DEM",
+        "reference_path": "research/geoguard/data/polk_pilot/derived/reference_aligned.tif",
+        "reference_type": "DSM",
+        "reference_date": "2011-01-01",
+        "reference_crs": "EPSG:6344 (aligned from native EPSG:4326)",
+        "reference_vertical_datum": "NAVD88 (Geoid12B), converted from EGM2008 with NOAA VDatum",
+        "reference_units": "metre",
+        "reference_resolution_m": 30.0,
+        "truth_source": "USGS 3DEP LPC IA_NorthCentral_2020_D20 tile w4580n4615, maximum-Z surface raster",
+        "truth_path": "research/geoguard/data/polk_pilot/derived/truth_aligned.tif",
+        "truth_type": "DSM",
+        "truth_date": "2020-04-19",
+        "truth_crs": "EPSG:6344",
+        "truth_vertical_datum": "NAVD88 (Geoid12B)",
+        "truth_units": "metre",
+        "truth_resolution_m": 1.0,
+        "license": "NAIP and USGS data: US public domain; Copernicus DEM: free Copernicus DEM licence with attribution required",
+        "acquisition_gap_days": 241,
+        "valid_truth_fraction": 0.991122,
+        "status": "verified_pilot",
+        "exclusion_reason": null,
+        "rgb_checksum_sha256": "8d67e84271c425ee17325341cadfdf9bb95606e998c466047626a8fdc2e8a2c7",
+        "reference_checksum_sha256": "023c9ff4fbf096aaefa1c1bfc8d653ae7ae45565c00a28eaeca49843598bd6d6",
+        "truth_checksum_sha256": "c0029bf4422e4ee30ca9d8d013f86daac00f66837bb182ba6458ef65fe0c83d2",
+        "notes": "Verified 1 km x 1 km open/agricultural pilot at EPSG:6344 bounds 458000,4615000,459000,4616000. Copernicus epoch is 2011-2015; reference_date stores the range start. NOAA VDatum EGM2008-to-NAVD88 corner offsets 0.667-0.668 m were bilinearly applied; API uncertainty is NaN and therefore unquantified. LiDAR tile dates are 2020-04-19 to 2020-04-20 (241-242 day RGB gap). Maximum accepted Z per 1 m cell, no interpolation. Development/training only, never blind test."
+      },
+      "reference_product": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N41_00_W094_00_DEM",
+      "truth_product": "USGS 3DEP LPC IA_NorthCentral_2020_D20 tile w4580n4615, maximum-Z surface raster",
+      "RGB_acquisition_date": "2019-08-22",
+      "LiDAR_acquisition_date": "2020-04-19",
+      "vertical_datum": "NAVD88 (Geoid12B), converted from EGM2008 with NOAA VDatum",
+      "existing_source_metadata": {
+        "site": "polk",
+        "county": "Polk County",
+        "state": "Iowa",
+        "domain": "open",
+        "target_crs": "EPSG:6344",
+        "bounds": [
+          458000.0,
+          4615000.0,
+          459000.0,
+          4616000.0
+        ],
+        "wgs84_bounds": [
+          -93.50473205632564,
+          41.68566552339082,
+          -93.49264633550007,
+          41.69472447753643
+        ],
+        "naip_ids": [
+          "ia_m_4109321_sw_15_060_20190822_20191105",
+          "ia_m_4109321_nw_15_060_20190822_20191105",
+          "ia_m_4109320_se_15_060_20190822_20191105",
+          "ia_m_4109320_ne_15_060_20190822_20191105"
+        ],
+        "naip_urls": [
+          "https://naipeuwest.blob.core.windows.net/naip/v002/ia/2019/ia_60cm_2019/41093/m_4109321_sw_15_060_20190822.tif",
+          "https://naipeuwest.blob.core.windows.net/naip/v002/ia/2019/ia_60cm_2019/41093/m_4109321_nw_15_060_20190822.tif",
+          "https://naipeuwest.blob.core.windows.net/naip/v002/ia/2019/ia_60cm_2019/41093/m_4109320_se_15_060_20190822.tif",
+          "https://naipeuwest.blob.core.windows.net/naip/v002/ia/2019/ia_60cm_2019/41093/m_4109320_ne_15_060_20190822.tif"
+        ],
+        "naip_date": "2019-08-22",
+        "copernicus_tile": "Copernicus_DSM_COG_10_N41_00_W094_00_DEM",
+        "copernicus_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N41_00_W094_00_DEM/Copernicus_DSM_COG_10_N41_00_W094_00_DEM.tif",
+        "copernicus_epoch": "2011-2015",
+        "vdatum_responses": [
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-93.50473205632564",
+            "s_y": "41.69472447753643",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid12b",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-93.504721907",
+            "t_y": "41.6947173807",
+            "t_z": "0.667",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-93.50473205632564&s_y=41.69472447753643&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid12b"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-93.49264633550007",
+            "s_y": "41.69472447753643",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid12b",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-93.4926361896",
+            "t_y": "41.6947173792",
+            "t_z": "0.667",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-93.49264633550007&s_y=41.69472447753643&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid12b"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-93.50473205632564",
+            "s_y": "41.68566552339082",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid12b",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-93.5047219091",
+            "t_y": "41.685658428",
+            "t_z": "0.668",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-93.50473205632564&s_y=41.68566552339082&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid12b"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-93.49264633550007",
+            "s_y": "41.68566552339082",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid12b",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-93.4926361917",
+            "t_y": "41.6856584265",
+            "t_z": "0.667",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-93.49264633550007&s_y=41.68566552339082&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid12b"
+          }
+        ],
+        "truth_product": "USGS LPC IA_NorthCentral_2020_D20 w4580n4615",
+        "truth_url": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/IA_NorthCentral_2020_D20/IA_NorthCentral_2_2020/LAZ/USGS_LPC_IA_NorthCentral_2020_D20_w4580n4615.laz?download=1",
+        "truth_legacy_tile_url": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/IA_NorthCentral_2020_D20/IA_NorthCentral_2_2020/LAZ/USGS_LPC_IA_NorthCentral_2020_D20_w4580n4615.laz?download=1",
+        "truth": {
+          "source_crs": [
+            "COMPD_CS[\"NAD83(2011) / UTM zone 15N (Meters) + NAVD88 height - Geoid12B (Meters)\",PROJCS[\"NAD83(2011) / UTM zone 15N (Meters)\",GEOGCS[\"NAD83(2011)\",DATUM[\"NAD83 (National Spatial Reference System 2011\",SPHEROID[\"GRS 1980\",6378137,298.257222101,AUTHORITY[\"EPSG\",\"7019\"]],AUTHORITY[\"EPSG\",\"1116\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.0174532925199433,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"6318\"]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",-93],PARAMETER[\"scale_factor\",0.9996],PARAMETER[\"false_easting\",500000],PARAMETER[\"false_northing\",0],UNIT[\"metre\",1,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"X\",EAST],AXIS[\"Y\",NORTH],AUTHORITY[\"EPSG\",\"6344\"]],VERT_CS[\"NAVD88 height - Geoid12B (Meters)\",VERT_DATUM[\"North American Vertical Datum 1988\",2005,AUTHORITY[\"EPSG\",\"5103\"]],UNIT[\"metre\",1.0,AUTHORITY[\"EPSG\",\"9001\"]],AXIS[\"Up\",UP],AUTHORITY[\"EPSG\",\"5703\"]]]"
+          ],
+          "source_transport": "USGS TNM LAZ tile",
+          "source_file_count": 1,
+          "gps_time_types": [
+            1
+          ],
+          "tile_acquisition_start": "2020-04-19",
+          "tile_acquisition_end": "2020-04-20",
+          "project_collection_range": "2020-04-16/2020-04-27",
+          "all_class_counts": {
+            "1": 744425,
+            "2": 2248401,
+            "7": 2939,
+            "18": 8679
+          },
+          "accepted_class_counts": {
+            "1": 368450,
+            "2": 1932929
+          },
+          "accepted_surface_classes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9,
+            10,
+            13,
+            14,
+            17
+          ],
+          "excluded_classes": [
+            7,
+            11,
+            18,
+            20,
+            22
+          ],
+          "accepted_point_count": 2301327,
+          "valid_cell_count": 992002,
+          "valid_fraction": 0.992002,
+          "density_min": 1,
+          "density_median": 2.0,
+          "density_max": 14,
+          "elevation_min_m": 279.1700134277344,
+          "elevation_max_m": 312.260009765625
+        },
+        "valid_fraction": 0.991122,
+        "checksums": {
+          "rgb_source_crop": "1b5949a26399691c84b5e2ea3529a3da6f6657d6e632e6e356b1cd47c7783315",
+          "reference_source_crop": "586e7fc11fc99f7e8a9e7d9c262b609996b43e705a563f0bc252cd2d5a6278a5",
+          "truth_raw_descriptor": "9786f42147a9c465cbb861aa885d931c8eb9f665ae85cd32fe36a8a287eda105",
+          "rgb_aligned": "8d67e84271c425ee17325341cadfdf9bb95606e998c466047626a8fdc2e8a2c7",
+          "reference_aligned": "023c9ff4fbf096aaefa1c1bfc8d653ae7ae45565c00a28eaeca49843598bd6d6",
+          "truth_aligned": "c0029bf4422e4ee30ca9d8d013f86daac00f66837bb182ba6458ef65fe0c83d2"
+        }
+      },
+      "wake_provenance_text": null,
+      "inference_mask": "Not stored separately; V1 computes RGB/reference/DAV2 validity only in memory. Do not use truth/scoring mask for inference.",
+      "scoring_mask": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\valid_mask.tif",
+      "input_valid_pixels": 999120,
+      "scoring_pixels": 991122,
+      "truth_valid_fraction": 0.992002,
+      "baseline_metrics": {
+        "mae": 0.4877707349200696,
+        "rmse": 1.387273885975239,
+        "bias": -0.029262984459133657,
+        "pearson": 0.8100573407815801,
+        "spearman": 0.9247477746345523,
+        "valid_pixel_count": 991122
+      },
+      "baseline_match": "PASS",
+      "triplet_QA": "PASS",
+      "triplet_QA_output": "\nRGB:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\rgb_aligned.tif\n  shape: (1000, 1000)\n  bands: 3\n  dtype: uint8, uint8, uint8\n  CRS: EPSG:6344\n  bounds: (458000, 4615000, 459000, 4616000)\n  pixel size: (1, 1)\n  nodata: (0.0, 0.0, 0.0)\n  nodata/non-finite percentage: 0.000000%\n\nREFERENCE:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\reference_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6344\n  bounds: (458000, 4615000, 459000, 4616000)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 0.088000%\n  finite min/max: 280.9521484 / 295.8883667\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid12B)\n  elevation type from metadata: DSM\n\nTRUTH:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\truth_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6344\n  bounds: (458000, 4615000, 459000, 4616000)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 0.799800%\n  finite min/max: 279.1700134 / 312.2600098\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid12B)\n  elevation type from metadata: DSM\n\nALIGNMENT:\n  geographic overlap: PASS\n  bounds plausibly intersect: YES\n  CRS compatibility: EXACT MATCH\n  reference/RGB resolution ratio: 1\n  truth/RGB resolution ratio: 1\n\nWARNINGS:\n- none\n\nSCIENTIFIC BLOCKERS:\n- none\nRESULT: PASS \u2014 metadata supports further comparison; target-type provenance still requires manifest review\n",
+      "truth_construction": "Existing maximum accepted LiDAR Z per 1 m cell; no interpolation. Wake accepts classes 1,2,3,4,5,6,9,10,13,14 and excludes 17/18 overlap classes and withheld. Other pilots accept 1,2,3,4,5,6,9,10,13,14,17 and exclude withheld/overlap flags; see unchanged source metadata and preparation script. Not regenerated."
+    },
+    {
+      "region": "larimer",
+      "canonical_aoi": {
+        "CRS": "EPSG:6342",
+        "bounds": [
+          477750,
+          4491100,
+          478750,
+          4492100
+        ]
+      },
+      "manifest_entry": {
+        "aoi_id": "larimer_co_train",
+        "region": "Larimer County",
+        "state": "Colorado",
+        "country": "United States",
+        "role": "train",
+        "domain": "hilly",
+        "rgb_source": "USDA-FSA NAIP 2021 products co_m_4010531_nw and co_m_4010530_ne via Microsoft Planetary Computer NAIP archive",
+        "rgb_path": "research/geoguard/data/larimer_pilot/derived/rgb_aligned.tif",
+        "rgb_date": "2021-07-26",
+        "rgb_crs": "EPSG:6342 (aligned from native EPSG:26913)",
+        "rgb_gsd_m": 0.6,
+        "reference_source": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N40_00_W106_00_DEM",
+        "reference_path": "research/geoguard/data/larimer_pilot/derived/reference_aligned.tif",
+        "reference_type": "DSM",
+        "reference_date": "2011-01-01",
+        "reference_crs": "EPSG:6342 (aligned from native EPSG:4326)",
+        "reference_vertical_datum": "NAVD88 (Geoid18), converted from EGM2008 with NOAA VDatum",
+        "reference_units": "metre",
+        "reference_resolution_m": 30.0,
+        "truth_source": "USGS 3DEP LPC CO_CameronPeakWildfire_2021_D21 collection via public EPT, maximum-Z surface raster",
+        "truth_path": "research/geoguard/data/larimer_pilot/derived/truth_aligned.tif",
+        "truth_type": "DSM",
+        "truth_date": "2021-09-07",
+        "truth_crs": "EPSG:6342 (aligned from USGS EPT EPSG:3857; collection native EPSG:6430)",
+        "truth_vertical_datum": "NAVD88 (Geoid18)",
+        "truth_units": "metre",
+        "truth_resolution_m": 1.0,
+        "license": "NAIP and USGS data: US public domain; Copernicus DEM: free Copernicus DEM licence with attribution required",
+        "acquisition_gap_days": 43,
+        "valid_truth_fraction": 0.960982,
+        "status": "verified_pilot",
+        "exclusion_reason": null,
+        "rgb_checksum_sha256": "4fd894a0312c149a075452227dd1661b2c512dcd14006aef74b64f649226ab8d",
+        "reference_checksum_sha256": "d4847a67b035c646dec657b1755f192d1de5b8b1fa39f5fab121396623ab938b",
+        "truth_checksum_sha256": "88c69a8a4322976bc536e5f9aac5a9d2d6dba14da2040eb1706e717e98978eb5",
+        "notes": "Verified 1 km x 1 km hilly pilot at EPSG:6342 bounds 477750,4491100,478750,4492100. Copernicus epoch is 2011-2015; reference_date stores range start. NOAA VDatum EGM2008-to-NAVD88 offsets 0.598-0.616 m were bilinearly applied; API uncertainty is NaN and unquantified. USGS project range is 2021-09-07 to 2021-09-22 (43-58 day RGB gap); EPT GPS time type 0 prevents defensible per-tile date decoding. EPT is the official same 3DEP collection, not substituted truth. Maximum accepted Z per 1 m cell, no interpolation. Development/training only."
+      },
+      "reference_product": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N40_00_W106_00_DEM",
+      "truth_product": "USGS 3DEP LPC CO_CameronPeakWildfire_2021_D21 collection via public EPT, maximum-Z surface raster",
+      "RGB_acquisition_date": "2021-07-26",
+      "LiDAR_acquisition_date": "2021-09-07",
+      "vertical_datum": "NAVD88 (Geoid18), converted from EGM2008 with NOAA VDatum",
+      "existing_source_metadata": {
+        "site": "larimer",
+        "county": "Larimer County",
+        "state": "Colorado",
+        "domain": "hilly",
+        "target_crs": "EPSG:6342",
+        "bounds": [
+          477750.0,
+          4491100.0,
+          478750.0,
+          4492100.0
+        ],
+        "wgs84_bounds": [
+          -105.26289690405964,
+          40.570378709884395,
+          -105.25104774906963,
+          40.579413804986324
+        ],
+        "naip_ids": [
+          "co_m_4010531_nw_13_060_20210726",
+          "co_m_4010530_ne_13_060_20210726"
+        ],
+        "naip_urls": [
+          "https://naipeuwest.blob.core.windows.net/naip/v002/co/2021/co_060cm_2021/40105/31/m_4010531_nw_13_060_20210726.tif",
+          "https://naipeuwest.blob.core.windows.net/naip/v002/co/2021/co_060cm_2021/40105/30/m_4010530_ne_13_060_20210726.tif"
+        ],
+        "naip_date": "2021-07-26",
+        "copernicus_tile": "Copernicus_DSM_COG_10_N40_00_W106_00_DEM",
+        "copernicus_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N40_00_W106_00_DEM/Copernicus_DSM_COG_10_N40_00_W106_00_DEM.tif",
+        "copernicus_epoch": "2011-2015",
+        "vdatum_responses": [
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-105.26289690405964",
+            "s_y": "40.579413804986324",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-105.2628841239",
+            "t_y": "40.579408366",
+            "t_z": "0.607",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-105.26289690405964&s_y=40.579413804986324&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-105.25104774906963",
+            "s_y": "40.579413804986324",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-105.2510349711",
+            "t_y": "40.5794083645",
+            "t_z": "0.616",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-105.25104774906963&s_y=40.579413804986324&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-105.26289690405964",
+            "s_y": "40.570378709884395",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-105.2628841257",
+            "t_y": "40.5703732721",
+            "t_z": "0.598",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-105.26289690405964&s_y=40.570378709884395&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-105.25104774906963",
+            "s_y": "40.570378709884395",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-105.2510349729",
+            "t_y": "40.5703732706",
+            "t_z": "0.612",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-105.25104774906963&s_y=40.570378709884395&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          }
+        ],
+        "truth_product": "USGS LPC CO_CameronPeakWildfire_2021_D21 w3065n1450",
+        "truth_url": "https://usgs-lidar-public.s3.amazonaws.com/CO_CameronPkFire_1_2021/ept.json",
+        "truth_legacy_tile_url": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/CO_CameronPeakWildfire_2021_D21/CO_CameronPkFire_1_2021/LAZ/USGS_LPC_CO_CameronPeakWildfire_2021_D21_w3065n1450.laz?download=1",
+        "truth": {
+          "source_crs": [
+            "EPSG:3857"
+          ],
+          "source_transport": "USGS 3DEP public EPT subset",
+          "source_file_count": 149,
+          "gps_time_types": [
+            0
+          ],
+          "tile_acquisition_start": null,
+          "tile_acquisition_end": null,
+          "project_collection_range": "2021-09-07/2021-09-22",
+          "all_class_counts": {
+            "1": 3016144,
+            "2": 2584290,
+            "7": 16759,
+            "9": 49,
+            "18": 67036,
+            "20": 2
+          },
+          "accepted_class_counts": {
+            "1": 1958662,
+            "2": 1916119
+          },
+          "accepted_surface_classes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9,
+            10,
+            13,
+            14,
+            17
+          ],
+          "excluded_classes": [
+            7,
+            11,
+            18,
+            20,
+            22
+          ],
+          "accepted_point_count": 3874781,
+          "valid_cell_count": 963712,
+          "valid_fraction": 0.963712,
+          "density_min": 1,
+          "density_median": 4.0,
+          "density_max": 167,
+          "elevation_min_m": 1946.262939453125,
+          "elevation_max_m": 2300.7041015625
+        },
+        "valid_fraction": 0.960982,
+        "checksums": {
+          "rgb_source_crop": "fb6dd25cbcf181d3f49c6a847c2d64c9263db3a549e67fa3507db66e4787ed73",
+          "reference_source_crop": "b7b6273c7e4599eb5fec0b993a3f1aedcf3b9350adca85f13ecba8125dd29a5c",
+          "truth_raw_descriptor": "7635a5755240656f5ee3dce48744835b296f99e465051a13137e8886bcb810b2",
+          "rgb_aligned": "4fd894a0312c149a075452227dd1661b2c512dcd14006aef74b64f649226ab8d",
+          "reference_aligned": "d4847a67b035c646dec657b1755f192d1de5b8b1fa39f5fab121396623ab938b",
+          "truth_aligned": "88c69a8a4322976bc536e5f9aac5a9d2d6dba14da2040eb1706e717e98978eb5"
+        }
+      },
+      "wake_provenance_text": null,
+      "inference_mask": "Not stored separately; V1 computes RGB/reference/DAV2 validity only in memory. Do not use truth/scoring mask for inference.",
+      "scoring_mask": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\valid_mask.tif",
+      "input_valid_pixels": 997249,
+      "scoring_pixels": 960982,
+      "truth_valid_fraction": 0.963712,
+      "baseline_metrics": {
+        "mae": 2.5566088235001327,
+        "rmse": 3.432679150118815,
+        "bias": 0.9024456686796439,
+        "pearson": 0.9990900121689751,
+        "spearman": 0.9990936472544666,
+        "valid_pixel_count": 960982
+      },
+      "baseline_match": "PASS",
+      "triplet_QA": "PASS",
+      "triplet_QA_output": "\nRGB:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\rgb_aligned.tif\n  shape: (1000, 1000)\n  bands: 3\n  dtype: uint8, uint8, uint8\n  CRS: EPSG:6342\n  bounds: (477750, 4491100, 478750, 4492100)\n  pixel size: (1, 1)\n  nodata: (0.0, 0.0, 0.0)\n  nodata/non-finite percentage: 0.000000%\n\nREFERENCE:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\reference_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6342\n  bounds: (477750, 4491100, 478750, 4492100)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 0.275100%\n  finite min/max: 1955.796997 / 2291.650146\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid18)\n  elevation type from metadata: DSM\n\nTRUTH:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\truth_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6342\n  bounds: (477750, 4491100, 478750, 4492100)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 3.628800%\n  finite min/max: 1946.262939 / 2300.704102\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid18)\n  elevation type from metadata: DSM\n\nALIGNMENT:\n  geographic overlap: PASS\n  bounds plausibly intersect: YES\n  CRS compatibility: EXACT MATCH\n  reference/RGB resolution ratio: 1\n  truth/RGB resolution ratio: 1\n\nWARNINGS:\n- none\n\nSCIENTIFIC BLOCKERS:\n- none\nRESULT: PASS \u2014 metadata supports further comparison; target-type provenance still requires manifest review\n",
+      "truth_construction": "Existing maximum accepted LiDAR Z per 1 m cell; no interpolation. Wake accepts classes 1,2,3,4,5,6,9,10,13,14 and excludes 17/18 overlap classes and withheld. Other pilots accept 1,2,3,4,5,6,9,10,13,14,17 and exclude withheld/overlap flags; see unchanged source metadata and preparation script. Not regenerated."
+    },
+    {
+      "region": "humboldt",
+      "canonical_aoi": {
+        "CRS": "EPSG:6339",
+        "bounds": [
+          416500,
+          4527000,
+          417500,
+          4528000
+        ]
+      },
+      "manifest_entry": {
+        "aoi_id": "humboldt_ca_train",
+        "region": "Humboldt County",
+        "state": "California",
+        "country": "United States",
+        "role": "train",
+        "domain": "forest",
+        "rgb_source": "USDA-FSA NAIP 2022 products ca_m_4012408_se and ca_m_4012301_sw via Microsoft Planetary Computer NAIP archive",
+        "rgb_path": "research/geoguard/data/humboldt_pilot/derived/rgb_aligned.tif",
+        "rgb_date": "2022-05-31",
+        "rgb_crs": "EPSG:6339 (aligned from native EPSG:26910)",
+        "rgb_gsd_m": 0.6,
+        "reference_source": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N40_00_W124_00_DEM",
+        "reference_path": "research/geoguard/data/humboldt_pilot/derived/reference_aligned.tif",
+        "reference_type": "DSM",
+        "reference_date": "2011-01-01",
+        "reference_crs": "EPSG:6339 (aligned from native EPSG:4326)",
+        "reference_vertical_datum": "NAVD88 (Geoid18), converted from EGM2008 with NOAA VDatum",
+        "reference_units": "metre",
+        "reference_resolution_m": 30.0,
+        "truth_source": "USGS 3DEP LPC CA_NorthernCA_B22 collection via public EPT, maximum-Z surface raster",
+        "truth_path": "research/geoguard/data/humboldt_pilot/derived/truth_aligned.tif",
+        "truth_type": "DSM",
+        "truth_date": "2022-09-11",
+        "truth_crs": "EPSG:6339 (aligned from USGS EPT EPSG:3857; collection native EPSG:6339)",
+        "truth_vertical_datum": "NAVD88 (Geoid18)",
+        "truth_units": "metre",
+        "truth_resolution_m": 1.0,
+        "license": "NAIP and USGS data: US public domain; Copernicus DEM: free Copernicus DEM licence with attribution required",
+        "acquisition_gap_days": 103,
+        "valid_truth_fraction": 0.982686,
+        "status": "verified_pilot",
+        "exclusion_reason": null,
+        "rgb_checksum_sha256": "e4ce83d58f0950c21c2758c28a93ddcc136ae18e915d886622ef73eae148397b",
+        "reference_checksum_sha256": "d2225c41ffe920e2bd89e765a328be7e9afbeb5ab35693483cddc4638f7ce87c",
+        "truth_checksum_sha256": "3d2fade4445df47c86ae1380ce48680bc39713e6bd4ddd4a7df237d15153d301",
+        "notes": "Verified 1 km x 1 km forest pilot at EPSG:6339 bounds 416500,4527000,417500,4528000. AOI was shifted 500 m east during preparation to remain wholly inside successful NOAA VDatum coverage; no failed-corner extrapolation was used. Copernicus epoch is 2011-2015; reference_date stores range start. VDatum offsets 0.935-0.966 m were bilinearly applied; API uncertainty is NaN and unquantified. USGS project range is 2022-09-11 to 2022-11-03 (103-156 day RGB gap); EPT GPS time type 0 prevents per-tile date decoding. Maximum accepted Z per 1 m cell, no interpolation. Development/training only."
+      },
+      "reference_product": "Copernicus DEM GLO-30 tile Copernicus_DSM_COG_10_N40_00_W124_00_DEM",
+      "truth_product": "USGS 3DEP LPC CA_NorthernCA_B22 collection via public EPT, maximum-Z surface raster",
+      "RGB_acquisition_date": "2022-05-31",
+      "LiDAR_acquisition_date": "2022-09-11",
+      "vertical_datum": "NAVD88 (Geoid18), converted from EGM2008 with NOAA VDatum",
+      "existing_source_metadata": {
+        "site": "humboldt",
+        "county": "Humboldt County",
+        "state": "California",
+        "domain": "forest",
+        "target_crs": "EPSG:6339",
+        "bounds": [
+          416500.0,
+          4527000.0,
+          417500.0,
+          4528000.0
+        ],
+        "wgs84_bounds": [
+          -123.99132622482419,
+          40.88982924909686,
+          -123.9793228767823,
+          40.89893773404642
+        ],
+        "naip_ids": [
+          "ca_m_4012408_se_10_060_20220531",
+          "ca_m_4012301_sw_10_060_20220531"
+        ],
+        "naip_urls": [
+          "https://naipeuwest.blob.core.windows.net/naip/v002/ca/2022/ca_060cm_2022/40124/m_4012408_se_10_060_20220531.tif",
+          "https://naipeuwest.blob.core.windows.net/naip/v002/ca/2022/ca_060cm_2022/40123/m_4012301_sw_10_060_20220531.tif"
+        ],
+        "naip_date": "2022-05-31",
+        "copernicus_tile": "Copernicus_DSM_COG_10_N40_00_W124_00_DEM",
+        "copernicus_url": "https://copernicus-dem-30m.s3.amazonaws.com/Copernicus_DSM_COG_10_N40_00_W124_00_DEM/Copernicus_DSM_COG_10_N40_00_W124_00_DEM.tif",
+        "copernicus_epoch": "2011-2015",
+        "vdatum_responses": [
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-123.99132622482419",
+            "s_y": "40.89893773404642",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-123.9913109216",
+            "t_y": "40.8989347278",
+            "t_z": "0.951",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-123.99132622482419&s_y=40.89893773404642&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-123.9793228767823",
+            "s_y": "40.89893773404642",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-123.979307575",
+            "t_y": "40.8989347235",
+            "t_z": "0.935",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-123.9793228767823&s_y=40.89893773404642&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-123.99132622482419",
+            "s_y": "40.88982924909686",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-123.9913109246",
+            "t_y": "40.8898262434",
+            "t_z": "0.966",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-123.99132622482419&s_y=40.88982924909686&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          },
+          {
+            "region": "CONTIGUOUS",
+            "s_h_frame": "WGS84_G1674",
+            "s_coor": "geo",
+            "s_h_unit": "m",
+            "s_h_zone": "",
+            "s_v_frame": "EGM2008",
+            "s_v_unit": "m",
+            "s_v_elevation": "height",
+            "s_v_geoid": "egm2008",
+            "s_x": "-123.9793228767823",
+            "s_y": "40.88982924909686",
+            "s_z": "0",
+            "t_h_frame": "NAD83_2011",
+            "t_coor": "geo",
+            "t_h_unit": "m",
+            "t_h_zone": "",
+            "t_v_frame": "NAVD88",
+            "t_v_unit": "m",
+            "t_v_elevation": "height",
+            "t_v_geoid": "geoid18",
+            "epoch_in": "0.0",
+            "epoch_out": "0.0",
+            "t_x": "-123.979307578",
+            "t_y": "40.8898262392",
+            "t_z": "0.956",
+            "uncertainty": "NaN",
+            "request_url": "https://vdatum.noaa.gov/vdatumweb/api/convert?s_x=-123.9793228767823&s_y=40.88982924909686&s_z=0&region=contiguous&s_h_frame=WGS84_G1674&s_coor=geo&s_h_unit=m&s_v_frame=EGM2008&s_v_unit=m&s_v_geoid=egm2008&t_h_frame=NAD83_2011&t_coor=geo&t_h_unit=m&t_v_frame=NAVD88&t_v_unit=m&t_v_geoid=geoid18"
+          }
+        ],
+        "truth_product": "USGS LPC CA_NorthernCA_B22 10TDL1627",
+        "truth_url": "https://usgs-lidar-public.s3.amazonaws.com/CA_NorthernCA_5_B22/ept.json",
+        "truth_legacy_tile_url": "https://rockyweb.usgs.gov/vdelivery/Datasets/Staged/Elevation/LPC/Projects/CA_NorthernCA_B22/CA_NorthernCA_5_B22/LAZ/USGS_LPC_CA_NorthernCA_B22_10TDL1627.laz?download=1",
+        "truth": {
+          "source_crs": [
+            "EPSG:3857"
+          ],
+          "source_transport": "USGS 3DEP public EPT subset",
+          "source_file_count": 1313,
+          "gps_time_types": [
+            0
+          ],
+          "tile_acquisition_start": null,
+          "tile_acquisition_end": null,
+          "project_collection_range": "2022-09-11/2022-11-03",
+          "all_class_counts": {
+            "1": 50248666,
+            "2": 11511741,
+            "7": 5826,
+            "9": 364,
+            "17": 14,
+            "18": 24021,
+            "20": 15,
+            "22": 1
+          },
+          "accepted_class_counts": {
+            "1": 41595342,
+            "2": 9906654
+          },
+          "accepted_surface_classes": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            9,
+            10,
+            13,
+            14,
+            17
+          ],
+          "excluded_classes": [
+            7,
+            11,
+            18,
+            20,
+            22
+          ],
+          "accepted_point_count": 51501996,
+          "valid_cell_count": 999580,
+          "valid_fraction": 0.99958,
+          "density_min": 2,
+          "density_median": 46.0,
+          "density_max": 266,
+          "elevation_min_m": 126.52999877929688,
+          "elevation_max_m": 356.6700134277344
+        },
+        "valid_fraction": 0.982686,
+        "checksums": {
+          "rgb_source_crop": "158fa6e3dcc3c0757a5ee75ae0f39908cced38301178bc78b75410aaf8bbb4cd",
+          "reference_source_crop": "c05fb2057940d865ef1e87ff7c73a5eadacc84cd573b42648351c92c3d23c4bc",
+          "truth_raw_descriptor": "c5875163f7bb01becd6928e8d82e46e98c56567ebc9fe5f0cc78ca86239452d9",
+          "rgb_aligned": "e4ce83d58f0950c21c2758c28a93ddcc136ae18e915d886622ef73eae148397b",
+          "reference_aligned": "d2225c41ffe920e2bd89e765a328be7e9afbeb5ab35693483cddc4638f7ce87c",
+          "truth_aligned": "3d2fade4445df47c86ae1380ce48680bc39713e6bd4ddd4a7df237d15153d301"
+        }
+      },
+      "wake_provenance_text": null,
+      "inference_mask": "Not stored separately; V1 computes RGB/reference/DAV2 validity only in memory. Do not use truth/scoring mask for inference.",
+      "scoring_mask": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\valid_mask.tif",
+      "input_valid_pixels": 983106,
+      "scoring_pixels": 982686,
+      "truth_valid_fraction": 0.99958,
+      "baseline_metrics": {
+        "mae": 7.685916235951078,
+        "rmse": 9.850414236787238,
+        "bias": -3.760334033921694,
+        "pearson": 0.9675420109618219,
+        "spearman": 0.9635399518753008,
+        "valid_pixel_count": 982686
+      },
+      "baseline_match": "PASS",
+      "triplet_QA": "PASS",
+      "triplet_QA_output": "\nRGB:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\rgb_aligned.tif\n  shape: (1000, 1000)\n  bands: 3\n  dtype: uint8, uint8, uint8\n  CRS: EPSG:6339\n  bounds: (416500, 4527000, 417500, 4528000)\n  pixel size: (1, 1)\n  nodata: (0.0, 0.0, 0.0)\n  nodata/non-finite percentage: 0.000000%\n\nREFERENCE:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\reference_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6339\n  bounds: (416500, 4527000, 417500, 4528000)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 1.689400%\n  finite min/max: 146.3422699 / 337.4121399\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid18)\n  elevation type from metadata: DSM\n\nTRUTH:\n  path: C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\truth_aligned.tif\n  shape: (1000, 1000)\n  bands: 1\n  dtype: float32\n  CRS: EPSG:6339\n  bounds: (416500, 4527000, 417500, 4528000)\n  pixel size: (1, 1)\n  nodata: (-9999.0,)\n  nodata/non-finite percentage: 0.042000%\n  finite min/max: 126.5299988 / 356.6700134\n  units from metadata: metre\n  vertical datum from metadata: NAVD88 (Geoid18)\n  elevation type from metadata: DSM\n\nALIGNMENT:\n  geographic overlap: PASS\n  bounds plausibly intersect: YES\n  CRS compatibility: EXACT MATCH\n  reference/RGB resolution ratio: 1\n  truth/RGB resolution ratio: 1\n\nWARNINGS:\n- none\n\nSCIENTIFIC BLOCKERS:\n- none\nRESULT: PASS \u2014 metadata supports further comparison; target-type provenance still requires manifest review\n",
+      "truth_construction": "Existing maximum accepted LiDAR Z per 1 m cell; no interpolation. Wake accepts classes 1,2,3,4,5,6,9,10,13,14 and excludes 17/18 overlap classes and withheld. Other pilots accept 1,2,3,4,5,6,9,10,13,14,17 and exclude withheld/overlap flags; see unchanged source metadata and preparation script. Not regenerated."
+    }
+  ],
+  "files": [
+    {
+      "region": "wake",
+      "role": "rgb",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\rgb_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/rgb_aligned.tif",
+      "filename": "rgb_aligned.tif",
+      "sha256": "a0828aa36ff4d33a7e807db1ce704d1d26c3664d606b57df2353eec0df4a0bc8",
+      "bytes": 1786483,
+      "CRS": "EPSG:6346",
+      "bounds": [
+        717954.0,
+        3944392.0,
+        718954.0,
+        3945392.0
+      ],
+      "shape": [
+        3,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8",
+        "uint8",
+        "uint8"
+      ],
+      "nodata": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "description": "rgb",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        717954.0,
+        0.0,
+        -1.0,
+        3945392.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null,
+        null,
+        null
+      ],
+      "tags": {
+        "acquisition_date": "2014-06-18",
+        "bands": "Red,Green,Blue",
+        "resampling": "bilinear",
+        "source_crs": "EPSG:26917",
+        "source_gsd_m": "1.0",
+        "source_product": "NAIP m_3507828_nw_17_1_20140618",
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "region": "wake",
+      "role": "reference",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\reference_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/reference_aligned.tif",
+      "filename": "reference_aligned.tif",
+      "sha256": "5782c883488abb444264b7d8fb4072b008297d806d93af66c2e846088767c57c",
+      "bytes": 3182501,
+      "CRS": "EPSG:6346",
+      "bounds": [
+        717954.0,
+        3944392.0,
+        718954.0,
+        3945392.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "reference",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        717954.0,
+        0.0,
+        -1.0,
+        3945392.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "elevation_type": "DSM",
+          "horizontal_resampling": "bilinear",
+          "source_product": "Copernicus DEM GLO-30 Copernicus_DSM_COG_10_N35_00_W079_00_DEM",
+          "source_resolution": "1 arc-second (~30 m)",
+          "source_units": "metre",
+          "source_vertical_datum": "EGM2008",
+          "target_type": "DSM",
+          "units": "metre",
+          "vertical_conversion": "NOAA VDatum EGM2008(WGS84_G1674) to NAVD88(Geoid12A); bilinear AOI corner offsets",
+          "vertical_conversion_uncertainty": "NOAA API returned NaN; treat datum conversion uncertainty as unquantified",
+          "vertical_datum": "NAVD88 (Geoid12A)",
+          "vertical_offset_corners_m": "TL=0.273,TR=0.275,BL=0.275,BR=0.277"
+        }
+      ]
+    },
+    {
+      "region": "wake",
+      "role": "truth",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\truth_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/truth_aligned.tif",
+      "filename": "truth_aligned.tif",
+      "sha256": "92e8304c1ef8e51e74ab8f2de4af81c1341ce45a498103e7c30f95fc35f87355",
+      "bytes": 2558874,
+      "CRS": "EPSG:6346",
+      "bounds": [
+        717954.0,
+        3944392.0,
+        718954.0,
+        3945392.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "truth",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        717954.0,
+        0.0,
+        -1.0,
+        3945392.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "elevation_type": "DSM",
+          "excluded_classes": "7,11,17,18",
+          "included_classes": "1,2,3,4,5,6,9,10,13,14",
+          "nodata_logic": "no accepted LiDAR return in cell",
+          "rasterization": "maximum Z of accepted surface points per 1 m cell",
+          "source_acquisition_date": "2014-02-09",
+          "source_product": "USGS LPC NC_Phase2_2014 LA_37_20162803_",
+          "source_units": "US survey feet",
+          "target_type": "DSM",
+          "units": "metre",
+          "unit_conversion": "0.3048006096012192 m per US survey foot",
+          "vertical_datum": "NAVD88 (Geoid12A)"
+        }
+      ]
+    },
+    {
+      "region": "wake",
+      "role": "scoring_mask",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\valid_mask.tif",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/valid_mask.tif",
+      "filename": "valid_mask.tif",
+      "sha256": "142b451938043f6fcabed98ea0acd65fb11e61d9740a4acda44edfc21ace4bc1",
+      "bytes": 35864,
+      "CRS": "EPSG:6346",
+      "bounds": [
+        717954.0,
+        3944392.0,
+        718954.0,
+        3945392.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8"
+      ],
+      "nodata": [
+        0.0
+      ],
+      "description": "scoring_mask",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        717954.0,
+        0.0,
+        -1.0,
+        3945392.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "mask_logic": "1 where RGB, reference DSM, and LiDAR DSM are all valid; 0 otherwise",
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {}
+      ]
+    },
+    {
+      "region": "wake",
+      "role": "frozen_dav2",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\ai\\depth_relative.tif",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/ai/depth_relative.tif",
+      "filename": "depth_relative.tif",
+      "sha256": "10db0cfd0ffb13891c6f156d7fc115a08a5e71a852a3735ecdaabe8333ef5cf4",
+      "bytes": 2141780,
+      "CRS": "EPSG:6346",
+      "bounds": [
+        717954.0,
+        3944392.0,
+        718954.0,
+        3945392.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "frozen_dav2",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        717954.0,
+        0.0,
+        -1.0,
+        3945392.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "relative_arbitrary"
+      ],
+      "tags": {
+        "checkpoint_id": "depth-anything/Depth-Anything-V2-Small-hf",
+        "device": "cpu",
+        "metric_depth": "false",
+        "model_name": "Depth Anything V2 Small",
+        "output_convention": "relative disparity-like monocular depth; values are arbitrary and must not be interpreted as metric distance, elevation, or DSM height",
+        "output_units": "relative_arbitrary",
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "metric_depth": "false",
+          "normalization": "none",
+          "output_units": "relative_arbitrary"
+        }
+      ]
+    },
+    {
+      "region": "wake",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\metadata\\naip_m_3507828_nw_20140618_fgdc.txt",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/metadata/naip_m_3507828_nw_20140618_fgdc.txt",
+      "filename": "naip_m_3507828_nw_20140618_fgdc.txt",
+      "sha256": "25913e37a2dc314b28f5c2dc32887a854ad6325ae3bdd8d6d20c7b55ea578981",
+      "bytes": 18296,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "wake",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\metadata\\NC_Phase2_ClassifiedPointCloud.xml",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/metadata/NC_Phase2_ClassifiedPointCloud.xml",
+      "filename": "NC_Phase2_ClassifiedPointCloud.xml",
+      "sha256": "07342859d671c7cdca96a697d229a0c20223ff8e41613b46f83ec8c8c58bde6b",
+      "bytes": 29253,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "wake",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\metadata\\PROVENANCE.md",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/metadata/PROVENANCE.md",
+      "filename": "PROVENANCE.md",
+      "sha256": "eac8d7ba27b29b979d3a4a30a0961d36e116a5d6c0f80d3515ee47a7cc882569",
+      "bytes": 6444,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "wake",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\ai\\depth_relative_metadata.json",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/ai/depth_relative_metadata.json",
+      "filename": "depth_relative_metadata.json",
+      "sha256": "898d1ae8f069ea257d8e719a76252b75102c96342e88bba036abe5004edd0363",
+      "bytes": 815,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "wake",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\wake_pilot\\derived\\baseline\\reference_metrics.json",
+      "repo_relative_path": "research/geoguard/data/wake_pilot/derived/baseline/reference_metrics.json",
+      "filename": "reference_metrics.json",
+      "sha256": "e44f85c2c96468bd7d0feecaaa59b944b8a38c71d9327aa21126e40744fd0322",
+      "bytes": 227,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "polk",
+      "role": "rgb",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\rgb_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/rgb_aligned.tif",
+      "filename": "rgb_aligned.tif",
+      "sha256": "8d67e84271c425ee17325341cadfdf9bb95606e998c466047626a8fdc2e8a2c7",
+      "bytes": 2166249,
+      "CRS": "EPSG:6344",
+      "bounds": [
+        458000.0,
+        4615000.0,
+        459000.0,
+        4616000.0
+      ],
+      "shape": [
+        3,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8",
+        "uint8",
+        "uint8"
+      ],
+      "nodata": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "description": "rgb",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        458000.0,
+        0.0,
+        -1.0,
+        4616000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null,
+        null,
+        null
+      ],
+      "tags": {
+        "acquisition_date": "2019-08-22",
+        "source": "USDA-FSA NAIP",
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "region": "polk",
+      "role": "reference",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\reference_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/reference_aligned.tif",
+      "filename": "reference_aligned.tif",
+      "sha256": "023c9ff4fbf096aaefa1c1bfc8d653ae7ae45565c00a28eaeca49843598bd6d6",
+      "bytes": 2755657,
+      "CRS": "EPSG:6344",
+      "bounds": [
+        458000.0,
+        4615000.0,
+        459000.0,
+        4616000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "reference",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        458000.0,
+        0.0,
+        -1.0,
+        4616000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "effective_resolution": "approximately 30 metres",
+          "elevation_type": "DSM",
+          "source_product": "Copernicus_DSM_COG_10_N41_00_W094_00_DEM",
+          "units": "metre",
+          "vertical_conversion": "NOAA VDatum EGM2008 to NAVD88",
+          "vertical_datum": "NAVD88 (Geoid12B)"
+        }
+      ]
+    },
+    {
+      "region": "polk",
+      "role": "truth",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\truth_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/truth_aligned.tif",
+      "filename": "truth_aligned.tif",
+      "sha256": "c0029bf4422e4ee30ca9d8d013f86daac00f66837bb182ba6458ef65fe0c83d2",
+      "bytes": 1556638,
+      "CRS": "EPSG:6344",
+      "bounds": [
+        458000.0,
+        4615000.0,
+        459000.0,
+        4616000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "truth",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        458000.0,
+        0.0,
+        -1.0,
+        4616000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "elevation_type": "DSM",
+          "rasterization": "maximum accepted LiDAR Z per 1 metre cell; no interpolation",
+          "units": "metre",
+          "vertical_datum": "NAVD88 (Geoid12B)"
+        }
+      ]
+    },
+    {
+      "region": "polk",
+      "role": "scoring_mask",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\valid_mask.tif",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/valid_mask.tif",
+      "filename": "valid_mask.tif",
+      "sha256": "ebeed57b340da15a697ce79bb7b3cf2bd2057a3565876191063c62c30ef97fda",
+      "bytes": 20516,
+      "CRS": "EPSG:6344",
+      "bounds": [
+        458000.0,
+        4615000.0,
+        459000.0,
+        4616000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8"
+      ],
+      "nodata": [
+        0.0
+      ],
+      "description": "scoring_mask",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        458000.0,
+        0.0,
+        -1.0,
+        4616000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "mask_definition": "RGB AND reference AND truth valid",
+          "units": "dimensionless"
+        }
+      ]
+    },
+    {
+      "region": "polk",
+      "role": "frozen_dav2",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\ai\\depth_relative.tif",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/ai/depth_relative.tif",
+      "filename": "depth_relative.tif",
+      "sha256": "d04aec53885c9314de2977122f97f5066777920bfb4591094c2aa83dfd11198d",
+      "bytes": 3342023,
+      "CRS": "EPSG:6344",
+      "bounds": [
+        458000.0,
+        4615000.0,
+        459000.0,
+        4616000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        null
+      ],
+      "description": "frozen_dav2",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        458000.0,
+        0.0,
+        -1.0,
+        4616000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "relative_arbitrary"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "frozen": "true",
+          "metric_depth": "false",
+          "model": "depth-anything/Depth-Anything-V2-Small-hf",
+          "units": "relative_arbitrary"
+        }
+      ]
+    },
+    {
+      "region": "polk",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\metadata\\lidar_project_metadata.xml",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/metadata/lidar_project_metadata.xml",
+      "filename": "lidar_project_metadata.xml",
+      "sha256": "f2bb64f2f05fd5ffc62207399c7ae592a6c1be5e6b3767edc5cf2b312afd9cba",
+      "bytes": 42585,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "polk",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\metadata\\PROVENANCE.md",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/metadata/PROVENANCE.md",
+      "filename": "PROVENANCE.md",
+      "sha256": "4a42df36a18556990913f08b12c2d192e73394ccca48b05df18cfe038c510153",
+      "bytes": 3167,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "polk",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\metadata\\source_metadata.json",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/metadata/source_metadata.json",
+      "filename": "source_metadata.json",
+      "sha256": "1e77d420c27bb137ae65ad316ea7d55ff0c993eba534e1f7af10c27136fc0b37",
+      "bytes": 8798,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "polk",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\ai\\depth_relative_metadata.json",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/ai/depth_relative_metadata.json",
+      "filename": "depth_relative_metadata.json",
+      "sha256": "2dd80ef025359c0d125f94514bc1c4a02908a4e4bfa8399e735e19171fecff74",
+      "bytes": 1108,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "polk",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\polk_pilot\\derived\\baseline\\reference_metrics.json",
+      "repo_relative_path": "research/geoguard/data/polk_pilot/derived/baseline/reference_metrics.json",
+      "filename": "reference_metrics.json",
+      "sha256": "74d4408ef2a76ae4a7dcfe3988837e3152e745c07abd58a9e61d5973995e4dfc",
+      "bytes": 231,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "larimer",
+      "role": "rgb",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\rgb_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/rgb_aligned.tif",
+      "filename": "rgb_aligned.tif",
+      "sha256": "4fd894a0312c149a075452227dd1661b2c512dcd14006aef74b64f649226ab8d",
+      "bytes": 2546753,
+      "CRS": "EPSG:6342",
+      "bounds": [
+        477750.0,
+        4491100.0,
+        478750.0,
+        4492100.0
+      ],
+      "shape": [
+        3,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8",
+        "uint8",
+        "uint8"
+      ],
+      "nodata": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "description": "rgb",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        477750.0,
+        0.0,
+        -1.0,
+        4492100.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null,
+        null,
+        null
+      ],
+      "tags": {
+        "acquisition_date": "2021-07-26",
+        "source": "USDA-FSA NAIP",
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "region": "larimer",
+      "role": "reference",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\reference_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/reference_aligned.tif",
+      "filename": "reference_aligned.tif",
+      "sha256": "d4847a67b035c646dec657b1755f192d1de5b8b1fa39f5fab121396623ab938b",
+      "bytes": 3148536,
+      "CRS": "EPSG:6342",
+      "bounds": [
+        477750.0,
+        4491100.0,
+        478750.0,
+        4492100.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "reference",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        477750.0,
+        0.0,
+        -1.0,
+        4492100.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "effective_resolution": "approximately 30 metres",
+          "elevation_type": "DSM",
+          "source_product": "Copernicus_DSM_COG_10_N40_00_W106_00_DEM",
+          "units": "metre",
+          "vertical_conversion": "NOAA VDatum EGM2008 to NAVD88",
+          "vertical_datum": "NAVD88 (Geoid18)"
+        }
+      ]
+    },
+    {
+      "region": "larimer",
+      "role": "truth",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\truth_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/truth_aligned.tif",
+      "filename": "truth_aligned.tif",
+      "sha256": "88c69a8a4322976bc536e5f9aac5a9d2d6dba14da2040eb1706e717e98978eb5",
+      "bytes": 2979477,
+      "CRS": "EPSG:6342",
+      "bounds": [
+        477750.0,
+        4491100.0,
+        478750.0,
+        4492100.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "truth",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        477750.0,
+        0.0,
+        -1.0,
+        4492100.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "elevation_type": "DSM",
+          "rasterization": "maximum accepted LiDAR Z per 1 metre cell; no interpolation",
+          "units": "metre",
+          "vertical_datum": "NAVD88 (Geoid18)"
+        }
+      ]
+    },
+    {
+      "region": "larimer",
+      "role": "scoring_mask",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\valid_mask.tif",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/valid_mask.tif",
+      "filename": "valid_mask.tif",
+      "sha256": "f9463641ef0f458243da7a1d4bf1c049974a88cfaa3e34c1d61b8d34c74132bd",
+      "bytes": 40300,
+      "CRS": "EPSG:6342",
+      "bounds": [
+        477750.0,
+        4491100.0,
+        478750.0,
+        4492100.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8"
+      ],
+      "nodata": [
+        0.0
+      ],
+      "description": "scoring_mask",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        477750.0,
+        0.0,
+        -1.0,
+        4492100.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "mask_definition": "RGB AND reference AND truth valid",
+          "units": "dimensionless"
+        }
+      ]
+    },
+    {
+      "region": "larimer",
+      "role": "frozen_dav2",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\ai\\depth_relative.tif",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/ai/depth_relative.tif",
+      "filename": "depth_relative.tif",
+      "sha256": "0730c024b7dcde221b7595f65e618c86fa559643c06958002c8cb382cbae04b9",
+      "bytes": 3356877,
+      "CRS": "EPSG:6342",
+      "bounds": [
+        477750.0,
+        4491100.0,
+        478750.0,
+        4492100.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        null
+      ],
+      "description": "frozen_dav2",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        477750.0,
+        0.0,
+        -1.0,
+        4492100.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "relative_arbitrary"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "frozen": "true",
+          "metric_depth": "false",
+          "model": "depth-anything/Depth-Anything-V2-Small-hf",
+          "units": "relative_arbitrary"
+        }
+      ]
+    },
+    {
+      "region": "larimer",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\metadata\\lidar_project_metadata.xml",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/metadata/lidar_project_metadata.xml",
+      "filename": "lidar_project_metadata.xml",
+      "sha256": "1d826a1f8c443d1f25a40baca3dc5264e52929af531a8d5b11f3274622c286f3",
+      "bytes": 13889,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "larimer",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\metadata\\PROVENANCE.md",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/metadata/PROVENANCE.md",
+      "filename": "PROVENANCE.md",
+      "sha256": "82738f3bd2666875e0e04eb69f08973d1e1541ed0adeb88a89d80f37d1cdd703",
+      "bytes": 2771,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "larimer",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\metadata\\source_metadata.json",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/metadata/source_metadata.json",
+      "filename": "source_metadata.json",
+      "sha256": "c2def6ace5eda1593ecd98822884b3a32e4d0da03d75d47318823d58a316fbb3",
+      "bytes": 7420,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "larimer",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\ai\\depth_relative_metadata.json",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/ai/depth_relative_metadata.json",
+      "filename": "depth_relative_metadata.json",
+      "sha256": "b1469d6e8e7b4b65f11ebbb6aafbf76ef4b6dde89a5db3d35a86d23cd2eb21ab",
+      "bytes": 1116,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "larimer",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\derived\\baseline\\reference_metrics.json",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/derived/baseline/reference_metrics.json",
+      "filename": "reference_metrics.json",
+      "sha256": "eb18e7ea8273e0e305792399ecf26ad93bdf40636c5696ad1289bff31ff260b7",
+      "bytes": 228,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "larimer",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\larimer_pilot\\truth_raw\\ept_selection.json",
+      "repo_relative_path": "research/geoguard/data/larimer_pilot/truth_raw/ept_selection.json",
+      "filename": "ept_selection.json",
+      "sha256": "7635a5755240656f5ee3dce48744835b296f99e465051a13137e8886bcb810b2",
+      "bytes": 40614,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "humboldt",
+      "role": "rgb",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\rgb_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/rgb_aligned.tif",
+      "filename": "rgb_aligned.tif",
+      "sha256": "e4ce83d58f0950c21c2758c28a93ddcc136ae18e915d886622ef73eae148397b",
+      "bytes": 2267565,
+      "CRS": "EPSG:6339",
+      "bounds": [
+        416500.0,
+        4527000.0,
+        417500.0,
+        4528000.0
+      ],
+      "shape": [
+        3,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8",
+        "uint8",
+        "uint8"
+      ],
+      "nodata": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "description": "rgb",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        416500.0,
+        0.0,
+        -1.0,
+        4528000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null,
+        null,
+        null
+      ],
+      "tags": {
+        "acquisition_date": "2022-05-31",
+        "source": "USDA-FSA NAIP",
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {},
+        {},
+        {}
+      ]
+    },
+    {
+      "region": "humboldt",
+      "role": "reference",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\reference_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/reference_aligned.tif",
+      "filename": "reference_aligned.tif",
+      "sha256": "d2225c41ffe920e2bd89e765a328be7e9afbeb5ab35693483cddc4638f7ce87c",
+      "bytes": 3233086,
+      "CRS": "EPSG:6339",
+      "bounds": [
+        416500.0,
+        4527000.0,
+        417500.0,
+        4528000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "reference",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        416500.0,
+        0.0,
+        -1.0,
+        4528000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "effective_resolution": "approximately 30 metres",
+          "elevation_type": "DSM",
+          "source_product": "Copernicus_DSM_COG_10_N40_00_W124_00_DEM",
+          "units": "metre",
+          "vertical_conversion": "NOAA VDatum EGM2008 to NAVD88",
+          "vertical_datum": "NAVD88 (Geoid18)"
+        }
+      ]
+    },
+    {
+      "region": "humboldt",
+      "role": "truth",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\truth_aligned.tif",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/truth_aligned.tif",
+      "filename": "truth_aligned.tif",
+      "sha256": "3d2fade4445df47c86ae1380ce48680bc39713e6bd4ddd4a7df237d15153d301",
+      "bytes": 2586085,
+      "CRS": "EPSG:6339",
+      "bounds": [
+        416500.0,
+        4527000.0,
+        417500.0,
+        4528000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        -9999.0
+      ],
+      "description": "truth",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        416500.0,
+        0.0,
+        -1.0,
+        4528000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "metre"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "elevation_type": "DSM",
+          "rasterization": "maximum accepted LiDAR Z per 1 metre cell; no interpolation",
+          "units": "metre",
+          "vertical_datum": "NAVD88 (Geoid18)"
+        }
+      ]
+    },
+    {
+      "region": "humboldt",
+      "role": "scoring_mask",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\valid_mask.tif",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/valid_mask.tif",
+      "filename": "valid_mask.tif",
+      "sha256": "f1da29b40631b09b12ab37152f956208b07800589b03359355807edd7d9eef12",
+      "bytes": 10646,
+      "CRS": "EPSG:6339",
+      "bounds": [
+        416500.0,
+        4527000.0,
+        417500.0,
+        4528000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "uint8"
+      ],
+      "nodata": [
+        0.0
+      ],
+      "description": "scoring_mask",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        416500.0,
+        0.0,
+        -1.0,
+        4528000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        null
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "mask_definition": "RGB AND reference AND truth valid",
+          "units": "dimensionless"
+        }
+      ]
+    },
+    {
+      "region": "humboldt",
+      "role": "frozen_dav2",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\ai\\depth_relative.tif",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/ai/depth_relative.tif",
+      "filename": "depth_relative.tif",
+      "sha256": "3d9ee0ac5a1679e2d758f04565d39bb1bc387b3e1767013e0f885d14682980fd",
+      "bytes": 3416387,
+      "CRS": "EPSG:6339",
+      "bounds": [
+        416500.0,
+        4527000.0,
+        417500.0,
+        4528000.0
+      ],
+      "shape": [
+        1,
+        1000,
+        1000
+      ],
+      "dtype": [
+        "float32"
+      ],
+      "nodata": [
+        null
+      ],
+      "description": "frozen_dav2",
+      "git_classification": "untracked ignored",
+      "generated_from_source": true,
+      "transform": [
+        1.0,
+        0.0,
+        416500.0,
+        0.0,
+        -1.0,
+        4528000.0
+      ],
+      "width": 1000,
+      "height": 1000,
+      "pixel_size": [
+        1.0,
+        1.0
+      ],
+      "units": [
+        "relative_arbitrary"
+      ],
+      "tags": {
+        "AREA_OR_POINT": "Area"
+      },
+      "band_tags": [
+        {
+          "frozen": "true",
+          "metric_depth": "false",
+          "model": "depth-anything/Depth-Anything-V2-Small-hf",
+          "units": "relative_arbitrary"
+        }
+      ]
+    },
+    {
+      "region": "humboldt",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\metadata\\lidar_project_metadata.xml",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/metadata/lidar_project_metadata.xml",
+      "filename": "lidar_project_metadata.xml",
+      "sha256": "fb962de272e39fe86206e568c9691d264549dccdfed59ce5cb74e2237f759657",
+      "bytes": 19343,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "humboldt",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\metadata\\PROVENANCE.md",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/metadata/PROVENANCE.md",
+      "filename": "PROVENANCE.md",
+      "sha256": "2ca0bdaeb8aed8b9a9408ec177bd4159c2d2144cf3738560b4e991dbb545a536",
+      "bytes": 2681,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "humboldt",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\metadata\\source_metadata.json",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/metadata/source_metadata.json",
+      "filename": "source_metadata.json",
+      "sha256": "ace997a10511d485b43189ff1aad3fcbf3005b876e11262534d3abc112b52e8a",
+      "bytes": 7393,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "humboldt",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\ai\\depth_relative_metadata.json",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/ai/depth_relative_metadata.json",
+      "filename": "depth_relative_metadata.json",
+      "sha256": "ae352e5d525360bb3e0134554556cd87e0b14fce8069fbc999153dfe5ce188d2",
+      "bytes": 1120,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "humboldt",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\derived\\baseline\\reference_metrics.json",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/derived/baseline/reference_metrics.json",
+      "filename": "reference_metrics.json",
+      "sha256": "a41fac9b7da5402d2186a261ab35362c8ecf4172c7e93b9962242422a10056d3",
+      "bytes": 227,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "humboldt",
+      "role": "provenance / historical metadata",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\data\\humboldt_pilot\\truth_raw\\ept_selection.json",
+      "repo_relative_path": "research/geoguard/data/humboldt_pilot/truth_raw/ept_selection.json",
+      "filename": "ept_selection.json",
+      "sha256": "c5875163f7bb01becd6928e8d82e46e98c56567ebc9fe5f0cc78ca86239452d9",
+      "bytes": 358790,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "provenance / historical metadata",
+      "git_classification": "untracked ignored",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\manifests\\schema.json",
+      "repo_relative_path": "research/geoguard/manifests/schema.json",
+      "filename": "schema.json",
+      "sha256": "b932283111f52d39e47dd49d20cd861532f7d39fdc8180d35c688b67bfb2fa3a",
+      "bytes": 5166,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\manifests\\proposed_split.json",
+      "repo_relative_path": "research/geoguard/manifests/proposed_split.json",
+      "filename": "proposed_split.json",
+      "sha256": "69d3401dcee9838c36ad1930d36a30fa9cc17dfdd87b4f0be41f12439e9592fc",
+      "bytes": 18297,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\manifests\\SPLIT_POLICY.md",
+      "repo_relative_path": "research/geoguard/manifests/SPLIT_POLICY.md",
+      "filename": "SPLIT_POLICY.md",
+      "sha256": "a82119891d6c17532c4caee2a4391e45c887e24f6d0063a4641c4607392179aa",
+      "bytes": 3116,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\TRAINING_PILOT_SUMMARY.md",
+      "repo_relative_path": "research/geoguard/TRAINING_PILOT_SUMMARY.md",
+      "filename": "TRAINING_PILOT_SUMMARY.md",
+      "sha256": "5d3e6514ce12f8f41ec2ceb44ed774d2400e5b7516d34b3d51d1e0914c9c8ea5",
+      "bytes": 1644,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\scripts\\prepare_training_pilots.py",
+      "repo_relative_path": "research/geoguard/scripts/prepare_training_pilots.py",
+      "filename": "prepare_training_pilots.py",
+      "sha256": "961c72845ee2fa53d530ae0dd3d067a4cb0912867eec4c4b179d5f9586623582",
+      "bytes": 32244,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\qa\\check_triplet.py",
+      "repo_relative_path": "research/geoguard/qa/check_triplet.py",
+      "filename": "check_triplet.py",
+      "sha256": "f576c5190a3dc903fe0db83e7bc71613947ea0f6e512e4dbf03694f6bb2b88e8",
+      "bytes": 12146,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\experiments\\reference_baseline.py",
+      "repo_relative_path": "research/geoguard/experiments/reference_baseline.py",
+      "filename": "reference_baseline.py",
+      "sha256": "47950a16ad22e498093bd96b5436e5a8e4b43c6c0fb0940f033857ae71d7c5f4",
+      "bytes": 6004,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\geoinverse\\config.py",
+      "repo_relative_path": "research/geoguard/geoinverse/config.py",
+      "filename": "config.py",
+      "sha256": "08028d709ea03814676e36d3e2e537f2c2464e6ba5dad27f1476a16606894bfd",
+      "bytes": 1489,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\geoinverse\\dataset.py",
+      "repo_relative_path": "research/geoguard/geoinverse/dataset.py",
+      "filename": "dataset.py",
+      "sha256": "9ba66884a9366488dcbb1a62db33a8cb590db4fd784861158b0a36ab3f34d46c",
+      "bytes": 6051,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\geoinverse\\dataset_v1.py",
+      "repo_relative_path": "research/geoguard/geoinverse/dataset_v1.py",
+      "filename": "dataset_v1.py",
+      "sha256": "c03b81a3231341b18c4acf69b74ac66d4fc45d7fbffabe7bb0ffc39d2f0b0259",
+      "bytes": 3891,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\residual\\config.py",
+      "repo_relative_path": "research/geoguard/residual/config.py",
+      "filename": "config.py",
+      "sha256": "5456ffd5407c837767d4954eb784e07df7cdfa9131b6e3992b417203cd13f2c3",
+      "bytes": 1730,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\residual\\dataset.py",
+      "repo_relative_path": "research/geoguard/residual/dataset.py",
+      "filename": "dataset.py",
+      "sha256": "cd6d2bca0dcda7d8d230e6204bbb9c5988cc8bbcd44a32c2b4806fafeb49500d",
+      "bytes": 6859,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    },
+    {
+      "region": "all",
+      "role": "evaluation / provenance support",
+      "absolute_source_path": "C:\\Users\\shawn_d8kl69k\\Documents\\depthwizard-sih26175\\research\\geoguard\\scripts\\inventory_canonical_pilots.py",
+      "repo_relative_path": "research/geoguard/scripts/inventory_canonical_pilots.py",
+      "filename": "inventory_canonical_pilots.py",
+      "sha256": "b02fce66afa3a196656563983ac51f1a0209bdad3b9952f3052ef0f9b59a7688",
+      "bytes": 12123,
+      "CRS": null,
+      "bounds": null,
+      "shape": null,
+      "dtype": null,
+      "nodata": null,
+      "description": "evaluation / provenance support",
+      "git_classification": "untracked",
+      "generated_from_source": false
+    }
+  ],
+  "uncertainty_policy": "Preserve existing NaN/unknown VDatum uncertainty; never interpret as zero.",
+  "trace": "GeoInverse V0/V1 and Residual dataset/config modules load these same five rasters per pilot.",
+  "scope": "No data modification, reprojection, regeneration, training, production change, commit or push.",
+  "generated_inventory_artifacts": [
+    "CANONICAL_PILOT_TRANSFER_MANIFEST.json",
+    "CANONICAL_PILOT_TRANSFER_README.md",
+    "CANONICAL_PILOT_FILELIST.txt"
+  ],
+  "total_input_bytes": 43809573
+}

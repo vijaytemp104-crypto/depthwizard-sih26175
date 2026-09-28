@@ -1,0 +1,200 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://chakraview.local/schemas/geoguard-aoi-manifest-v1.json",
+  "title": "ChakraVIEW GeoGuard-SC AOI manifest",
+  "description": "Research manifest for geographically separated RGB, coarse-reference, and independent-truth triplets.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "aois"],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "description": {
+      "type": "string"
+    },
+    "aois": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/aoi"
+      }
+    }
+  },
+  "$defs": {
+    "nullableString": {
+      "type": ["string", "null"]
+    },
+    "positiveNumberOrNull": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0
+    },
+    "dateOrNull": {
+      "type": ["string", "null"],
+      "format": "date"
+    },
+    "checksumOrNull": {
+      "type": ["string", "null"],
+      "pattern": "^[A-Fa-f0-9]{64}$"
+    },
+    "aoi": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "aoi_id",
+        "region",
+        "state",
+        "country",
+        "role",
+        "domain",
+        "rgb_source",
+        "rgb_path",
+        "rgb_date",
+        "rgb_crs",
+        "rgb_gsd_m",
+        "reference_source",
+        "reference_path",
+        "reference_type",
+        "reference_date",
+        "reference_crs",
+        "reference_vertical_datum",
+        "reference_units",
+        "reference_resolution_m",
+        "truth_source",
+        "truth_path",
+        "truth_type",
+        "truth_date",
+        "truth_crs",
+        "truth_vertical_datum",
+        "truth_units",
+        "truth_resolution_m",
+        "license",
+        "acquisition_gap_days",
+        "valid_truth_fraction",
+        "status",
+        "exclusion_reason",
+        "rgb_checksum_sha256",
+        "reference_checksum_sha256",
+        "truth_checksum_sha256",
+        "notes"
+      ],
+      "properties": {
+        "aoi_id": {
+          "type": "string",
+          "minLength": 1,
+          "pattern": "^[a-z0-9][a-z0-9_-]*$"
+        },
+        "region": {
+          "type": "string",
+          "minLength": 1
+        },
+        "state": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "country": {
+          "type": "string",
+          "minLength": 1
+        },
+        "role": {
+          "enum": ["train", "model_validation", "gate_calibration", "blind_test"]
+        },
+        "domain": {
+          "enum": ["urban", "open", "hilly", "forest"]
+        },
+        "rgb_source": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "rgb_path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "rgb_date": {
+          "$ref": "#/$defs/dateOrNull"
+        },
+        "rgb_crs": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "rgb_gsd_m": {
+          "$ref": "#/$defs/positiveNumberOrNull"
+        },
+        "reference_source": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "reference_path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "reference_type": {
+          "enum": ["DSM", "DTM", "DEM", "AGL"]
+        },
+        "reference_date": {
+          "$ref": "#/$defs/dateOrNull"
+        },
+        "reference_crs": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "reference_vertical_datum": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "reference_units": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "reference_resolution_m": {
+          "$ref": "#/$defs/positiveNumberOrNull"
+        },
+        "truth_source": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "truth_path": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "truth_type": {
+          "enum": ["DSM", "DTM", "DEM", "AGL"]
+        },
+        "truth_date": {
+          "$ref": "#/$defs/dateOrNull"
+        },
+        "truth_crs": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "truth_vertical_datum": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "truth_units": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "truth_resolution_m": {
+          "$ref": "#/$defs/positiveNumberOrNull"
+        },
+        "license": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "acquisition_gap_days": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "valid_truth_fraction": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1
+        },
+        "status": {
+          "enum": ["metadata_pending", "verified_pilot", "ready", "excluded"]
+        },
+        "exclusion_reason": {
+          "$ref": "#/$defs/nullableString"
+        },
+        "rgb_checksum_sha256": {
+          "$ref": "#/$defs/checksumOrNull"
+        },
+        "reference_checksum_sha256": {
+          "$ref": "#/$defs/checksumOrNull"
+        },
+        "truth_checksum_sha256": {
+          "$ref": "#/$defs/checksumOrNull"
+        },
+        "notes": {
+          "$ref": "#/$defs/nullableString"
+        }
+      }
+    }
+  }
+}

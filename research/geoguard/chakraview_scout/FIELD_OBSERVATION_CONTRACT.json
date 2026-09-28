@@ -1,0 +1,11 @@
+{
+  "schema_version": "research-1",
+  "required": ["observation_id", "mission_id", "status", "timestamp", "location", "source"],
+  "status_enum": ["OBSERVED", "BLOCKED", "CLEAR", "UNKNOWN", "NOTE"],
+  "location_contract": {"row": "integer", "col": "integer", "coordinates": "optional numeric pair", "crs": "explicit", "accuracy": "optional documented units"},
+  "optional": ["photo_reference", "note", "quality", "verified_footprint", "datum", "units", "instrument", "operator_review"],
+  "quality": "[0,1], defaults to 0; not inferred from status",
+  "update_rule": "OBSERVED/BLOCKED/CLEAR may reduce the supplied cell U by (1-quality); UNKNOWN/NOTE do not reduce it. Verified wider footprints require a separate explicit assimilation step.",
+  "scope": "Research interface documentation, not a production API or JSON Schema validator. Python validates local cell/status/quality only. Browser demo queues notes only.",
+  "privacy": "No facial recognition, victim identification or sensitive-data subsystem. Opaque photo references only."
+}

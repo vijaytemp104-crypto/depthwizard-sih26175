@@ -1,0 +1,14 @@
+flowchart TD
+  Image[Satellite / Aerial Image] --> Foundation[Foundation Geometry]
+  Foundation --> GeoInverse[GeoInverse: AI + Physics + Geodesy]
+  GeoInverse --> Terrain[Evidence-Constrained Terrain]
+  Terrain --> Response[Response Intelligence]
+  Terrain --> Evidence[Evidence / Uncertainty]
+  Response --> Scout[ChakraVIEW Scout]
+  Evidence --> Scout
+  Scout --> Observation[Next Best Observation]
+  Observation --> Ground[Ground Team: Human Review]
+  Observation --> Drone[Drone Operator: Human Review]
+  Ground --> New[New Verified Evidence]
+  Drone --> New
+  New --> GeoInverse
